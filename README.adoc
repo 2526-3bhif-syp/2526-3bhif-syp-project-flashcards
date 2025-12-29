@@ -1,17 +1,24 @@
-= Flashcards
 :toc: macro
 :toc-title: Table of Contents
 :toclevels: 2
 :icons: font
 
-image::img/icon.png[Flashcards Icon, 200, 200, align="center"]
+++++
+<p align="center">
+  <img src="img/icon.png" alt="Flashcards Icon" width="200" height="200"/>
+</p>
 
-[.text-center]
-image:https://img.shields.io/badge/build-passing-brightgreen[Build Status]
-image:https://img.shields.io/badge/version-1.0.0-orange[Version]
-image:https://img.shields.io/badge/license-MIT-blue[License]
-image:https://img.shields.io/badge/Java-21-red[Java]
-image:https://img.shields.io/badge/status-active-success[Status]
+<h1 align="center">Flashcards</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build Status"/>
+  <img src="https://img.shields.io/badge/version-0.0.1-orange" alt="Version"/>
+  <img src="https://img.shields.io/badge/Java-21-red" alt="Java"/>
+  <img src="https://img.shields.io/badge/status-active-success" alt="Status"/>
+</p>
+++++
+
+'''
 
 toc::[]
 
