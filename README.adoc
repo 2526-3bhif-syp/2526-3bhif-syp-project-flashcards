@@ -40,7 +40,7 @@ image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0O
 
 * **Kerimcan Yagci**
 * **Julian Mostbauer**
-* **Lorenz Patzer**
+* **Lorenz Parzer**
 * **Jan Brunner**
 
 == Slides
