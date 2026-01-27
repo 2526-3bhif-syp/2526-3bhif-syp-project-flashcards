@@ -42,3 +42,7 @@ Key features:
 == Slides
 
 The presentation slides for this project can be found link:https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-flashcards/slides[here].
+
+== Pflichtenheft
+
+Link zum link:https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-flashcards/specifications.html[Pflichtenheft]
