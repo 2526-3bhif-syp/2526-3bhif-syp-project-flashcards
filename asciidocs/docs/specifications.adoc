@@ -5,7 +5,7 @@ Mostbauer Julian, Brunner Jan, Kerimcan Yagci, Parzer Lorenz
 
 == Ausgangssituation
 
-Viele junge Personen besuchen Schulen oder Universitäten, in welchen sie sich für ihre Zukunft weiterbilden. Um ihr Wissen beweisen zu können, müssen sie zahlreiche Prüfungen bestehen.
+Viele junge Personen besuchen Schulen, Universitäten oder andere Lehranstalten, in welchen sie sich für ihre Zukunft weiterbilden. Um ihr Wissen beweisen zu können, müssen sie zahlreiche Prüfungen bestehen.
 
 == Istzustand
 
@@ -13,7 +13,7 @@ Derzeit lernen die meisten Personen von Zusammenfassungen oder erstellen sich se
 
 == Problemstellung
 
-Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand als auch ein Verwaltungsproblem mit sich. Zudem sind die meisten Lernplattformen kostenpflichtig, diese Plattformen haben meist einen Free-trail, aber dieser ist meistens sehr begrenzt und verfügt über nicht so vielen Funktionen.
+Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand als auch ein Verwaltungsproblem mit sich. Zudem sind die meisten Lernplattformen kostenpflichtig. Diese Plattformen haben meist auch einen Free-trail, aber dieser ist meistens sehr begrenzt und verfügt über nicht so viele Funktionen.
 
 == Aufgabenstellung
 
