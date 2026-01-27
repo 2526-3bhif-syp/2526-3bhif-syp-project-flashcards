@@ -1,0 +1,15 @@
+= Pflichtenheft - Flashcards
+Mostbauer Julian, Brunner Jan, Kerimcan Yagci, Parzer Lorenz
+1.0.0, {docdate}
+:sectnums:
+
+== Ausgangssituation
+
+Viele junge Personen besuchen Schulen oder Universitäten, in welchen sie sich für ihre Zukunft weiterbilden. Um ihr Wissen beweisen zu können, müssen sie zahlreiche Prüfungen bestehen.
+
+== Istzustand
+
+Zum Lernen gibt es bereits verschiedene analoge und digitale Lösungen. Physische Karteikarten bringen ein Verwaltungsproblem mit sich, da das manuelle sortieren das während des lernens notwendig ist vom tatsächlichen Inhalt ablenkt. Digitale Lösungen wie Quizlet sind in ihrer gratis Funktionalität beschränkt und ein Abo wird benötigt um neue Funktionen freizuschalten.
+
+== Problemstellung
+
