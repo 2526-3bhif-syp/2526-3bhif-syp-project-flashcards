@@ -33,6 +33,10 @@ image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0O
 
 == Ziele
 
+* Lernen mit Karteikarten kostenlos ermöglichen
+* Zeitaufwand beim Erstellen und Verwalten der Karten zu vermindern
+* Unterstützung der Nutzer um die Organisation der Lerninhalte zu verbessern durch einfacher Stapelverwaltung
+
 == Mengengerüst
 
 == Rahmenbedingungen
