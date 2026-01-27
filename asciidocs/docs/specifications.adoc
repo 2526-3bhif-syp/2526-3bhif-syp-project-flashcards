@@ -19,7 +19,17 @@ Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand 
 
 === Funktionale Anforderungen
 
+* **Stapelverwaltung**: Benutzer können Lernkarten-Stapel (Decks) erstellen, um verschiedene Themen (z. B. Englisch, Informatik) zu trennen.
+* **Lernmodus**: Benutzer werden über die Lernkarten abgefragt.
+* **Fortschritt speichern**: Das System speichert, welche Karten bereits gelernt wurden, um den Fortschritt anzuzeigen.
+* **Filter/Suche**: Benutzer können nach bestimmten Stapeln oder Karten suchen.
+
+image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0OIj92Qk4spvKCRUVKwNXcG-_SJtIRRmCGXvYNSBbaj1QT6RgXRKnhCIqpe8ZN4TURfZHwgXYg_oi8mz9bTP1Y0bhSTRO8yKC08C8cOVbaAjoEk0fwxBy1imdHXOKKYuy4p2U6RLP7thhNYR2oUjiKZj_RicrcfkNRIHfpRWzHoVsNAwPI9ivi9LedvCvs__yJgMfVsR40PbDrU-V5ePFtrRUGulPmy_014NY_ovsIkjnhGUqsPCsp7j0LA9osLVxF0T3mVZb8sQynoEx7JwjLy0[UCD, 600]
+
 === Nicht funktionale Anforderungen (NFA)
+
+* **Bedienbarkeit**: Die App soll so einfach wie möglich gestaltet sein, damit man ohne lange Einarbeitung direkt anfangen kann zu lernen.
+* **Stabilität**: Die Anwendung soll sowohl auf dem PC als auch auf dem Tablet oder Smartphone gut lesbar und bedienbar sein.
 
 == Ziele
 
