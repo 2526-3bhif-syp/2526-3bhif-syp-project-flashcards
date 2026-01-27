@@ -13,3 +13,14 @@ Zum Lernen gibt es bereits verschiedene analoge und digitale Lösungen. Physisch
 
 == Problemstellung
 
+== Aufgabenstellung
+
+=== Funktionale Anforderungen
+
+=== Nicht funktionale Anforderungen (NFA)
+
+== Ziele
+
+== Mengengerüst
+
+== Rahmenbedingungen
