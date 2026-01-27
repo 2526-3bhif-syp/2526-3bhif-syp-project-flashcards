@@ -9,9 +9,11 @@ Viele junge Personen besuchen Schulen oder Universitäten, in welchen sie sich f
 
 == Istzustand
 
-Zum Lernen gibt es bereits verschiedene analoge und digitale Lösungen. Physische Karteikarten bringen ein Verwaltungsproblem mit sich, da das manuelle sortieren das während des lernens notwendig ist vom tatsächlichen Inhalt ablenkt. Digitale Lösungen wie Quizlet sind in ihrer gratis Funktionalität beschränkt und ein Abo wird benötigt um neue Funktionen freizuschalten.
+Derzeit lernen die meisten Personen von Zusammenfassungen oder erstellen sich selbst Lernkarten und lernen mit denen. Ebenfalls lernen viele Personen mit Lernplattformen.
 
 == Problemstellung
+
+Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand als auch ein Verwaltungsproblem mit sich. Zudem sind die meisten Lernplattformen kostenpflichtig, diese Plattformen haben meist einen Free-trail, aber dieser ist meistens sehr begrenzt und verfügt über nicht so vielen Funktionen.
 
 == Aufgabenstellung
 
