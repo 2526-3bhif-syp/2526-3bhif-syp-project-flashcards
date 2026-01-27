@@ -25,4 +25,14 @@ Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand 
 
 == Mengengerüst
 
+Ein Schüler an unserer Schule hat um die 15 Fächer für die er lernen muss. Im Schnitt kann man mit 30 Flashcards pro Fach rechnen, wodurch ein Nutzer auf ca. 450 FLashcards pro Schuljahr kommt. 
+
+Datenbestände: Text, Bilder und Audio.
+
 == Rahmenbedingungen
+
+=== Technisch
+- JavaFX App
+
+=== Zetilich
+- Abschluss des Projektes vor dem Ende des Schuljahres
