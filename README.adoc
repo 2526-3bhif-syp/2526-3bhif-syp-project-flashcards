@@ -1,93 +1,48 @@
-= asciidoctor-html-template
-Thomas Stütz
-1.0.0, {docdate}
-:imagesdir: img
+:toc: macro
+:toc-title: Table of Contents
+:toclevels: 2
 :icons: font
-:sectnums:    // Nummerierung der Überschriften / section numbering
-// :toc:
-// :toclevels: 1
-:experimental:
-//https://gist.github.com/dcode/0cfbf2699a1fe9b46ff04c41721dda74?permalink_comment_id=3948218
-ifdef::env-github[]
-:tip-caption: :bulb:
-:note-caption: :information_source:
-:important-caption: :heavy_exclamation_mark:
-:caution-caption: :fire:
-:warning-caption: :warning:
-endif::[]
 
-image::https://img.shields.io/badge/version-1.0.0-blue[]
+++++
+<p align="center">
+  <img src="img/icon.png" alt="Flashcards Icon" width="200" height="200"/>
+</p>
 
-== doc-as-code
+<h1 align="center">Flashcards</h1>
 
-=== Overview
+<p align="center">
+  <img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build Status"/>
+  <img src="https://img.shields.io/badge/version-0.0.1-orange" alt="Version"/>
+  <img src="https://img.shields.io/badge/Java-21-red" alt="Java"/>
+  <img src="https://img.shields.io/badge/status-active-success" alt="Status"/>
+</p>
+++++
 
-The purpose of this template is to convert adoc-Files to html-Files
-These files are divided in html-documents and html-slides. The slides are rendered using https://revealjs.com/[revealjs^].
+'''
 
-The conversion of the adoc-files is processed in a docker-container.
+toc::[]
 
+== Description
 
-image::/img/adoc-to-html.png[]
+Flashcards helps you learn with digital cards. It is easy to use and works on all devices. You can learn anywhere.
 
-=== Usage
+Key features:
 
-==== Initial Configuration
+* **Easy Learning**: Learn quickly with flashcards.
+* **Simple Design**: Easy to use for everyone.
+* **Everywhere**: Works on PC, tablet and phone.
 
-* After templating this repo commit and push the demo page
+== Team Members
 
-* Set Settings - Pages - Branch: gh-pages - Folder: / (root)
-+
-[%collapsible]
-====
-image::/img/permissions-for-asciidoc-2.png[]
-====
+* **Kerimcan Yagci**
+* **Julian Mostbauer**
+* **Lorenz Parzer**
+* **Jan Brunner**
 
-==== Accessing the Website(s) for docs
+== Slides
 
-* https://*<github-repo-owner>*.github.io/*<github-repo-name>*
+The presentation slides for this project can be found link:https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-flashcards/slides[here].
 
-** ie https://htl-leonding-college.github.io/asciidoctor-html-template
+== Pflichtenheft
 
-==== Accessing the Website(s) for slides
-
-* https://*<github-repo-owner>*.github.io/*<github-repo-name>*/demo/*<file-name>*
-
-** ie https://htl-leonding-college.github.io/asciidoctor-html-template/slides/demo.html
-
-
-
-==== Remote Rendering by github-actions
-
-When commiting and pushing the adoc-files into github, they are automatically rendered by github-actions to html in a (new) branch `gh-pages`. All sub-folders with adoc-files are included.
-
-==== Local Rendering
-
-Because the rendering with gh-actions on a gh-runner takes time, it is possible to create a local dist-folder with
-
-[source,bash]
-----
-./local-convert.sh
-----
-
-IMPORTANT: You need docker installed locally.
-
-You even can publish your locally created html-slides with
-
-[source,bash]
-----
-./publish.sh
-----
-
-
-
-=== Customizing
-
-IMPORTANT: You should not change the scripts in the `asciidocs`-folder, unless you really know what to do.
-
-* The script are available in the `asciidocs`-Folder. So you could change the options for the asciidoctor-engine or the version of revealjs.
-
-=== Docs
-** https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/[Asciidoctor Quick Reference]
-** https://asciidoctor.org/docs/asciidoc-writers-guide/[AsciiDoc Writer’s Guide^]
-** https://docs.asciidoctor.org/reveal.js-converter/latest/converter/features/[Slides with Asciidoctor for revealjs^]
+Link zum https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-flashcards/specifications.html[Pflichtenheft^]
