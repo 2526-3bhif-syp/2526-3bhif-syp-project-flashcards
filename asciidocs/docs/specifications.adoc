@@ -17,6 +17,10 @@ Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand 
 
 == Aufgabenstellung
 
+Das Ziel des Projekts ist eine einfache App, mit der man digitale Lernkarten erstellen und verwalten kann. Man soll seine Karten in verschiedene Stapel (Decks) einsortieren können, zum Beispiel für verschiedene Schulfächer. Die App soll kostenlos sein und dabei helfen, schneller und organisierter zu lernen, ohne dass man einen riesigen Stapel aus Papier mit sich herumtragen muss.
+
+image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0OIj92Qk4spvKCRUVKwNXcG-_SJtIRRmCGXvYNSBbaj1QT6RgXRKnhCIqpe8ZN4TURfZHwgXYg_oi8mz9bTP1Y0bhSTRO8yKC08C8cOVbaAjoEk0fwxBy1imdHXOKKYuy4p2U6RLP7thhNYR2oUjiKZj_RicrcfkNRIHfpRWzHoVsNAwPI9ivi9LedvCvs__yJgMfVsR40PbDrU-V5ePFtrRUGulPmy_014NY_ovsIkjnhGUqsPCsp7j0LA9osLVxF0T3mVZb8sQynoEx7JwjLy0[UCD, 600]
+
 === Funktionale Anforderungen
 
 * **Stapelverwaltung**: Benutzer können Lernkarten-Stapel (Decks) erstellen, um verschiedene Themen (z. B. Englisch, Informatik) zu trennen.
@@ -24,7 +28,6 @@ Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand 
 * **Fortschritt speichern**: Das System speichert, welche Karten bereits gelernt wurden, um den Fortschritt anzuzeigen.
 * **Filter/Suche**: Benutzer können nach bestimmten Stapeln oder Karten suchen.
 
-image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0OIj92Qk4spvKCRUVKwNXcG-_SJtIRRmCGXvYNSBbaj1QT6RgXRKnhCIqpe8ZN4TURfZHwgXYg_oi8mz9bTP1Y0bhSTRO8yKC08C8cOVbaAjoEk0fwxBy1imdHXOKKYuy4p2U6RLP7thhNYR2oUjiKZj_RicrcfkNRIHfpRWzHoVsNAwPI9ivi9LedvCvs__yJgMfVsR40PbDrU-V5ePFtrRUGulPmy_014NY_ovsIkjnhGUqsPCsp7j0LA9osLVxF0T3mVZb8sQynoEx7JwjLy0[UCD, 600]
 
 === Nicht funktionale Anforderungen (NFA)
 
