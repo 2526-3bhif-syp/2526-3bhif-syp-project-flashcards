@@ -14,6 +14,21 @@ Derzeit lernen die meisten Personen durch Zusammenfassungen oder das Erstellen v
 == Problemstellung
 
 Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand als auch ein Verwaltungsproblem mit sich. Zudem sind die meisten Lernplattformen kostenpflichtig. Diese Plattformen haben meist auch einen Free-trail, aber dieser ist meistens sehr begrenzt und verfügt über nicht so viele Funktionen.
+Ein gutes Beispiel dafür ist Quizlet. Früher waren alle Funktionen dieser App kostenlos, aber jetzt verstecken sich die sehr viele Funktionen aber hinter einen kostenpflichtigen Plan.
+
+*Hier eine kurze Auflistung der kostenpflichtigen Features:*
+
+* Lern-Modus
+* Test-Modus
+* Q-Chat
+* Magic-Notes
+* KI-Übungstests
+* Eigene Bilder
+* Eigene Audio Aufnahmen
+* Formatierung von Text
+* Offline Lernen
+* Smart Grading
+* Werbefreiheit
 
 == Aufgabenstellung
 
