@@ -11,6 +11,14 @@ Viele junge Personen besuchen Schulen oder Universitäten, in welchen sie sich f
 
 Derzeit lernen die meisten Personen von Zusammenfassungen oder erstellen sich selbst Lernkarten und lernen mit denen. Ebenfalls lernen viele Personen mit Lernplattformen.
 
+=== Marktübersicht
+Aktuell gibt es ein große Anzahl an Apps welche Flashcards anbieten. Es wird auf folgende genauer eingegangen
+
+- **Quizlet**: Quizlet ist einer der größten Lernplattformen weltweit. Es wird von 60 Millionen Usern genutzt und stellt ungefähr 500 Millionen Lernsets zur Verfügung.
+- **Anki**: Anki ist ein Open Source Projekt, welches seit 15 betrieben wird. Genaue Nutzerdaten sind nicht bekannt, jedoch kann man auch hier von mehreren Millionen ausgehen.
+
+Beide genannten Apps sind die Marktführer, die das Online Lernen mithilfe von Algorithmen oder schönem UI auf ein nächstes Level bringen.
+
 == Problemstellung
 
 Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand als auch ein Verwaltungsproblem mit sich. Zudem sind die meisten Lernplattformen kostenpflichtig, diese Plattformen haben meist einen Free-trail, aber dieser ist meistens sehr begrenzt und verfügt über nicht so vielen Funktionen.
