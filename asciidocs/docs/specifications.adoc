@@ -5,11 +5,11 @@ Mostbauer Julian, Brunner Jan, Kerimcan Yagci, Parzer Lorenz
 
 == Ausgangssituation
 
-Viele junge Personen besuchen Schulen oder Universitäten, in welchen sie sich für ihre Zukunft weiterbilden. Um ihr Wissen beweisen zu können, müssen sie zahlreiche Prüfungen bestehen.
+Viele junge Personen besuchen Schulen, Universitäten oder andere Lehranstalten, in welchen sie sich für ihre Zukunft weiterbilden. Um ihr Wissen beweisen zu können, müssen sie zahlreiche Prüfungen bestehen.
 
 == Istzustand
 
-Derzeit lernen die meisten Personen von Zusammenfassungen oder erstellen sich selbst Lernkarten und lernen mit denen. Ebenfalls lernen viele Personen mit Lernplattformen.
+Derzeit lernen die meisten Personen durch Zusammenfassungen oder das Erstellen von eigenen Lernkarten oder lernen mit denen. Ebenfalls lernen viele Personen mit Lernplattformen.
 
 === Marktübersicht
 Aktuell gibt es ein große Anzahl an Apps welche Flashcards anbieten. Es wird auf folgende genauer eingegangen
@@ -21,9 +21,28 @@ Beide genannten Apps sind die Marktführer, die das Online Lernen mithilfe von A
 
 == Problemstellung
 
-Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand als auch ein Verwaltungsproblem mit sich. Zudem sind die meisten Lernplattformen kostenpflichtig, diese Plattformen haben meist einen Free-trail, aber dieser ist meistens sehr begrenzt und verfügt über nicht so vielen Funktionen.
+Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand als auch ein Verwaltungsproblem mit sich. Zudem sind die meisten Lernplattformen kostenpflichtig. Diese Plattformen haben meist auch einen Free-trail, aber dieser ist meistens sehr begrenzt und verfügt über nicht so viele Funktionen.
+Ein gutes Beispiel dafür ist Quizlet. Früher waren alle Funktionen dieser App kostenlos, aber jetzt verstecken sich die sehr viele Funktionen aber hinter einen kostenpflichtigen Plan.
+
+*Hier eine kurze Auflistung der kostenpflichtigen Features:*
+
+* Lern-Modus
+* Test-Modus
+* Q-Chat
+* Magic-Notes
+* KI-Übungstests
+* Eigene Bilder
+* Eigene Audio Aufnahmen
+* Formatierung von Text
+* Offline Lernen
+* Smart Grading
+* Werbefreiheit
 
 == Aufgabenstellung
+
+Das Ziel des Projekts ist eine einfache App, mit der man digitale Lernkarten erstellen und verwalten kann. Man soll seine Karten in verschiedene Stapel (Decks) einsortieren können, zum Beispiel für verschiedene Schulfächer. Die App soll kostenlos sein und dabei helfen, schneller und organisierter zu lernen, ohne dass man einen riesigen Stapel aus Papier mit sich herumtragen muss.
+
+image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0OIj92Qk4spvKCRUVKwNXcG-_SJtIRRmCGXvYNSBbaj1QT6RgXRKnhCIqpe8ZN4TURfZHwgXYg_oi8mz9bTP1Y0bhSTRO8yKC08C8cOVbaAjoEk0fwxBy1imdHXOKKYuy4p2U6RLP7thhNYR2oUjiKZj_RicrcfkNRIHfpRWzHoVsNAwPI9ivi9LedvCvs__yJgMfVsR40PbDrU-V5ePFtrRUGulPmy_014NY_ovsIkjnhGUqsPCsp7j0LA9osLVxF0T3mVZb8sQynoEx7JwjLy0[UCD, 600]
 
 === Funktionale Anforderungen
 
@@ -32,7 +51,6 @@ Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand 
 * **Fortschritt speichern**: Das System speichert, welche Karten bereits gelernt wurden, um den Fortschritt anzuzeigen.
 * **Filter/Suche**: Benutzer können nach bestimmten Stapeln oder Karten suchen.
 
-image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0OIj92Qk4spvKCRUVKwNXcG-_SJtIRRmCGXvYNSBbaj1QT6RgXRKnhCIqpe8ZN4TURfZHwgXYg_oi8mz9bTP1Y0bhSTRO8yKC08C8cOVbaAjoEk0fwxBy1imdHXOKKYuy4p2U6RLP7thhNYR2oUjiKZj_RicrcfkNRIHfpRWzHoVsNAwPI9ivi9LedvCvs__yJgMfVsR40PbDrU-V5ePFtrRUGulPmy_014NY_ovsIkjnhGUqsPCsp7j0LA9osLVxF0T3mVZb8sQynoEx7JwjLy0[UCD, 600]
 
 === Nicht funktionale Anforderungen (NFA)
 
@@ -47,4 +65,14 @@ image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0O
 
 == Mengengerüst
 
+Ein Schüler an unserer Schule hat um die 15 Fächer, für die er lernen muss. Im Schnitt kann man mit 30 Flashcards pro Fach rechnen, wodurch ein Nutzer auf ca. 450 Flashcards pro Schuljahr kommt.
+
+Datenbestände: Text, Bilder und Audio.
+
 == Rahmenbedingungen
+
+=== Technisch
+- JavaFX App
+
+=== Zeitlich
+- Abschluss des Projektes vor dem Ende des Schuljahres
