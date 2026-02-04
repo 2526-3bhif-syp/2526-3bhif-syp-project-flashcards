@@ -9,7 +9,7 @@ Viele junge Personen besuchen Schulen, Universitäten oder andere Lehranstalten,
 
 == Istzustand
 
-Derzeit lernen die meisten Personen durch Zusammenfassungen oder das erstellen von eigenen Lernkarten oder lernen mit denen. Ebenfalls lernen viele Personen mit Lernplattformen.
+Derzeit lernen die meisten Personen durch Zusammenfassungen oder das Erstellen von eigenen Lernkarten oder lernen mit denen. Ebenfalls lernen viele Personen mit Lernplattformen.
 
 == Problemstellung
 
@@ -42,7 +42,7 @@ image::https://img.plantuml.biz/plantuml/dpng/NP7FQiCm38VlUWgHUmlhNnWbjAJTUT3r0O
 
 == Mengengerüst
 
-Ein Schüler an unserer Schule hat um die 15 Fächer für die er lernen muss. Im Schnitt kann man mit 30 Flashcards pro Fach rechnen, wodurch ein Nutzer auf ca. 450 Flashcards pro Schuljahr kommt. 
+Ein Schüler an unserer Schule hat um die 15 Fächer, für die er lernen muss. Im Schnitt kann man mit 30 Flashcards pro Fach rechnen, wodurch ein Nutzer auf ca. 450 Flashcards pro Schuljahr kommt.
 
 Datenbestände: Text, Bilder und Audio.
 
@@ -51,5 +51,5 @@ Datenbestände: Text, Bilder und Audio.
 === Technisch
 - JavaFX App
 
-=== Zetilich
+=== Zeitlich
 - Abschluss des Projektes vor dem Ende des Schuljahres
