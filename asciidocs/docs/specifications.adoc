@@ -12,9 +12,32 @@ Viele junge Personen besuchen Schulen, Universitäten oder andere Lehranstalten,
 Derzeit lernen die meisten Personen durch Zusammenfassungen, oder das Erstellen von eigenen Lernkarten. Ebenfalls lernen viele Personen mit Lernplattformen.
 Für viele Schüler ist lernen ein großer Aufwand, für den sie viel Zeit investieren müssen.
 
+=== Marktübersicht
+Aktuell gibt es eine große Anzahl an Apps welche Flashcards anbieten. Es wird auf folgende genauer eingegangen
+
+- **Quizlet**: Quizlet ist einer der größten Lernplattformen weltweit. Es wird von 60 Millionen Usern genutzt und stellt ungefähr 500 Millionen Lernsets zur Verfügung.
+- **Anki**: Anki ist ein Open-Source-Projekt, welches seit 15 Jahren betrieben wird. Genaue Nutzerdaten sind nicht bekannt, jedoch kann man auch hier von mehreren Millionen ausgehen.
+
+Beide genannten Apps sind die Marktführer, die das Online Lernen mithilfe von Algorithmen oder schönem UI auf ein nächstes Level bringen.
+
 == Problemstellung
 
 Analoge meist selbstgemachte Lernkarteikarten bringen einen großen Zeitaufwand als auch ein Verwaltungsproblem mit sich. Zudem sind die meisten Lernplattformen kostenpflichtig. Diese Plattformen haben meist auch einen Free-trail, aber dieser ist meistens sehr begrenzt und verfügt über nicht so viele Funktionen.
+Ein gutes Beispiel dafür ist Quizlet. Früher waren alle Funktionen dieser App kostenlos, aber jetzt verstecken sich die sehr viele Funktionen aber hinter einen kostenpflichtigen Plan.
+
+*Hier eine kurze Auflistung der kostenpflichtigen Features:*
+
+* Lern-Modus
+* Test-Modus
+* Q-Chat
+* Magic-Notes
+* KI-Übungstests
+* Eigene Bilder
+* Eigene Audio Aufnahmen
+* Formatierung von Text
+* Offline Lernen
+* Smart Grading
+* Werbefreiheit
 
 == Aufgabenstellung
 
