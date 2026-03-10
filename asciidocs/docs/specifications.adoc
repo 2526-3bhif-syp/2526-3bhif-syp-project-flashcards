@@ -9,7 +9,8 @@ Viele junge Personen besuchen Schulen, Universitäten oder andere Lehranstalten,
 
 == Istzustand
 
-Derzeit lernen die meisten Personen durch Zusammenfassungen oder das Erstellen von eigenen Lernkarten oder lernen mit denen. Ebenfalls lernen viele Personen mit Lernplattformen.
+Derzeit lernen die meisten Personen durch Zusammenfassungen, oder das Erstellen von eigenen Lernkarten. Ebenfalls lernen viele Personen mit Lernplattformen.
+Für viele Schüler ist lernen ein großer Aufwand, für den sie viel Zeit investieren müssen.
 
 == Problemstellung
 
