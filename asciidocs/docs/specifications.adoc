@@ -43,20 +43,58 @@ Ein gutes Beispiel dafür ist Quizlet. Früher waren alle Funktionen dieser App 
 
 Das Ziel des Projekts ist eine einfache App, mit der man digitale Lernkarten erstellen und verwalten kann. Man soll seine Karten in verschiedene Stapel (Decks) einsortieren können, zum Beispiel für verschiedene Schulfächer. Die App soll kostenlos sein und dabei helfen, schneller und organisierter zu lernen, ohne dass man einen riesigen Stapel aus Papier mit sich herumtragen muss.
 
+=== Fragearten und Vergleich mit bestehenden Systemen
+
+Ein wesentlicher Aspekt von Lernkartensystemen sind die unterstützten Fragearten. Gängige Systeme wie *Quizlet* und *Anki* bieten unterschiedliche Abfrageformate an:
+
+[cols="1,2,2", options="header"]
+|===
+| Frageart | Quizlet | Anki
+
+| *Klassische Karte* (Vorder-/Rückseite)
+| ✓ (Standard-Lernmodus)
+| ✓ (Basic-Kartentyp)
+
+| *Multiple Choice*
+| ✓ (automatisch aus dem Deck generiert)
+| ✓ (über Add-ons)
+
+| *Freitext*
+| ✓ (Schreib-Modus)
+| ✓ (Tipp-Eingabe im Basic-Kartentyp)
+
+| *Lückentext* (Cloze Deletion)
+| ✓ (Lückentext-Modus)
+| ✓ (nativer Cloze-Kartentyp)
+
+| *Zuordnung* (Matching)
+| ✓ (Match-Modus)
+| ✗ (nur über Add-ons)
+|===
+
+Unsere App unterstützt folgende Fragearten:
+
+* *Klassische Karte*: Vorderseite (Frage) und Rückseite (Antwort) – der Nutzer bewertet selbst, ob seine Antwort korrekt war.
+* *Multiple Choice*: Aus dem vorhandenen Deck werden automatisch falsche Antworten (Distraktoren) generiert; der Nutzer wählt die richtige Antwort aus vier Optionen aus.
+* *Freitext*: Der Nutzer tippt die Antwort selbst ein; die Eingabe wird case-insensitiv mit der hinterlegten Antwort verglichen.
+* *Lückentext*: Bestimmte Wörter in einem Satz werden ausgeblendet und müssen vom Nutzer ergänzt werden.
+
 image::https://img.plantuml.biz/plantuml/svg/NP7FQiCm38VlUWgHUmhhNnYbjAJTUT3r0OIj92Qk4spvKCRUVKwNXcG-_SJtIRRmCGXvYNSBbaj1QT6RgXRKnhCIqpe8ZN4TURfZHwgXYg_oi8mz9bTP1Y0bhSTRO8yKC08C8cOVbaAjoEk0fwxBy1imdHXOKKYuy4p2U6RLP7thhNYR2oUjiKZj_Ricrd9kNRIHfpRWrHoVsNAwPIAivy9LedvCvs_-yJgMfVsR40PbErU-V5ePFtrRUGulPmS_017pF7zkzahBCQt6j1xJPamxW5JYOj4NMtp7_TuuPQFcmm6Ex7JwjLy0[UCD, 600\]
 
 === Funktionale Anforderungen
 
-* **Stapelverwaltung**: Benutzer können Lernkarten-Stapel (Decks) erstellen, um verschiedene Themen (z. B. Englisch, Informatik) zu trennen.
-* **Lernmodus**: Benutzer werden über die Lernkarten abgefragt.
-* **Fortschritt speichern**: Das System speichert, welche Karten bereits gelernt wurden, um den Fortschritt anzuzeigen.
-* **Filter/Suche**: Benutzer können nach bestimmten Stapeln oder Karten suchen.
+* *Stapelverwaltung*: Benutzer können Decks anlegen, umbenennen und löschen. Jedes Deck erhält einen frei wählbaren Namen sowie eine optionale Beschreibung. Innerhalb eines Decks können Karten erstellt, bearbeitet, gelöscht und in andere Decks verschoben werden. Ein Deck kann bis zu 500 Karten enthalten.
+* *Kartentypen*: Beim Erstellen einer Karte wählt der Nutzer den Typ aus: Klassische Karte (Vorder-/Rückseite), Multiple Choice (bis zu 4 Antwortoptionen, wobei falsche Distraktoren automatisch aus anderen Karten des Decks generiert werden können), Freitext (freie Eingabe, case-insensitiver Vergleich) oder Lückentext (markierte Wörter werden ausgeblendet).
+* *Lernmodus*: Der Nutzer startet eine Lernsitzung für ein gewähltes Deck. Die App zeigt Karten nacheinander an, nimmt die Antwort des Nutzers entgegen und gibt sofortiges Feedback (richtig/falsch). Am Ende der Sitzung wird eine Zusammenfassung mit Trefferquote angezeigt.
+* *Fortschritt speichern*: Pro Karte wird lokal gespeichert, wie oft sie richtig bzw. falsch beantwortet wurde. Die App visualisiert den Fortschritt je Deck als prozentualen Fortschrittsbalken. Karten, die häufig falsch beantwortet werden, werden in der nächsten Sitzung bevorzugt angezeigt (einfaches Spaced-Repetition-Prinzip).
+* *Filter/Suche*: Die Suchfunktion ermöglicht eine Volltextsuche über Decknamen und Karteninhalte (Vorder- und Rückseite). Ergebnisse werden in Echtzeit während der Eingabe gefiltert und nach Relevanz sortiert dargestellt.
 
+=== Nicht-funktionale Anforderungen (NFA)
 
-=== Nicht funktionale Anforderungen (NFA)
-
-* **Bedienbarkeit**: Die App soll so einfach wie möglich gestaltet sein, damit man ohne lange Einarbeitung direkt anfangen kann zu lernen.
-* **Stabilität**: Die Anwendung soll sowohl auf dem PC als auch auf dem Tablet oder Smartphone gut lesbar und bedienbar sein.
+* *Bedienbarkeit*: Eine neue Karte soll in maximal 3 Interaktionsschritten (Klick/Tippen) erstellbar sein. Die Navigation zwischen Hauptbereichen (Decks, Lernen, Suche) erfolgt über eine jederzeit sichtbare Navigationsleiste. Die App soll ohne Handbuch oder Einführung intuitiv bedienbar sein; dies wird durch Nutzertests mit mindestens 3 Testpersonen validiert.
+* *Kompatibilität & Responsivität*: Die JavaFX-App läuft auf Windows 10/11, macOS 12+ und Linux (Ubuntu 22.04+). Die Oberfläche ist für Fenstergrößen ab 360 × 640 px (Smartphone-Hochformat) bis 1920 × 1080 px (Desktop) nutzbar und passt sich durch ein responsives Layout automatisch an die verfügbare Fenstergröße an.
+* *Performance*: Das Laden eines Decks mit bis zu 500 Karten dauert weniger als 1 Sekunde. Der Wechsel zwischen zwei Karten im Lernmodus erfolgt in unter 200 ms.
+* *Datenspeicherung*: Alle Daten (Decks, Karten, Fortschritt) werden lokal auf dem Gerät gespeichert. Es ist kein Nutzerkonto oder Internetzugang erforderlich.
 
 == Ziele
 
