@@ -97,9 +97,13 @@ image::https://img.plantuml.biz/plantuml/svg/NP7FQiCm38VlUWgHUmhhNnYbjAJTUT3r0OI
 
 == Ziele
 
-* Lernen mit Karteikarten kostenlos ermöglichen
-* Zeitaufwand beim Erstellen und Verwalten der Karten zu vermindern
-* Unterstützung der Nutzer um die Organisation der Lerninhalte zu verbessern durch einfacher Stapelverwaltung
+* Zeit sparen: Man muss keine Karten mehr per Hand basteln oder ausschneiden. Das Erstellen geht am Computer viel schneller.
+
+* Geld sparen: Alle wichtigen Funktionen sind komplett kostenlos. Man braucht kein teures Abo wie bei Quizlet.
+
+* Bessere Ordnung: Alle Lernkarten sind an einem Ort in der App gespeichert. Es fliegen keine Zettel mehr herum und man verliert keine Karten mehr.
+
+* Ehrliche Kontrolle: Die App zeigt nach dem Lernen sofort an, wie viel Prozent man richtig hatte. So weiß man genau, ob man den Stoff wirklich kann oder ihn nur glaubt zu wissen.
 
 == Mengengerüst
 
