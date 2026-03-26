@@ -95,6 +95,10 @@ image::https://img.plantuml.biz/plantuml/svg/NP7FQiCm38VlUWgHUmhhNnYbjAJTUT3r0OI
 * *Performance*: Das Laden eines Decks mit bis zu 500 Karten dauert weniger als 1 Sekunde. Der Wechsel zwischen zwei Karten im Lernmodus erfolgt in unter 200 ms.
 * *Datenspeicherung*: Alle Daten (Decks, Karten, Fortschritt) werden lokal auf dem Gerät gespeichert. Es ist kein Nutzerkonto oder Internetzugang erforderlich.
 
+==== GUI
+
+image::{docdir}/images/gui.jpeg[]
+
 == Ziele
 
 * Zeit sparen: Man muss keine Karten mehr per Hand basteln oder ausschneiden. Das Erstellen geht am Computer viel schneller.
