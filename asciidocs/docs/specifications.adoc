@@ -1,6 +1,8 @@
 = Pflichtenheft - Flashcards
 Mostbauer Julian, Brunner Jan, Kerimcan Yagci, Parzer Lorenz
 1.0.0, {docdate}
+ifndef::imagesdir[:imagesdir: images]
+
 :sectnums:
 
 == Ausgangssituation
@@ -97,7 +99,7 @@ image::https://img.plantuml.biz/plantuml/svg/NP7FQiCm38VlUWgHUmhhNnYbjAJTUT3r0OI
 
 ==== GUI
 
-image::{docdir}/images/gui.jpeg[]
+image::gui.jpeg[]
 
 == Ziele
 
