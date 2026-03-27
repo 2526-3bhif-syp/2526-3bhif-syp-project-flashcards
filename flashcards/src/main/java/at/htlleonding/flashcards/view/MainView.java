@@ -1,14 +1,12 @@
 package at.htlleonding.flashcards.view;
 
-import javafx.scene.layout.Region;
+import javafx.scene.layout.BorderPane;
 
-/**
- * Main view for the Flashcard application.
- * Layout is defined purely in Java code.
- */
-public class MainView extends Region {
+public class MainView extends BorderPane {
     public MainView() {
-        // Initial setup for a blank white view
         this.setStyle("-fx-background-color: white;");
+        
+        NavbarView navbar = new NavbarView();
+        this.setTop(navbar);
     }
 }
