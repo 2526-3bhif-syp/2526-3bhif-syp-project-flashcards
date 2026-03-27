@@ -1,0 +1,34 @@
+= Projekt-Dokumentation Flashcard App
+Jan Brunner
+:icons: font
+:toc: left
+
+== Technologie-Stack
+
+* *Framework:* JavaFX 26
+* *Pattern:* MVP (Model-View-Presenter)
+* *Build-Tool:* Maven
+* *Java-Version:* JDK 26
+* *Speicherformat:* JSON (Jackson)
+* *UI-Ansatz:* Layout primär im Java-Code (kein FXML)
+
+== Architektur-Entscheidungen
+
+* *MVP Pattern:*
+** *Model:* (`at.htlleonding.flashcards.model`) Datenhaltung.
+** *View:* (`at.htlleonding.flashcards.view`) UI-Komponenten (Layout im Code).
+** *Presenter:* (`at.htlleonding.flashcards.presenter`) Bindeglied zwischen Model und View.
+* *Java 26:* Das Projekt nutzt Java 26 und JavaFX 26.
+
+== Projekt-Struktur
+
+[source]
+----
+flashcards/src/main/java/at/htlleonding/flashcards/
+├── model/
+├── presenter/
+│   └── MainPresenter.java
+├── view/
+│   └── MainView.java
+└── Main.java
+----
