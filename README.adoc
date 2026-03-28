@@ -40,3 +40,11 @@ The presentation slides for this project can be found link:https://2526-3bhif-sy
 == Pflichtenheft
 
 Link zum https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-flashcards/specifications.html[Pflichtenheft^]
+
+== Agents
+
+The user stories and chats can easily be found in the project structure or directly accessed via the following links in the repo:
+
+* link:asciidocs/docs/stories/[Stories]
+* link:asciidocs/docs/chats/[Chats]
+
