@@ -5,7 +5,7 @@
 
 ++++
 <p align="center">
-  <img src="img/icon.png" alt="Flashcards Icon" width="200" height="200"/>
+  <img src="asciidocs/docs/images/icon.png" alt="Flashcards Icon" width="200" height="200"/>
 </p>
 
 <h1 align="center">Flashcards</h1>
