@@ -1,4 +1,9 @@
-= Index page
-ifndef::imagesdir[:imagesdir: images]
+= Flashcards
+Jan Brunner, Julian Mostbauer, Kerimcan Yagci, Lorenz Parzer
+1.0.0 {docdate}
 
-image::img.png[]
+:sectnums:
+
+== Docs
+
+https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-flashcards/specifications.html[Pflichtenheft]

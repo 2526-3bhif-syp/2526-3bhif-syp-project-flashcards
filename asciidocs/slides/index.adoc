@@ -1,0 +1,42 @@
+:author: Kerimcan Yagci
+:email: k.yagci@students.htl-leonding.ac.at
+:revnumber: 1.0
+:revdate: {docdate}
+:revremark: Flashcards @ HTL Leonding
+:encoding: utf-8
+:lang: de
+:doctype: article
+:notitle:
+:icons: font
+:customcss: css/presentation.css
+:revealjs_theme: black
+:revealjs_width: 1408
+:revealjs_height: 792
+:source-highlighter: highlightjs
+:iconfont-remote!:
+:iconfont-name: fonts/fontawesome/css/all
+:imagesdir: images
+:title-slide-transition: zoom
+:title-slide-transition-speed: fast
+
+[%notitle]
+== Welcome
+
+image::icon.png[width=300]
+
+[.heading]
+Flashcards
+
+== Was ist Flashcards?
+
+[%step]
+* *Einfaches Lernen* mit Karteikarten
+* *Leichte Bedienung*
+* *Auf allen Geräten* verfügbar
+
+== Das Team
+
+* Kerimcan Yagci
+* Julian Mostbauer
+* Lorenz Parzer
+* Jan Brunner
