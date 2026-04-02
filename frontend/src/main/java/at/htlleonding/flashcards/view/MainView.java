@@ -8,5 +8,8 @@ public class MainView extends BorderPane {
         
         NavbarView navbar = new NavbarView();
         this.setTop(navbar);
+
+        SidebarView sidebar = new SidebarView();
+        this.setLeft(sidebar);
     }
 }
