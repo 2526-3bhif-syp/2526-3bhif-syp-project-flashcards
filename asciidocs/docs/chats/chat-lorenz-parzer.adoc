@@ -1,0 +1,30 @@
+= Chats - Lorenz Parzer
+
+== Session 1
+Erstelle mir ein schmale horizontale Navbar. Im Zentrum ist eine abgerundete Suchleiste mit einer Leselupe icon eingenommen. Die Suchleiste enthält den Platzhalter "Search". Der code sollte in einer neuen Datei               
+   navbar-view.java geschrieben werden und in das MainView eingebunden werden. Bitte änder noch nichts bevor ich nicht akzeptiert habe. Nur java code. Also kein fxml.    
+
+
+Ja kannst du durchführen. Entferne die Kommentare und ändere auch die main so dass sie ein Ganzbildschirm ist   
+
+
+== Session 2
+
+Erstelle mir am linken Bilschirmrand eine Sidebar welche über die selbe Breite verfügt wie die navbar. Es soll mit einer einfachen Linie vom Haupt bildschirm abgetrennt sein und mit der navbar in einem sein
+
+Schaut gut aus nur will ich dass die navbar und die sidebar von der Linie also der abgrenzung ineinander fließen, also dass die Linie durchgezogen ist, zudem will ich dass du die button vergrößerst und nach obenschiebst, die Einstellungen sollen da bleiben wo sie ist nur eben größer.
+
+ siehst du nicht auf dem gui bild wie sich die linien verbinden und rund      
+   abschließen. Zudem entferne den Text und mache die buttons dementsprechend   
+   größer 
+
+Nimm als brand logo das img/icon.png zudem führe ein dass wenn man über die icons hovert das der text dann angezeigt wird
+
+
+entferne die Brand logo wieder und schreib einfach "Flashcard" hin 
+
+du kannst ruhig die buttons noch ein stück größer machen damit der Text in   
+   einer angemessenen größe ist 
+
+kannst du das mit dem abgerundeten wieder aus der mainview löschen und es so 
+   machen wie vorher     
