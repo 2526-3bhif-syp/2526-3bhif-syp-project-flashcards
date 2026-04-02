@@ -1,5 +1,0 @@
-Erstelle mir ein schmale horizontale Navbar. Im Zentrum ist eine abgerundete Suchleiste mit einer Leselupe icon eingenommen. Die Suchleiste enthält den Platzhalter "Search". Der code sollte in einer neuen Datei               
-   navbar-view.java geschrieben werden und in das MainView eingebunden werden. Bitte änder noch nichts bevor ich nicht akzeptiert habe. Nur java code. Also kein fxml.    
-
-
-Ja kannst du durchführen. Entferne die Kommentare und ändere auch die main so dass sie ein Ganzbildschirm ist   
