@@ -3,36 +3,37 @@ package at.htlleonding.flashcards.view;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.layout.HBox;
-import javafx.scene.control.Label;
 
 public class SidebarView extends VBox {
 
     public SidebarView() {
-        this.setPrefWidth(250);
-        this.setSpacing(5);
-        this.setPadding(new Insets(20, 10, 20, 10));
+        this.setPrefWidth(110); // Leicht verbreitert für größere Buttons
+        this.setSpacing(12);
+        this.setPadding(new Insets(10, 0, 20, 0)); 
+        this.setAlignment(Pos.TOP_CENTER);
         this.setStyle("-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;");
 
-        HBox brandBox = new HBox(10);
-        brandBox.setAlignment(Pos.CENTER_LEFT);
-        brandBox.setPadding(new Insets(0, 0, 30, 10));
+        // Logo / Brand Bereich
+        Label brandLabel = new Label("Flashcard");
+        brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2196F3;");
         
-        Label brandLabel = new Label("FLASHCARDS");
-        brandLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;");
-        
-        brandBox.getChildren().add(brandLabel);
-        this.getChildren().add(brandBox);
+        VBox logoContainer = new VBox(brandLabel);
+        logoContainer.setAlignment(Pos.CENTER);
+        logoContainer.setPadding(new Insets(20, 0, 30, 0));
+        this.getChildren().add(logoContainer);
 
+        // Navigations-Elemente
         addNavigationItem("Home", "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z");
         addNavigationItem("Library", "M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z");
         addNavigationItem("Flashcards", "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z");
         addNavigationItem("Practice", "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z");
         
+        // Spacer
         VBox spacer = new VBox();
         VBox.setVgrow(spacer, Priority.ALWAYS);
         this.getChildren().add(spacer);
@@ -42,29 +43,48 @@ public class SidebarView extends VBox {
 
     private void addNavigationItem(String text, String svgPath) {
         Button btn = new Button();
-        btn.setMaxWidth(Double.MAX_VALUE);
-        btn.setAlignment(Pos.CENTER_LEFT);
-        btn.setPadding(new Insets(10, 15, 10, 15));
+        btn.setPrefSize(90, 90); // Größere Buttons für bessere Textwirkung
+        btn.setAlignment(Pos.CENTER);
         
+        VBox content = new VBox(8); // Etwas mehr Abstand zwischen Icon und Text
+        content.setAlignment(Pos.CENTER);
+        
+        // Icon
         SVGPath icon = new SVGPath();
         icon.setContent(svgPath);
-        icon.setFill(Color.web("#666666"));
-        icon.setScaleX(0.8);
-        icon.setScaleY(0.8);
+        icon.setFill(Color.web("#555555"));
+        icon.setScaleX(1.4); // Icon leicht vergrößert
+        icon.setScaleY(1.4);
         
-        btn.setGraphic(icon);
-        btn.setGraphicTextGap(15);
-        btn.setText(text);
+        // Text Label
+        Label label = new Label(text);
+        label.setStyle("-fx-font-size: 13px; -fx-font-weight: 500; -fx-text-fill: #2196F3;");
+        label.setVisible(false);
+        label.setManaged(false);
         
+        content.getChildren().addAll(icon, label);
+        btn.setGraphic(content);
+        
+        // Styling
         btn.setStyle(
             "-fx-background-color: transparent; " +
-            "-fx-text-fill: #666666; " +
-            "-fx-font-size: 14px; " +
+            "-fx-background-radius: 15; " +
             "-fx-cursor: hand;"
         );
 
-        btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #333333; -fx-font-size: 14px; -fx-cursor: hand;"));
-        btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #666666; -fx-font-size: 14px; -fx-cursor: hand;"));
+        // Hover Effect
+        btn.setOnMouseEntered(e -> {
+            btn.setStyle("-fx-background-color: #f0f7ff; -fx-background-radius: 15; -fx-cursor: hand;");
+            icon.setFill(Color.web("#2196F3"));
+            label.setVisible(true);
+            label.setManaged(true);
+        });
+        btn.setOnMouseExited(e -> {
+            btn.setStyle("-fx-background-color: transparent; -fx-background-radius: 15; -fx-cursor: hand;");
+            icon.setFill(Color.web("#555555"));
+            label.setVisible(false);
+            label.setManaged(false);
+        });
 
         this.getChildren().add(btn);
     }
