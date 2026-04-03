@@ -27,18 +27,17 @@ public class SidebarView extends VBox {
         // Navigations-Pfeile ganz oben
         HBox arrowBox = new HBox(5);
         arrowBox.setAlignment(Pos.CENTER);
-        arrowBox.setPadding(new Insets(0, 0, 15, 0)); // Abstand nach unten zu den anderen Icons
+        arrowBox.setPadding(new Insets(0, 0, 15, 0)); 
         
         addArrowItem(arrowBox, "Back", "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z");
         addArrowItem(arrowBox, "Forward", "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z");
         
         this.getChildren().add(arrowBox);
 
-        // Obere Navigations-Elemente (jetzt etwas tiefer)
+        // Obere Navigations-Elemente
         addNavigationItem("Home", "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z");
-        addNavigationItem("Library", "M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z");
         addNavigationItem("Flashcards", "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z");
-        addNavigationItem("Practice", "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z");
+        addNavigationItem("Statistic", "M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z");
         
         VBox spacer = new VBox();
         VBox.setVgrow(spacer, Priority.ALWAYS);
