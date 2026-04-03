@@ -72,3 +72,4 @@ Fragen an dich:
   * Jetzt löscht du nocht den hover background bei den icons.                       
 
   * Gebe die oberen vier icons ein wenig herunter und mach ganz oben Pfeile für das spätere Redirecting. Die sollen auch diesen Hover effekt haben. Keine Logik implementieren.
+  * Lösche die navbar icons Practice und Libary und füge ein neues icons hinzu, nämlich Statistic.
