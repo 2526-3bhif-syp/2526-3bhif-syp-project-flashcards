@@ -75,3 +75,7 @@ Fragen an dich:
   * Lösche die navbar icons Practice und Libary und füge ein neues icons hinzu, nämlich Statistic.
 
   * Nun mach mal die Logik für das redirecting. Du kannst gerne die neuen Views dafür erstellen. Die Navbar und sidebar soll bei allen Views gleich sein. Füge vielleicht temporär noch einen Text in der Mitte der View hinzu, dass man weiß wo man sich gerade befindet. 
+
+  * Jetzt implementiere das mit den Pfeilen. Das ich wieder zurück gehen kann oder nach vorne. Die Pfeile sollen nur auswählbar sein, wenn es möglich ist.
+
+  * Die Tooltips bei den arrow icons sind ein wenig komisch. Sie bleiben bestehen, auch wenn ich mit der Maus weggehe.
