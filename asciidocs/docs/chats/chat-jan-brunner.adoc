@@ -32,3 +32,23 @@ flashcards/src/main/java/at/htlleonding/flashcards/
 │   └── MainView.java
 └── Main.java
 ----
+
+
+== Session 2
+
+Fragen an dich:
+
+   * Soll ich die Layout-Struktur in MainView anpassen, damit die Trennlinien
+     zwischen Navbar und Sidebar wirklich "ineinander fließen"?
+        - Ja sollst du
+   * Möchtest du, dass ich die Hover-Effekte noch verfeinere, oder sollen wir
+     nun die funktionale Basis (Model) angehen?
+     - Ich möchte, dass du statt den Text beim hoveren einen tooltip machst wie in vue.js
+   * Gibt es weitere UI-Details aus den Chats, die ich deiner Meinung nach
+     übersehen habe?
+     - Derzeit nicht
+
+ * Soll ich als Nächstes mit dem funktionalen Model (Decks und Karten) fortfahren
+  oder gibt es weitere visuelle Wünsche?
+ - Nein
+ * Gib den Header "Flashcards" von der Navbar weg. Zudem sollen die Tooltips wirklich direkt und direkt daneben auftauchen

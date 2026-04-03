@@ -7,17 +7,14 @@ public class MainView extends BorderPane {
     public MainView() {
         this.setStyle("-fx-background-color: white;");
         
+        NavbarView navbar = new NavbarView();
+        this.setTop(navbar);
+
         SidebarView sidebar = new SidebarView();
         this.setLeft(sidebar);
 
-        BorderPane contentArea = new BorderPane();
-        NavbarView navbar = new NavbarView();
-        contentArea.setTop(navbar);
-        
         // Platzhalter für den Hauptinhalt
         StackPane mainContent = new StackPane();
-        contentArea.setCenter(mainContent);
-        
-        this.setCenter(contentArea);
+        this.setCenter(mainContent);
     }
 }

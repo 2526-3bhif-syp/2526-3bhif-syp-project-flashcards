@@ -3,29 +3,21 @@ package at.htlleonding.flashcards.view;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import javafx.util.Duration;
 
 public class SidebarView extends VBox {
 
     public SidebarView() {
-        this.setPrefWidth(110); // Leicht verbreitert für größere Buttons
-        this.setSpacing(12);
-        this.setPadding(new Insets(10, 0, 20, 0)); 
+        this.setPrefWidth(70); 
+        this.setSpacing(15);
+        this.setPadding(new Insets(20, 0, 20, 0)); 
         this.setAlignment(Pos.TOP_CENTER);
         this.setStyle("-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-width: 0 1 0 0;");
-
-        // Logo / Brand Bereich
-        Label brandLabel = new Label("Flashcard");
-        brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #2196F3;");
-        
-        VBox logoContainer = new VBox(brandLabel);
-        logoContainer.setAlignment(Pos.CENTER);
-        logoContainer.setPadding(new Insets(20, 0, 30, 0));
-        this.getChildren().add(logoContainer);
 
         // Navigations-Elemente
         addNavigationItem("Home", "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z");
@@ -43,47 +35,46 @@ public class SidebarView extends VBox {
 
     private void addNavigationItem(String text, String svgPath) {
         Button btn = new Button();
-        btn.setPrefSize(90, 90); // Größere Buttons für bessere Textwirkung
+        btn.setPrefSize(45, 45); 
         btn.setAlignment(Pos.CENTER);
         
-        VBox content = new VBox(8); // Etwas mehr Abstand zwischen Icon und Text
-        content.setAlignment(Pos.CENTER);
+        // Tooltip (Sofortige Anzeige, fest rechts positioniert)
+        Tooltip tooltip = new Tooltip(text);
+        tooltip.setShowDelay(Duration.ZERO);
+        tooltip.setHideDelay(Duration.ZERO);
+        tooltip.setShowDuration(Duration.INDEFINITE);
+        tooltip.setStyle("-fx-font-size: 12px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 5 10 5 10; -fx-background-radius: 5;");
         
         // Icon
         SVGPath icon = new SVGPath();
         icon.setContent(svgPath);
         icon.setFill(Color.web("#555555"));
-        icon.setScaleX(1.4); // Icon leicht vergrößert
-        icon.setScaleY(1.4);
+        icon.setScaleX(1.1); 
+        icon.setScaleY(1.1);
         
-        // Text Label
-        Label label = new Label(text);
-        label.setStyle("-fx-font-size: 13px; -fx-font-weight: 500; -fx-text-fill: #2196F3;");
-        label.setVisible(false);
-        label.setManaged(false);
-        
-        content.getChildren().addAll(icon, label);
-        btn.setGraphic(content);
+        btn.setGraphic(icon);
         
         // Styling
         btn.setStyle(
             "-fx-background-color: transparent; " +
-            "-fx-background-radius: 15; " +
+            "-fx-background-radius: 8; " +
             "-fx-cursor: hand;"
         );
 
-        // Hover Effect
+        // Hover Effect & Tooltip Positioning
         btn.setOnMouseEntered(e -> {
-            btn.setStyle("-fx-background-color: #f0f7ff; -fx-background-radius: 15; -fx-cursor: hand;");
+            btn.setStyle("-fx-background-color: #f0f7ff; -fx-background-radius: 8; -fx-cursor: hand;");
             icon.setFill(Color.web("#2196F3"));
-            label.setVisible(true);
-            label.setManaged(true);
+            
+            // Tooltip rechts neben dem Button einblenden
+            javafx.geometry.Bounds bounds = btn.localToScreen(btn.getBoundsInLocal());
+            tooltip.show(btn, bounds.getMaxX() + 10, bounds.getMinY() + (btn.getHeight() / 2) - 15);
         });
+        
         btn.setOnMouseExited(e -> {
-            btn.setStyle("-fx-background-color: transparent; -fx-background-radius: 15; -fx-cursor: hand;");
+            btn.setStyle("-fx-background-color: transparent; -fx-background-radius: 8; -fx-cursor: hand;");
             icon.setFill(Color.web("#555555"));
-            label.setVisible(false);
-            label.setManaged(false);
+            tooltip.hide();
         });
 
         this.getChildren().add(btn);
