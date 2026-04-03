@@ -43,3 +43,4 @@ Thumbs.db
 # Project Specific
 dist/
 docs/slides/revealjs
+/flashcards/.mvn/wrapper/maven-wrapper.properties
