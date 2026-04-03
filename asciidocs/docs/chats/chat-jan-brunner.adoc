@@ -52,3 +52,13 @@ Fragen an dich:
   oder gibt es weitere visuelle Wünsche?
  - Nein
  * Gib den Header "Flashcards" von der Navbar weg. Zudem sollen die Tooltips wirklich direkt und direkt daneben auftauchen
+
+ * Soll ich nun mit der funktionalen Basis (Model) fortfahren?
+    - Nein
+ * Nun sollst die Ecken in der Applikation Rund machen. Außerdem sollen sich die linien nicht überschneidern, wie oben links in der Applikation. Das soll nicht vorkommen.  
+
+ * Wie findest du das neue Design? Gibt es noch weitere visuelle Wünsche oder
+  soll ich nun mit der Modell-Logik beginnen?
+    - Das Design ist nicht in Ordnung. Außen kann es ruhig eckig sein aber innen soll es run sein. Orientire dich an der gui.jpeg für die sidebar.
+ * Entspricht dieses Layout nun deinen Vorstellungen?
+    - Den Flashcard Schriftzug kannst du wieder entfernen.

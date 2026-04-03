@@ -14,7 +14,8 @@ public class NavbarView extends HBox {
     public NavbarView() {
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(10, 20, 10, 20));
-        this.setStyle("-fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0; -fx-background-color: white;");
+        this.setPrefHeight(60);
+        this.setStyle("-fx-background-color: white;"); // Keine Border, da MainContent abgerundet ist
 
         HBox leftSection = new HBox(10);
         leftSection.setAlignment(Pos.CENTER_LEFT);
