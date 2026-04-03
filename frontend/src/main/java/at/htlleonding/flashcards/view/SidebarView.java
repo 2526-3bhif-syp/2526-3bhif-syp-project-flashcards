@@ -18,6 +18,8 @@ import java.util.function.Consumer;
 
 public class SidebarView extends VBox {
     private Consumer<String> navigationHandler;
+    private Button backBtn;
+    private Button forwardBtn;
 
     public SidebarView() {
         this.setPrefWidth(85); 
@@ -30,9 +32,10 @@ public class SidebarView extends VBox {
         arrowBox.setAlignment(Pos.CENTER);
         arrowBox.setPadding(new Insets(0, 0, 15, 0)); 
         
-        addArrowItem(arrowBox, "Back", "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z");
-        addArrowItem(arrowBox, "Forward", "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z");
+        backBtn = createArrowButton("Back", "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z");
+        forwardBtn = createArrowButton("Forward", "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z");
         
+        arrowBox.getChildren().addAll(backBtn, forwardBtn);
         this.getChildren().add(arrowBox);
 
         addNavigationItem("Home", "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z");
@@ -50,7 +53,28 @@ public class SidebarView extends VBox {
         this.navigationHandler = handler;
     }
 
-    private void addArrowItem(HBox container, String text, String svgPath) {
+    public void setBackEnabled(boolean enabled) {
+        backBtn.setDisable(!enabled);
+        updateButtonStyle(backBtn, enabled);
+    }
+
+    public void setForwardEnabled(boolean enabled) {
+        forwardBtn.setDisable(!enabled);
+        updateButtonStyle(forwardBtn, enabled);
+    }
+
+    private void updateButtonStyle(Button btn, boolean enabled) {
+        SVGPath icon = (SVGPath) btn.getGraphic();
+        if (enabled) {
+            icon.setFill(Color.web("#888888"));
+            btn.setOpacity(1.0);
+        } else {
+            icon.setFill(Color.web("#cccccc"));
+            btn.setOpacity(0.4);
+        }
+    }
+
+    private Button createArrowButton(String text, String svgPath) {
         Button btn = new Button();
         btn.setPrefSize(30, 30);
         btn.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
@@ -69,32 +93,38 @@ public class SidebarView extends VBox {
         ScaleTransition scaleIcon = new ScaleTransition(Duration.millis(200), icon);
         
         btn.setOnAction(e -> {
-            if (navigationHandler != null) {
+            if (navigationHandler != null && !btn.isDisable()) {
                 navigationHandler.accept(text);
             }
         });
 
         btn.setOnMouseEntered(e -> {
-            fillIcon.setFromValue((Color) icon.getFill());
-            fillIcon.setToValue(Color.web("#2196F3"));
-            scaleIcon.setToX(1.2);
-            scaleIcon.setToY(1.2);
-            new ParallelTransition(fillIcon, scaleIcon).play();
-            
-            javafx.geometry.Bounds bounds = btn.localToScreen(btn.getBoundsInLocal());
-            tooltip.show(btn, bounds.getMaxX() + 5, bounds.getMinY() + (btn.getHeight() / 2) - 12);
+            if (!btn.isDisable()) {
+                fillIcon.setFromValue((Color) icon.getFill());
+                fillIcon.setToValue(Color.web("#2196F3"));
+                scaleIcon.setToX(1.2);
+                scaleIcon.setToY(1.2);
+                new ParallelTransition(fillIcon, scaleIcon).play();
+                
+                javafx.geometry.Bounds bounds = btn.localToScreen(btn.getBoundsInLocal());
+                tooltip.show(btn, bounds.getMaxX() + 5, bounds.getMinY() + (btn.getHeight() / 2) - 12);
+            }
         });
         
         btn.setOnMouseExited(e -> {
-            fillIcon.setFromValue((Color) icon.getFill());
-            fillIcon.setToValue(Color.web("#888888"));
-            scaleIcon.setToX(1.0);
-            scaleIcon.setToY(1.0);
-            new ParallelTransition(fillIcon, scaleIcon).play();
+            // Tooltip immer verstecken, unabhängig vom Disabled-Status
             tooltip.hide();
+            
+            if (!btn.isDisable()) {
+                fillIcon.setFromValue((Color) icon.getFill());
+                fillIcon.setToValue(Color.web("#888888"));
+                scaleIcon.setToX(1.0);
+                scaleIcon.setToY(1.0);
+                new ParallelTransition(fillIcon, scaleIcon).play();
+            }
         });
 
-        container.getChildren().add(btn);
+        return btn;
     }
 
     private void addNavigationItem(String text, String svgPath) {
