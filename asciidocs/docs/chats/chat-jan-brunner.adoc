@@ -70,3 +70,5 @@ Fragen an dich:
   * Ich möchte, dass du den hover effekt für die icons bei der sidebar smoother machts.
 
   * Jetzt löscht du nocht den hover background bei den icons.                       
+
+  * Gebe die oberen vier icons ein wenig herunter und mach ganz oben Pfeile für das spätere Redirecting. Die sollen auch diesen Hover effekt haben. Keine Logik implementieren.
