@@ -62,3 +62,11 @@ Fragen an dich:
     - Das Design ist nicht in Ordnung. Außen kann es ruhig eckig sein aber innen soll es run sein. Orientire dich an der gui.jpeg für die sidebar.
  * Entspricht dieses Layout nun deinen Vorstellungen?
     - Den Flashcard Schriftzug kannst du wieder entfernen.
+ * Soll ich nun mit der Modell-Logik fortfahren oder gibt es noch weitere
+  visuelle Details?
+     - Nein
+  * Die oberen vier icons sollen ganz oben beginnen, aber das fünfte soll wie schon vorhanden unten bleiben.   
+
+  * Ich möchte, dass du den hover effekt für die icons bei der sidebar smoother machts.
+
+  * Jetzt löscht du nocht den hover background bei den icons.                       
