@@ -14,8 +14,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
+import java.util.function.Consumer;
 
 public class SidebarView extends VBox {
+    private Consumer<String> navigationHandler;
 
     public SidebarView() {
         this.setPrefWidth(85); 
@@ -24,7 +26,6 @@ public class SidebarView extends VBox {
         this.setAlignment(Pos.TOP_CENTER);
         this.setStyle("-fx-background-color: white;");
 
-        // Navigations-Pfeile ganz oben
         HBox arrowBox = new HBox(5);
         arrowBox.setAlignment(Pos.CENTER);
         arrowBox.setPadding(new Insets(0, 0, 15, 0)); 
@@ -34,7 +35,6 @@ public class SidebarView extends VBox {
         
         this.getChildren().add(arrowBox);
 
-        // Obere Navigations-Elemente
         addNavigationItem("Home", "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z");
         addNavigationItem("Flashcards", "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z");
         addNavigationItem("Statistic", "M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z");
@@ -44,6 +44,10 @@ public class SidebarView extends VBox {
         this.getChildren().add(spacer);
         
         addNavigationItem("Settings", "M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L3.82 7.87c-.11.2-.06.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z");
+    }
+
+    public void setOnNavigationAction(Consumer<String> handler) {
+        this.navigationHandler = handler;
     }
 
     private void addArrowItem(HBox container, String text, String svgPath) {
@@ -64,6 +68,12 @@ public class SidebarView extends VBox {
         FillTransition fillIcon = new FillTransition(Duration.millis(200), icon);
         ScaleTransition scaleIcon = new ScaleTransition(Duration.millis(200), icon);
         
+        btn.setOnAction(e -> {
+            if (navigationHandler != null) {
+                navigationHandler.accept(text);
+            }
+        });
+
         btn.setOnMouseEntered(e -> {
             fillIcon.setFromValue((Color) icon.getFill());
             fillIcon.setToValue(Color.web("#2196F3"));
@@ -107,6 +117,12 @@ public class SidebarView extends VBox {
         FillTransition fillIcon = new FillTransition(Duration.millis(200), icon);
         ScaleTransition scaleIcon = new ScaleTransition(Duration.millis(200), icon);
         
+        btn.setOnAction(e -> {
+            if (navigationHandler != null) {
+                navigationHandler.accept(text);
+            }
+        });
+
         btn.setOnMouseEntered(e -> {
             fillIcon.setFromValue((Color) icon.getFill());
             fillIcon.setToValue(Color.web("#2196F3"));
