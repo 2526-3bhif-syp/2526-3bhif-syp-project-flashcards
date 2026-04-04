@@ -1,0 +1,202 @@
+= Functional Specification: Flashcard Lernapplikation
+:author: Fachbereich
+:revdate: 2026-04-04
+:toc: left
+:sectnums:
+
+== Einleitung
+
+=== Zweck
+Die Flashcard Lernapplikation dient der effizienten Wissensvermittlung durch digitales Karteikarten-Lernen. Sie unterstützt Nutzer dabei, Lerninhalte strukturiert zu erfassen, durch Selbsteinschätzung den Lernerfolg zu steuern und Fortschritte mittels Statistiken zu verfolgen.
+
+=== Scope
+Enthalten sind die Verwaltung von Stapeln und Karten (Text, Bild, Audio), ein Lern-Modus mit gewichtetem Zufallsalgorithmus, Tag-basierte Filterung, Import/Export via JSON (inkl. Base64-Medien) sowie lokale Datenhaltung. Nicht enthalten sind mobile Apps, Mehrsprachigkeit der GUI (nur Englisch) oder Cloud-Synchronisation.
+
+== Glossar
+
+[cols="1,3"]
+|===
+| Begriff | Definition
+
+| Karteikarte (Card)
+| Ein Lernobjekt bestehend aus einer Vorderseite (Frage) und einer Rückseite (Antwort).
+
+| Stapel (Deck)
+| Eine logische Gruppierung von Karteikarten zu einem Thema.
+
+| Seite (Face)
+| Entweder die Vorder- oder die Rückseite einer Karte. Kann Text und maximal ein Medium enthalten.
+
+| Medium
+| Eine digitale Datei (Bild oder Audio), die einer Kartenseite zugeordnet ist.
+
+| Lern-Modus
+| Ein interaktiver Prozess, bei dem Karten präsentiert werden und der Nutzer seinen Wissensstand bewertet.
+
+| Selbsteinschätzung
+| Die Bewertung des Nutzers nach dem Aufdecken der Rückseite (Falsch, Schwierig, Ok, Leicht).
+
+| Tag
+| Ein kurzes Schlagwort, das einer Karte zur Kategorisierung und Filterung zugewiesen wird.
+|===
+
+== Akteure / Rollen
+
+=== Lernender (User)
+* Kann Stapel und Karten erstellen, bearbeiten und löschen.
+* Kann Lernsitzungen durchführen und seinen Fortschritt bewerten.
+* Kann Statistiken über sein Lernverhalten einsehen.
+* Kann Daten importieren und exportieren.
+
+== Epics und User Stories
+
+=== Epic: Kartenverwaltung
+
+==== US-001: Stapel und Karten erstellen
+
+[horizontal]
+Story:: Als *Lernender* möchte ich *Stapel anlegen und darin Karten mit Text und Medien erstellen*, damit *ich meine Lerninhalte digitalisieren kann*.
+Priorität:: Hoch
+Story Points:: 5
+
+===== Akzeptanzkriterien
+
+[source,gherkin]
+....
+Given ich befinde mich in der Stapel-Übersicht
+When ich einen neuen Stapel erstelle
+  And Karten mit Vorder- und Rückseite hinzufüge
+  And optional ein Bild oder eine Audio-Datei pro Seite uploade
+Then wird der Stapel dauerhaft lokal gespeichert
+  And die Medien werden korrekt mit der Karte verknüpft
+....
+
+===== Geschäftsregeln
+* <<BR-001>>: Maximal ein Medium pro Seite
+* <<BR-002>>: Eindeutige Stapelnamen
+
+==== US-002: Karten organisieren (Tagging)
+
+[horizontal]
+Story:: Als *Lernender* möchte ich *Karten mit Tags versehen*, damit *ich diese stapelübergreifend filtern kann*.
+Priorität:: Mittel
+Story Points:: 3
+
+===== Akzeptanzkriterien
+
+[source,gherkin]
+....
+Given ich bearbeite eine Karte
+When ich ein oder mehrere Schlagworte (Tags) hinzufüge
+Then sind diese Tags der Karte fest zugeordnet
+  And ich kann in der Suche nach diesen Tags filtern
+....
+
+=== Epic: Lern-Prozess
+
+==== US-003: Lernsitzung durchführen
+
+[horizontal]
+Story:: Als *Lernender* möchte ich *Karten in einem Stapel lernen*, damit *ich mein Wissen festigen kann*.
+Priorität:: Hoch
+Story Points:: 8
+
+===== Akzeptanzkriterien
+
+[source,gherkin]
+....
+Given ich starte den Lern-Modus für einen Stapel
+When mir die Vorderseite gezeigt wird
+  And ich die Rückseite aufdecke
+  And ich eine Selbsteinschätzung (Falsch, Schwierig, Ok, Leicht) abgebe
+Then wird die nächste Karte basierend auf dem Algorithmus gewählt
+  And die Einschätzung wird für die Statistik protokolliert
+....
+
+===== Geschäftsregeln
+* <<BR-003>>: Priorisierung schwieriger Karten
+
+=== Epic: Datenaustausch & Analyse
+
+==== US-004: Import/Export
+
+[horizontal]
+Story:: Als *Lernender* möchte ich *meine Stapel exportieren und importieren*, damit *ich meine Daten sichern oder teilen kann*.
+Priorität:: Mittel
+Story Points:: 5
+
+===== Akzeptanzkriterien
+
+[source,gherkin]
+....
+When ich einen Stapel als JSON exportiere
+Then enthält die Datei alle Texte, Tags und Base64-kodierte Medien
+When ich diese Datei wieder importiere
+Then wird der Stapel mit allen Inhalten identisch wiederhergestellt
+....
+
+== Geschäftsregeln
+
+[[BR-001]]
+=== BR-001: Medienlimit
+Pro Kartenseite (Vorder- oder Rückseite) darf maximal ein Bild ODER eine Audio-Datei vorhanden sein. Text ist zusätzlich immer erlaubt.
+
+[[BR-002]]
+=== BR-002: Stapel-Hierarchie
+Stapel sind flach organisiert. Ein Stapel kann Karten enthalten, aber keine weiteren Unterstapel.
+
+[[BR-003]]
+=== BR-003: Lern-Algorithmus (Gewichtung)
+Karten, die als "Falsch" oder "Schwierig" markiert wurden, müssen in einer Sitzung mit höherer Wahrscheinlichkeit erneut erscheinen als Karten, die als "Leicht" markiert wurden.
+
+[[BR-004]]
+=== BR-004: Datenformat
+Der Export und Import erfolgt ausschließlich im JSON-Format. Medien müssen innerhalb der JSON-Struktur als Base64-Strings eingebettet sein.
+
+== Fachliches Datenmodell
+
+[plantuml]
+....
+@startuml
+entity Stapel {
+  name: String
+  beschreibung: String
+}
+
+entity Karte {
+  vorderseite_text: String
+  rueckseite_text: String
+  tags: List<String>
+}
+
+entity Seite {
+  medium_daten: Base64/Blob
+  medium_typ: IMAGE | AUDIO | NONE
+}
+
+entity LernFortschritt {
+  zeitpunkt: Zeitstempel
+  einschaetzung: FALSCH | SCHWIERIG | OK | LEICHT
+}
+
+Stapel "1" *-- "0..*" Karte
+Karte "1" *-- "2" Seite : besitzt (Vorder/Rück)
+Karte "1" *-- "0..*" LernFortschritt : Historie
+@enduml
+....
+
+== Sprint-Planung
+
+=== Sprint 1: Fundament & CRUD
+* US-001: Stapel und Karten erstellen
+* US-002: Karten organisieren (Tagging)
+* Lokale Persistenz (JSON)
+
+=== Sprint 2: Lernen & Austausch
+* US-003: Lernsitzung durchführen (Algorithmus)
+* US-004: Import/Export (Base64)
+
+=== Sprint 3: Analyse & Polishing
+* Statistik-View (Karten pro Tag/Woche, Quoten)
+* Kontextsensitive Suche in der Navbar
+* UI-Feinschliff (Runde Ecken, Tooltips)
