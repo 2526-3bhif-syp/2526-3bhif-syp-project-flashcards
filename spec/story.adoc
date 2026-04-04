@@ -1,0 +1,36 @@
+= Story: Flashcard Lernapplikation
+
+== Vision
+
+Eine Lernapplikation um digital mit Karteikarten zu lernen, das Nutzern ermöglicht
+Karten zu erstellen, editieren, löschen, importieren, exportieren und in Stapel zu sortieren.
+Weiterhin sollen Lerneinheiten erfasst werden um Statistiken über sein eigenes Lernverhalten
+einsehen zu können.
+
+== Grobe Anforderungen
+
+* Nutzer können Karteikarten erstellen
+* Karteikarten gehören zu einen Stapel und haben eine Vorder- und Rückseite mit jeweils Frage und Antwort
+* Beide Seiten können nicht nur Text, sondern auch Medien wie Bilder und Audio beinhalten
+* Man kann die Karteikarten in einen Lern-Modus durchgehen, wobei man die Vorderseite gezeigt bekommt, bevor
+  man sich die Rückseite zeigen lässt. Auf der Rückseite soll man dann eine Selbsteinschätzung des Wissenstands
+  abgeben können.
+* Diese Selbsteinschätzungen sollen später in Statistiken wieder angezeigt werden können
+
+== Technische Rahmenbedingungen
+
+[cols="1,2"]
+|===
+| Aspekt | Vorgabe
+
+| Sprache | Java 26
+| Build-Tool | Maven
+| Framework | JavaFx
+| Dokumentation | AsciiDoc
+| Tests | JUnit 5
+|===
+
+== Nicht-Ziele
+
+* Mobile App (nur Web)
+* Verschiedene Sprachen für die GUI (Nur Englisch)
