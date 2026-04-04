@@ -87,7 +87,20 @@ Die Story fokussiert sich auf das Erstellen von Karten mit Pflichtfeldern für F
 *Schritt 5: Dialog zur Kartenerstellung (Abgeschlossen)*
 * Dateien erstellt/geändert: `CreateCardDialog.java`, `MainPresenter.java`, `Deck.java`, `Model.java`.
 * Implementiert: Modal-Dialog mit Validierung (Pflichtfelder), Speichern im In-Memory Modell, automatische Aktualisierung des Grids.
-* Feedback: (Ausstehend)
+* Schritt 6: JSON-Persistenz (Abschluss & Dokumentation)
+** Speicherort: Die Daten werden in der Datei `frontend/decks.json` im Projektverzeichnis gespeichert.
+** Format: JSON-Array von Deck-Objekten, die jeweils eine Liste von Karten enthalten.
+** Mechanismus: Jackson-Bibliothek serialisiert das `Model` bei jeder Änderung (z.B. neue Karte hinzugefügt via `updateDeck()`). Beim Programmstart wird diese Datei automatisch eingelesen.
+** Feedback: (Warten auf Bestätigung)
 
-==== Session 7 (2026-04-04) - Abschluss CardStorage & Ausblick Persistenz
-* Ziel: Verifikation der Karten-Erstellung und Planung der JSON-Persistenz.
+[quote]
+User: "Explain how and where the cards are stored and make sure to note this information down into the chat-mostbauer.adoc as well"
+Agent: Die Karten werden in `frontend/decks.json` gespeichert. Jedes Mal, wenn eine Karte über den Dialog hinzugefügt wird, triggert der Presenter die `updateDeck()` Methode im Model, welche die gesamte Liste sofort in die JSON-Datei schreibt.
+
+Wo und wie werden die Karten gespeichert?
+1.  Speicherort: Die Daten befinden sich in der Datei frontend/decks.json (relativ zum Projektstamm).
+2.  Datenformat: Es handelt sich um ein JSON-Array, das Deck-Objekte enthält. Jedes Deck enthält eine Liste von Card-Objekten mit question, answer und tags.
+3.  Ablauf:
+    *   Laden: Beim Starten der App (new Model()) wird versucht, die decks.json einzulesen. Falls sie fehlt, wird der Dummy-Stapel "English" als Startpunkt erstellt.
+    *   Speichern: Sobald du im Dialog eine neue Karte speicherst, ruft der MainPresenter die Methode model.updateDeck(deck) auf. Diese Methode ersetzt das Deck in der Liste und führt sofort save() aus, welches die gesamte Struktur in die Datei schreibt.
+

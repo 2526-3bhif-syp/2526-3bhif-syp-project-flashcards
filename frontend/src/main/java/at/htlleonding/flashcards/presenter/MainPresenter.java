@@ -46,11 +46,15 @@ public class MainPresenter {
         CreateCardDialog dialog = new CreateCardDialog(owner);
         dialog.showAndWait().ifPresent(newCard -> {
             // Dem aktuellen Deck im Modell hinzufügen
-            var deck = model.getDecks().get(0); 
-            deck.addCard(newCard);
-            
-            // View aktualisieren
-            flashcardsView.renderCards(deck.getCards());
+            var decks = model.getDecks();
+            if (!decks.isEmpty()) {
+                var deck = decks.get(0); 
+                deck.addCard(newCard);
+                model.updateDeck(deck); // Explizit das Model triggern zum Speichern
+                
+                // View aktualisieren
+                flashcardsView.renderCards(deck.getCards());
+            }
         });
     }
 

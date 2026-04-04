@@ -8,6 +8,10 @@ public class Card {
     private String answer;
     private List<String> tags;
 
+    public Card() {
+        this.tags = new ArrayList<>();
+    }
+
     public Card(String question, String answer) {
         if (question == null || question.trim().isEmpty() || answer == null || answer.trim().isEmpty()) {
             throw new IllegalArgumentException("Question and answer are mandatory.");
