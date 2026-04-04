@@ -79,5 +79,10 @@ Die Story fokussiert sich auf das Erstellen von Karten mit Pflichtfeldern für F
 * Implementiert: Grid-Layout für Decks, Kachel-Design mit abgerundeten Ecken, Event-Handling für Klick auf Stapel.
 * Feedback: Passt, weiter mit Schritt 3 (Navigation).
 
-==== Session 5 (2026-04-04) - Navigation & FlashcardsView Vorbereitung
-* Ziel: Verknüpfung der HomeView-Klicks mit dem MainPresenter und Vorbereitung der Karten-Ansicht.
+*Schritt 3: Navigation im MainPresenter (Abgeschlossen)*
+* Dateien geändert: `MainPresenter.java`.
+* Implementiert: Event-Handler in `MainPresenter`, der Klicks in `HomeView` abfängt und zur `FlashcardsView` navigiert.
+* Feedback: Passt, weiter mit Schritt 4 (FlashcardsView).
+
+==== Session 6 (2026-04-04) - FlashcardsView Layout
+* Ziel: Implementierung des Grundlayouts der Karten-Ansicht (Sidebar + Grid mit "+").

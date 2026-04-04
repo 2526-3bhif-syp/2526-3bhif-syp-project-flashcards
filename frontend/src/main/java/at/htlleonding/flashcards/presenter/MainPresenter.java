@@ -1,5 +1,6 @@
 package at.htlleonding.flashcards.presenter;
 
+import at.htlleonding.flashcards.model.*;
 import at.htlleonding.flashcards.view.*;
 import javafx.scene.Node;
 
@@ -9,6 +10,7 @@ import java.util.Stack;
 
 public class MainPresenter {
     private final MainView view;
+    private final Model model;
     private final Map<String, Node> views = new HashMap<>();
     
     private final Stack<String> backStack = new Stack<>();
@@ -17,13 +19,17 @@ public class MainPresenter {
 
     public MainPresenter(MainView view) {
         this.view = view;
+        this.model = new Model();
         
         HomeView homeView = new HomeView();
         homeView.setOnDeckSelected(this::handleDeckSelected);
         
+        FlashcardsView flashcardsView = new FlashcardsView();
+        flashcardsView.setOnAddCardRequested(() -> System.out.println("Add card requested"));
+
         // Views vorab erstellen
         views.put("Home", homeView);
-        views.put("Flashcards", new FlashcardsView());
+        views.put("Flashcards", flashcardsView);
         views.put("Statistic", new StatisticView());
         views.put("Settings", new SettingsView());
 
@@ -34,11 +40,6 @@ public class MainPresenter {
         navigateTo("Home", false);
     }
 
-    private void handleDeckSelected(String deckName) {
-        // Hier könnte später das Modell für das spezifische Deck geladen werden
-        navigateTo("Flashcards", true);
-    }
-
     private void handleNavigation(String destination) {
         if (destination.equals("Back")) {
             goBack();
@@ -47,6 +48,17 @@ public class MainPresenter {
         } else {
             navigateTo(destination, true);
         }
+    }
+
+    private void handleDeckSelected(String deckName) {
+        // Dummy: Wir nehmen immer das erste Deck aus dem Modell
+        var deck = model.getDecks().get(0); 
+        
+        FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
+        fView.setDeckInfo(deck.getName(), "This deck is about basic " + deck.getName().toLowerCase() + " phrases.");
+        fView.renderCards(deck.getCards());
+        
+        navigateTo("Flashcards", true);
     }
 
     private void navigateTo(String destination, boolean addToHistory) {
