@@ -19,6 +19,10 @@ public class Deck {
         if (card == null) return;
         this.cards.add(card);
     }
+    
+    public void setCards(List<Card> cards) {
+        this.cards = new ArrayList<>(cards);
+    }
 
     // Getters
     public String getName() { return name; }

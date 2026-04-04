@@ -3,6 +3,7 @@ package at.htlleonding.flashcards.presenter;
 import at.htlleonding.flashcards.model.*;
 import at.htlleonding.flashcards.view.*;
 import javafx.scene.Node;
+import javafx.stage.Stage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class MainPresenter {
         homeView.setOnDeckSelected(this::handleDeckSelected);
         
         FlashcardsView flashcardsView = new FlashcardsView();
-        flashcardsView.setOnAddCardRequested(() -> System.out.println("Add card requested"));
+        flashcardsView.setOnAddCardRequested(() -> handleAddCardRequested(flashcardsView));
 
         // Views vorab erstellen
         views.put("Home", homeView);
@@ -38,6 +39,19 @@ public class MainPresenter {
         
         // Initialer Zustand
         navigateTo("Home", false);
+    }
+
+    private void handleAddCardRequested(FlashcardsView flashcardsView) {
+        Stage owner = (Stage) flashcardsView.getScene().getWindow();
+        CreateCardDialog dialog = new CreateCardDialog(owner);
+        dialog.showAndWait().ifPresent(newCard -> {
+            // Dem aktuellen Deck im Modell hinzufügen
+            var deck = model.getDecks().get(0); 
+            deck.addCard(newCard);
+            
+            // View aktualisieren
+            flashcardsView.renderCards(deck.getCards());
+        });
     }
 
     private void handleNavigation(String destination) {

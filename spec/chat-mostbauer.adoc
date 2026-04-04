@@ -79,10 +79,15 @@ Die Story fokussiert sich auf das Erstellen von Karten mit Pflichtfeldern für F
 * Implementiert: Grid-Layout für Decks, Kachel-Design mit abgerundeten Ecken, Event-Handling für Klick auf Stapel.
 * Feedback: Passt, weiter mit Schritt 3 (Navigation).
 
-*Schritt 3: Navigation im MainPresenter (Abgeschlossen)*
-* Dateien geändert: `MainPresenter.java`.
-* Implementiert: Event-Handler in `MainPresenter`, der Klicks in `HomeView` abfängt und zur `FlashcardsView` navigiert.
-* Feedback: Passt, weiter mit Schritt 4 (FlashcardsView).
+*Schritt 4: FlashcardsView Layout & Karten-Anzeige (Abgeschlossen)*
+* Dateien geändert: `FlashcardsView.java`, `MainPresenter.java`.
+* Implementiert: Sidebar, Karten-Grid, Zentrierung der Texte, Event-Link zum Presenter.
+* Feedback: Texte zentriert, Karten werden korrekt gerendert.
 
-==== Session 6 (2026-04-04) - FlashcardsView Layout
-* Ziel: Implementierung des Grundlayouts der Karten-Ansicht (Sidebar + Grid mit "+").
+*Schritt 5: Dialog zur Kartenerstellung (Abgeschlossen)*
+* Dateien erstellt/geändert: `CreateCardDialog.java`, `MainPresenter.java`, `Deck.java`, `Model.java`.
+* Implementiert: Modal-Dialog mit Validierung (Pflichtfelder), Speichern im In-Memory Modell, automatische Aktualisierung des Grids.
+* Feedback: (Ausstehend)
+
+==== Session 7 (2026-04-04) - Abschluss CardStorage & Ausblick Persistenz
+* Ziel: Verifikation der Karten-Erstellung und Planung der JSON-Persistenz.

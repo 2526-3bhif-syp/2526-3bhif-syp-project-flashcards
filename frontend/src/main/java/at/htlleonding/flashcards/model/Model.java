@@ -17,4 +17,13 @@ public class Model {
     public List<Deck> getDecks() {
         return new ArrayList<>(decks);
     }
+    
+    public void updateDeck(Deck updatedDeck) {
+        for (int i = 0; i < decks.size(); i++) {
+            if (decks.get(i).getName().equals(updatedDeck.getName())) {
+                decks.set(i, updatedDeck);
+                break;
+            }
+        }
+    }
 }
