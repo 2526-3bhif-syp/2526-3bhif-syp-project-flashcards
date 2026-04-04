@@ -3,38 +3,21 @@ Jan Brunner
 :icons: font
 :toc: left
 
-== Technologie-Stack
+== Initialer Prompt
+[quote]
+Lies bitte specs/story.adoc und analysiere die Anforderungen.
 
-* *Framework:* JavaFX 26
-* *Pattern:* MVP (Model-View-Presenter)
-* *Build-Tool:* Maven
-* *Java-Version:* JDK 26
-* *Speicherformat:* JSON (Jackson)
-* *UI-Ansatz:* Layout primär im Java-Code (kein FXML)
+Stelle mir gezielte Fragen, um:
+1. Die fachlichen Anforderungen vollständig zu verstehen
+2. Alle Unklarheiten zu beseitigen
+3. Die technischen Entscheidungen zu validieren
 
-== Architektur-Entscheidungen
-
-* *MVP Pattern:*
-** *Model:* (`at.htlleonding.flashcards.model`) Datenhaltung.
-** *View:* (`at.htlleonding.flashcards.view`) UI-Komponenten (Layout im Code).
-** *Presenter:* (`at.htlleonding.flashcards.presenter`) Bindeglied zwischen Model und View.
-* *Java 26:* Das Projekt nutzt Java 26 und JavaFX 26.
-
-== Projekt-Struktur
-
-[source]
-----
-flashcards/src/main/java/at/htlleonding/flashcards/
-├── model/
-├── presenter/
-│   └── MainPresenter.java
-├── view/
-│   └── MainView.java
-└── Main.java
-----
+Formatiere deine Fragen strukturiert nach Kategorien.
+Frage NICHT nach Code oder Implementierungsdetails –
+das kommt später. Lese auch alle Inhalte in asciidocs/docs/chats durch, sowie auch das existierende Java Projekt im frontend Ordner, um mehr Kontext über die berreits verrichtete Arbeit zu bekommen. Notiere alle deiner Fragen sowie meine Antworten darauf in der Datei spec/chat-jan-brunner.adoc. Verwende simple aber klare formatierung im asciidoc format. Notiere diesen initialen prompt ebenso
 
 
-== Session 2
+== Session 1
 
 Fragen an dich:
 
