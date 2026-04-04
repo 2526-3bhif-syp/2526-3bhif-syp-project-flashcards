@@ -74,5 +74,10 @@ Die Story fokussiert sich auf das Erstellen von Karten mit Pflichtfeldern für F
 * Dateien erstellt/geändert: `Card.java`, `Deck.java`, `Model.java`.
 * Feedback: Medien (Bilder/Audio) sollen noch nicht implementiert werden. Nur Text-Karten für den Anfang.
 
-==== Session 4 (2026-04-04) - Implementierung HomeView
-* Ziel: Anzeige des Dummy-Stapels "English" in der HomeView.
+*Schritt 2: HomeView-Implementierung (Abgeschlossen)*
+* Dateien geändert: `HomeView.java`.
+* Implementiert: Grid-Layout für Decks, Kachel-Design mit abgerundeten Ecken, Event-Handling für Klick auf Stapel.
+* Feedback: Passt, weiter mit Schritt 3 (Navigation).
+
+==== Session 5 (2026-04-04) - Navigation & FlashcardsView Vorbereitung
+* Ziel: Verknüpfung der HomeView-Klicks mit dem MainPresenter und Vorbereitung der Karten-Ansicht.

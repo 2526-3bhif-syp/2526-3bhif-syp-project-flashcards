@@ -18,8 +18,11 @@ public class MainPresenter {
     public MainPresenter(MainView view) {
         this.view = view;
         
+        HomeView homeView = new HomeView();
+        homeView.setOnDeckSelected(this::handleDeckSelected);
+        
         // Views vorab erstellen
-        views.put("Home", new HomeView());
+        views.put("Home", homeView);
         views.put("Flashcards", new FlashcardsView());
         views.put("Statistic", new StatisticView());
         views.put("Settings", new SettingsView());
@@ -29,6 +32,11 @@ public class MainPresenter {
         
         // Initialer Zustand
         navigateTo("Home", false);
+    }
+
+    private void handleDeckSelected(String deckName) {
+        // Hier könnte später das Modell für das spezifische Deck geladen werden
+        navigateTo("Flashcards", true);
     }
 
     private void handleNavigation(String destination) {
