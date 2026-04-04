@@ -1,0 +1,155 @@
+= Technische Spezifikation: Flashcard Lernapplikation
+:revdate: 2026-04-04
+
+== Fachliche Spezifikation
+
+IMPORTANT: Die fachlichen Anforderungen sind in `specs/fsd.adoc` definiert.
+Diese Datei ist die Single Source of Truth für das WAS.
+
+== Technologie-Stack
+
+[cols="1,2"]
+|===
+| Komponente | Version/Details
+
+| Java | 26 (LTS)
+| Build | Maven 3.9.x
+| Framework | JavaFX 26
+| Architektur-Pattern | MVP (Model-View-Presenter)
+| JSON-Library | Jackson
+| Medien-Handling | Base64 Encoding für Bilder/Audio
+| Dokumentation | AsciiDoc
+| Tests | JUnit 5
+|===
+
+== Architektur
+
+=== Layer-Architektur (Frontend-fokussiert)
+
+....
+frontend/src/main/java/at/htlleonding/flashcards/
+├── model/                # Fachliches Datenmodell & Logik
+│   ├── Card.java         # Entity
+│   ├── Deck.java         # Entity
+│   ├── Session.java      # Lern-Sitzung Logik
+│   └── Persistence.java  # JSON Storage Service
+├── view/                 # JavaFX UI Komponenten (No FXML)
+│   ├── MainView.java     # Root Layout
+│   ├── SidebarView.java  # Navigation
+│   └── *View.java        # Content-spezifische Views
+├── presenter/            # Bindeglied (MVP)
+│   ├── MainPresenter.java
+│   └── *Presenter.java   # Spezifische Presenter für Views
+└── Main.java             # JavaFX Application Entry
+....
+
+=== Schichten-Regeln
+
+[IMPORTANT]
+====
+* `view/` -> Rein deklaratives Layout im Java-Code. Keine Geschäftslogik.
+* `presenter/` -> Reagiert auf View-Events, manipuliert das `model` und aktualisiert die `view`.
+* `model/` -> Enthält Datenstrukturen, den Lern-Algorithmus (BR-003) und die JSON-Serialisierung.
+* `Persistence` -> Kapselt den Zugriff auf das Dateisystem (JSON/Base64).
+====
+
+== Coding-Konventionen
+
+=== Allgemein
+* Package-Prefix: `at.htlleonding.flashcards`
+* Keine Wildcards in Imports
+* Records für reine Datencontainer (wo sinnvoll)
+* JavaFX-Properties für Data-Binding verwenden
+
+=== Naming
+* Klassen: PascalCase
+* Methoden/Variablen: camelCase
+* Konstanten: SCREAMING_SNAKE_CASE
+* Views: `*View.java`
+* Presenter: `*Presenter.java`
+* Modelle: Substantive (z.B. `Card`, `Deck`)
+
+== Mapping: FSD → Code
+
+[cols="1,2,2"]
+|===
+| FSD-Element | Code-Artefakt | Beispiel
+
+| Stapel (Deck)
+| Klasse in `model/`
+| `Deck.java`
+
+| Karte (Card)
+| Klasse in `model/`
+| `Card.java`
+
+| Selbsteinschätzung
+| Enum in `model/`
+| `Difficulty.java` (FALSCH, SCHWIERIG, OK, LEICHT)
+
+| US-003: Lernsitzung
+| Logik in `Session.java` & `FlashcardsPresenter.java`
+| `Session.getNextCard()`
+
+| BR-004: Datenformat
+| Jackson Mixins/Service in `Persistence.java`
+| `Persistence.export(Deck deck)`
+|===
+
+== Test-Strategie
+
+[cols="1,2,2"]
+|===
+| Ebene | Scope | Technologie
+
+| Unit Tests
+| Model-Logik (Algorithmus, Score-Berechnung)
+| JUnit 5, AssertJ
+
+| Logic Tests
+| Persistence (JSON Im/Export inkl. Base64)
+| JUnit 5, TemporaryFolder
+
+| UI Tests
+| Navigation, View-States
+| TestFX (optional)
+|===
+
+== Workflow für Agent (Claude Code)
+
+=== Bei neuen Implementierungsschritten
+
+1. `specs/fsd.adoc` für Anforderungen prüfen
+2. `agents.adoc` für Architektur-Vorgaben prüfen
+3. Model-Klassen erstellen/erweitern
+4. Unit-Tests für Logik schreiben
+5. Presenter-Logik implementieren
+6. View-Elemente in JavaFX ergänzen (Code-only)
+7. Manuelle Verifikation der UI
+
+=== Regeln
+
+* **Kein FXML:** UI wird ausschließlich in Java-Code gebaut.
+* **Single Source of Truth:** Anforderungen kommen aus `fsd.adoc`.
+* **State Management:** Navigation über `MainPresenter` (Stack-basiert wie bereits vorhanden).
+* **Fehlerbehandlung:** Robuste Fehlerbehandlung beim Datei-I/O (JSON).
+
+== Prompts für häufige Aufgaben
+
+=== Neue Entität/Logik implementieren
+
+[source]
+....
+Implementiere das Datenmodell für [Begriff] laut specs/fsd.adoc.
+Erstelle die Klasse in model/ inklusive Jackson-Annotationen.
+Schreibe Unit-Tests für [Logik].
+....
+
+=== UI-Komponente erstellen
+
+[source]
+....
+Erstelle die [Name]View in view/. 
+Halte dich an das Design-Konzept (runde Ecken, Sidebar/Navbar Integration).
+Verbinde sie über einen neuen Presenter.
+....
