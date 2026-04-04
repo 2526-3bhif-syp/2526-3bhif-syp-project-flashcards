@@ -70,15 +70,9 @@ Die Story fokussiert sich auf das Erstellen von Karten mit Pflichtfeldern für F
 
 ==== Session 3 (2026-04-04) - UI Planung & Erster Schritt
 
-*Analyse des UI-Sketches (gui.jpeg):*
-* Die App besteht aus einer **Stapel-Ansicht** (Grid von Decks) und einer **Karten-Ansicht** (Inhalt eines Decks mit Sidebar für Aktionen).
-* Einstiegspunkt für neue Karten ist eine Kachel mit einem "+"-Symbol innerhalb der Karten-Ansicht.
+*Schritt 1: Model-Implementierung (Abgeschlossen)*
+* Dateien erstellt/geändert: `Card.java`, `Deck.java`, `Model.java`.
+* Feedback: Medien (Bilder/Audio) sollen noch nicht implementiert werden. Nur Text-Karten für den Anfang.
 
-*Festlegungen zur Umsetzung:*
-* **Vorgehensweise:** Zuerst wird die Stapel-Ansicht (HomeView) mit einem fest kodierten Dummy-Stapel ("English") implementiert, um den Navigationsfluss zu ermöglichen.
-* **Karten-Ansicht:** Zeigt Kacheln, die nur die Vorderseite (Frage) enthalten.
-* **Fokus:** Nur notwendige Infrastruktur für die Navigation zum Karten-Grid, noch keine CRUD-Operationen für Stapel selbst.
-
-*Fragen zur technischen Umsetzung:*
-* **Navigation:** Klick auf den Dummy-Stapel in `HomeView` wechselt zur `FlashcardsView`.
-* **Datenstruktur:** Einführung der Klassen `Deck` und `Card` im Model, vorerst ohne Persistenz-Logik (In-Memory).
+==== Session 4 (2026-04-04) - Implementierung HomeView
+* Ziel: Anzeige des Dummy-Stapels "English" in der HomeView.
