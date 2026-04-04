@@ -1,0 +1,54 @@
+= Chat: Mostbauer
+
+== Initialer Prompt
+[quote]
+Lies bitte specs/story.adoc und analysiere die Anforderungen.
+
+Stelle mir gezielte Fragen, um:
+1. Die fachlichen Anforderungen vollständig zu verstehen
+2. Alle Unklarheiten zu beseitigen
+3. Die technischen Entscheidungen zu validieren
+
+Formatiere deine Fragen strukturiert nach Kategorien.
+Frage NICHT nach Code oder Implementierungsdetails –
+das kommt später. Lese auch alle Inhalte in asciidocs/docs/chats durch, sowie auch das existierende Java Projekt im frontend Ordner, um mehr Kontext über die berreits verrichtete Arbeit zu bekommen. Notiere alle deiner Fragen sowie meine Antworten darauf in der Datei spec/chat-mostbauer.adoc. Verwende simple aber klare formatierung im asciidoc format. Notiere diesen initialen prompt ebenso
+
+== Fragen zur Anforderungsanalyse (Mostbauer)
+
+=== 1. Karteikarten & Stapel (Datenmodell)
+* *Inhaltstypen:* Die Story erwähnt Text, Bilder und Audio. Gibt es pro Seite ein Limit für die Anzahl der Medien (z.B. nur ein Bild + ein Audio) oder soll dies flexibel erweiterbar sein?
+* Antwort: Es darf maximal ein Bild oder eine Audio pro Seite geben. Text darf sich eine Seite mit einen Bild oder einer Audio teilen, aber auch alleine stehen.
+* *Stapel-Hierarchie:* Sind Stapel (Decks) flach organisiert oder soll es Unterordner/Unterstapel geben?
+* Antwort: Es gibt keine Unterstapel. Ein Stapel darf nur Karten enthalten, keine weiteren Stapel.
+* *Tags/Metadaten:* Sollen Karten zusätzlich zu Stapeln auch über Tags (Schlagworte) organisierbar sein?
+* Antwort: Ja, man soll nach Tags suchen können um die angezeigten Karten zu filtern. 
+  Weiterhin soll man auch Tags black/white-listen können im Lern-Modus, damit nur Karten mit passenden
+  Tags präsentiert werden.
+
+=== 2. Lern-Modus & Selbsteinschätzung
+* *Algorithmus:* Wie soll die Selbsteinschätzung die Reihenfolge der Karten beeinflussen? Ist ein Spaced-Repetition-System (wie Anki/Leitner) geplant oder eine einfache Zufallswiedergabe mit Fokus auf "schlechte" Karten?
+* Antwort: Eine einfache Zufallswiedergabe, die Karten welche als Schwieriger bewertet wurden priorisiert und Karten
+  welche als leicht bewertet wurden weniger oft anzeigt.
+* *Einschätzungsskala:* Welche Stufen der Selbsteinschätzung sind vorgesehen? (z.B. "Nicht gewusst", "Unsicher", "Gewusst" oder eine Skala von 1-5?)
+* Antwort: Die Einschätzung erfolgt mit einen von: "Falsch", "Schwierig", "Ok", "Leicht"
+
+=== 3. Import / Export
+* *Formate:* Welche Dateiformate werden für den Import/Export angestrebt? (CSV, JSON, Anki-Pakete .apkg?)
+* Antwort: JSON
+* *Medien-Export:* Wie sollen Bilder und Audio-Dateien beim Export gehandhabt werden (z.B. als ZIP-Archiv)?
+* Antwort: Medien sollen base64 encoded werden und als string in die json gegeben werden.
+
+=== 4. Statistiken
+* *Detaillierungsgrad:* Welche konkreten Kennzahlen sollen visualisiert werden? (z.B. Karten pro Tag gelernt, Erfolgsquote pro Stapel, Zeitaufwand?)
+* Antwort: Karten pro Tag/Woche/Monat, Durchschnittliche Einschätzung pro Stapel, Anzahl pro Bewertungsart pro Lern-session(zb: 15 leicht, 30 ok, 5 schwer, 5 Falsch) 
+* *Zeitraum:* Sollen Statistiken filterbar sein (heute, letzte Woche, gesamt)?
+* Antwort: Der Nutzer soll die Option haben die Statistiken für einen Tag, eine Woche, 
+  einen Monat und ohne Begrenzung zu sehen.
+
+=== 5. Technische & UI Validierung
+* *Offline-Fähigkeit:* Da es sich um eine JavaFX-Desktop-App handelt (trotz des "nur Web" Kommentars in den Nicht-Zielen, der vermutlich "keine Mobile App" meint), sollen die Daten lokal in JSON-Dateien gespeichert werden, wie in Jan Brunners Dokumentation erwähnt?
+* Antwort: Ja, lokal speichern.
+* *Synchronisation:* Ist eine Synchronisation zwischen verschiedenen Geräten geplant oder bleibt die App eine reine Standalone-Anwendung?
+* Antwort: Synchronisation ist nicht geplant.
+* *Suche:* In der Navbar existiert bereits eine Suchleiste. Soll diese global über alle Stapel suchen oder kontextsensitiv (nur im aktuellen Stapel)?
+* Antwort: Sie sollte kontextsensitiv sein.
