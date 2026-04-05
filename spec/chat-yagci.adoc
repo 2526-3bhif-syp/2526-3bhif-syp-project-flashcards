@@ -1,0 +1,34 @@
+= Chat: Yagci
+
+== Initialer Prompt
+[quote]
+Lies bitte specs/stories/EditDelete.md und analysiere die Anforderungen.
+
+Stelle mir gezielte Fragen, um:
+1. Die fachlichen Anforderungen vollständig zu verstehen
+2. Alle Unklarheiten zu beseitigen
+3. Die technischen Entscheidungen zu validieren
+
+Formatiere deine Fragen strukturiert nach Kategorien.
+Frage NICHT nach Code oder Implementierungsdetails.
+
+== Fragen zur Anforderungsanalyse (Yagci)
+
+=== 1. UI/UX: Editieren und Löschen
+* *Positionierung:* Wo sollen der Editier- und Lösch-Button auf der Karteikarte platziert werden?
+* Antwort: Bevorzugt in der rechten oberen oder unteren Ecke der Karteikarte als kleine Icons (Stift für Editieren, Mülleimer für Löschen).
+* *Dialoge:* Soll beim Klick auf "Editieren" ein Modaler Dialog ähnlich dem "Erstellen"-Dialog geöffnet werden?
+* Antwort: Ja, ein modaler Dialog ist am besten, damit der Ablauf konsistent zum Erstellen bleibt.
+* *Lösch-Bestätigung:* Wie soll die Bestätigung beim Löschen aussehen? Reicht ein einfacher "Bist du sicher?"-Alert?
+* Antwort: Ja, ein Standard-Bestätigungs-Dialog (Confirmation Alert) von JavaFX reicht völlig aus.
+
+=== 2. Datenhaltung & Logik
+* *Persistenz:* Die Änderungen müssen persistent sein. Wird dazu beim Aktualisieren und Löschen jeweils die existierende `updateDeck()`-Methode bzw. `save()`-Methode der `Model`-Klasse wiederverwendet?
+* Antwort: Ja, die aktuelle JSON-Dateispeicherung in `decks.json` über das Model soll direkt nach jedem Vorgang aktualisiert werden.
+
+== Session 2 (2026-04-05)
+
+=== User Story: EditDelete (Karten bearbeiten und löschen)
+* Dateien anzupassen: `Card.java` (evtl. ID/Equality Logik), `Deck.java`, `Model.java`, `FlashcardsView.java`, `MainPresenter.java`.
+* Neuer Dialog: `EditCardDialog.java` ähnlich `CreateCardDialog.java`.
+
