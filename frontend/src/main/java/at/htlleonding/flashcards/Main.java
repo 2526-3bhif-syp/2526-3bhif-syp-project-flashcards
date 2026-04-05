@@ -14,7 +14,7 @@ public class Main extends Application {
 
         Scene scene = new Scene(presenter.getView(), 640, 480);
         
-        stage.setTitle("Flashcards (MVP)");
+        stage.setTitle("Flashcards");
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
