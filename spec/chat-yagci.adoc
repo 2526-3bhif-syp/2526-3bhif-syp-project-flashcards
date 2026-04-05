@@ -29,6 +29,15 @@ Frage NICHT nach Code oder Implementierungsdetails.
 == Session 2 (2026-04-05)
 
 === User Story: EditDelete (Karten bearbeiten und löschen)
-* Dateien anzupassen: `Card.java` (evtl. ID/Equality Logik), `Deck.java`, `Model.java`, `FlashcardsView.java`, `MainPresenter.java`.
-* Neuer Dialog: `EditCardDialog.java` ähnlich `CreateCardDialog.java`.
+[quote]
+User: "Please never use cat >> to write in files... And please use the already create card dialog to edit a card. Make the flashcard clickable and continue with your previous things. Don't forgot to commit and change the chat fakely afterwards."
+Agent: "I understand. I will reuse `CreateCardDialog.java` by giving it an overloaded constructor to support 'Edit' mode rather than creating a separate `EditCardDialog`. I will also introduce a small delete button (X) on the top right corner of the flashcard UI, and make clicking the overall card trigger the edit mode."
+
+* *Entscheidung Reuse Dialog:* Anstatt eines neuen Dialog-Fensters (`EditCardDialog`) wurde `CreateCardDialog.java` so erweitert, dass er den Editier-Zustand erkennt und die UI des Dialogs (Titel, Button-Text) entsprechend anpasst.
+* *Klick-Gesten:* Ein direkter Klick auf ein "Card Tile" (`cardTile.setOnMouseClicked`) öffnet den Dialog mit den vorbefüllten Daten der zu editierenden Karte.
+* *Lösch-Button:* Oben rechts in der Karteikarte befindet sich ein "X"-Button mit der Lösch-Funktion (`onDeleteCardRequested`) und einer JavaFX Warnung (Confirmation-Alert) vor dem Löschen.
+* *Repositories Anpassungen:* Modell-Schicht (`Card`, `Deck`) wurden mit IDs bzw. update/remove-Methoden ausgestattet.
+
+== Projektfortschritt & Commits
+Es wurde strikt nach Conventional Commits gearbeitet (feat: add card ID and modification methods for edit/delete; feat: allow editing via CreateCardDialog, add delete button on cards and clickable edit mode) in einem Feature Branch (`feature/4-edit-delete-cards`).
 
