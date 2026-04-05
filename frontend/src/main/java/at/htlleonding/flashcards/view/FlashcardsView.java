@@ -137,11 +137,22 @@ public class FlashcardsView extends HBox {
             cardTile.setAlignment(Pos.CENTER);
             cardTile.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;");
             
-            // Delete Button (Top Right)
             HBox topBox = new HBox();
-            topBox.setAlignment(Pos.TOP_RIGHT);
-            Button deleteBtn = new Button("X");
-            deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand; -fx-font-size: 10px; -fx-font-weight: bold;");
+            
+            Button editBtn = new Button("Edit");
+            editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: blue; -fx-cursor: hand; -fx-font-size: 10px; -fx-padding: 0;");
+            editBtn.setOnAction(e -> {
+                e.consume();
+                if (onEditCardRequested != null) {
+                    onEditCardRequested.accept(card);
+                }
+            });
+            
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            
+            Button deleteBtn = new Button("Delete");
+            deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand; -fx-font-size: 10px; -fx-padding: 0;");
             deleteBtn.setOnAction(e -> {
                 e.consume(); // Prevent launching edit mode
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -154,7 +165,7 @@ public class FlashcardsView extends HBox {
                     }
                 });
             });
-            topBox.getChildren().add(deleteBtn);
+            topBox.getChildren().addAll(editBtn, spacer, deleteBtn);
             
             Label qLabel = new Label(card.getQuestion());
             qLabel.setWrapText(true);
