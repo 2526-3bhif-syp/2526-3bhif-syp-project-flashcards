@@ -133,14 +133,17 @@ public class FlashcardsView extends HBox {
         for (Card card : cards) {
             VBox cardTile = new VBox();
             cardTile.setPrefSize(120, 160);
-            cardTile.setPadding(new Insets(10));
-            cardTile.setAlignment(Pos.CENTER);
+            cardTile.setPadding(new Insets(5)); // Reduced padding to move closer to corners
+            cardTile.setAlignment(Pos.TOP_CENTER);
             cardTile.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;");
             
             HBox topBox = new HBox();
             
-            Button editBtn = new Button("Edit");
-            editBtn.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand; -fx-font-size: 10px; -fx-padding: 3 6; -fx-background-radius: 3;");
+            Button editBtn = new Button("✎");
+            editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+            editBtn.setOnMouseEntered(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+            editBtn.setOnMouseExited(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+            
             editBtn.setOnAction(e -> {
                 e.consume();
                 if (onEditCardRequested != null) {
@@ -151,8 +154,11 @@ public class FlashcardsView extends HBox {
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
             
-            Button deleteBtn = new Button("Delete");
-            deleteBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-cursor: hand; -fx-font-size: 10px; -fx-padding: 3 6; -fx-background-radius: 3;");
+            Button deleteBtn = new Button("✖");
+            deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+            deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #dc3545; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+            deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+            
             deleteBtn.setOnAction(e -> {
                 e.consume(); // Prevent launching edit mode
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -171,6 +177,7 @@ public class FlashcardsView extends HBox {
             qLabel.setWrapText(true);
             qLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
             qLabel.setAlignment(Pos.CENTER);
+            qLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             qLabel.setStyle("-fx-text-fill: black;");
             
             VBox.setVgrow(qLabel, Priority.ALWAYS);
