@@ -50,3 +50,13 @@ Agent: "I understand the issue. I have modified the `MainPresenter` so that navi
 * *Bugfix (Leere Flashcards-Ansicht):* Die Methode `navigateTo` in `MainPresenter` wurde so angepasst, dass sie bei der Navigation zu `Flashcards` proaktiv die Daten aus dem Standard-Deck lädt, damit die Ansicht nicht initial leer ist.
 * *Karten-UI Verbesserungen:* Die Karteikarten in `FlashcardsView` haben im oberen Bereich nun eine dedizierte HBox. Dort befinden sich ein blauer "Edit"-Button (oben links) und ein roter "Delete"-Button (oben rechts).
 * *Bestehende Interaktion:* Wie von den vorherigen Regeln gefordert, öffnet auch der Klick auf die Karte selbst nach wie vor den bekannten `CreateCardDialog` im Editier-Modus.
+
+== Session 4 (2026-04-05)
+
+=== User Story: EditDelete (Karten bearbeiten und löschen) - Finalisierung
+[quote]
+User: "The edit and delete buttons are still not in place. Place them in the top corners! The should have a visible button color"
+
+Agent: "I have updated the 'Edit' and 'Delete' buttons in the `FlashcardsView`. They now have a highly visible background color (blue for edit and red for delete) and white text. They are clearly positioned in the top corners of the flashcard element."
+
+* *UI Update:* The `FlashcardsView` card tiles were modified to set visible background colors for the action buttons instead of transparent backgrounds (blue `#007bff` for edit, red `#dc3545` for delete). They are pushed to the top-left and top-right respectively via the `HBox` spacer.

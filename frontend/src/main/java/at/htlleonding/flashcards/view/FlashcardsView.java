@@ -140,7 +140,7 @@ public class FlashcardsView extends HBox {
             HBox topBox = new HBox();
             
             Button editBtn = new Button("Edit");
-            editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: blue; -fx-cursor: hand; -fx-font-size: 10px; -fx-padding: 0;");
+            editBtn.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand; -fx-font-size: 10px; -fx-padding: 3 6; -fx-background-radius: 3;");
             editBtn.setOnAction(e -> {
                 e.consume();
                 if (onEditCardRequested != null) {
@@ -152,7 +152,7 @@ public class FlashcardsView extends HBox {
             HBox.setHgrow(spacer, Priority.ALWAYS);
             
             Button deleteBtn = new Button("Delete");
-            deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand; -fx-font-size: 10px; -fx-padding: 0;");
+            deleteBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-cursor: hand; -fx-font-size: 10px; -fx-padding: 3 6; -fx-background-radius: 3;");
             deleteBtn.setOnAction(e -> {
                 e.consume(); // Prevent launching edit mode
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
