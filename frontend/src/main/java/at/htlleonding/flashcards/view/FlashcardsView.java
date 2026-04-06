@@ -3,7 +3,9 @@ package at.htlleonding.flashcards.view;
 import at.htlleonding.flashcards.model.Card;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
@@ -11,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class FlashcardsView extends HBox {
     private VBox deckInfoSidebar;
@@ -18,6 +21,8 @@ public class FlashcardsView extends HBox {
     private Label deckTitleLabel;
     private Label deckDescriptionLabel;
     private Runnable onAddCardRequested;
+    private Consumer<Card> onEditCardRequested;
+    private Consumer<Card> onDeleteCardRequested;
 
     public FlashcardsView() {
         this.setPadding(new Insets(20));
@@ -112,6 +117,14 @@ public class FlashcardsView extends HBox {
         this.onAddCardRequested = callback;
     }
 
+    public void setOnEditCardRequested(Consumer<Card> callback) {
+        this.onEditCardRequested = callback;
+    }
+
+    public void setOnDeleteCardRequested(Consumer<Card> callback) {
+        this.onDeleteCardRequested = callback;
+    }
+
     public void renderCards(List<Card> cards) {
         // Erst alles außer dem "+" Button entfernen
         cardsGrid.getChildren().clear();
@@ -120,17 +133,64 @@ public class FlashcardsView extends HBox {
         for (Card card : cards) {
             VBox cardTile = new VBox();
             cardTile.setPrefSize(120, 160);
-            cardTile.setPadding(new Insets(10));
-            cardTile.setAlignment(Pos.CENTER); // Vertikale und horizontale Zentrierung
-            cardTile.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10;");
+            cardTile.setPadding(new Insets(5)); // Reduced padding to move closer to corners
+            cardTile.setAlignment(Pos.TOP_CENTER);
+            cardTile.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;");
+            
+            HBox topBox = new HBox();
+            
+            Button editBtn = new Button("✎");
+            editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+            editBtn.setOnMouseEntered(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+            editBtn.setOnMouseExited(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+            
+            editBtn.setOnAction(e -> {
+                e.consume();
+                if (onEditCardRequested != null) {
+                    onEditCardRequested.accept(card);
+                }
+            });
+            
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            
+            Button deleteBtn = new Button("✖");
+            deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+            deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #dc3545; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+            deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+            
+            deleteBtn.setOnAction(e -> {
+                e.consume(); // Prevent launching edit mode
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Delete Card");
+                alert.setHeaderText("Delete Flashcard");
+                alert.setContentText("Are you sure you want to delete this card permanently?");
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK && onDeleteCardRequested != null) {
+                        onDeleteCardRequested.accept(card);
+                    }
+                });
+            });
+            topBox.getChildren().addAll(editBtn, spacer, deleteBtn);
             
             Label qLabel = new Label(card.getQuestion());
             qLabel.setWrapText(true);
-            qLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER); // Text innerhalb des Labels zentrieren
+            qLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
             qLabel.setAlignment(Pos.CENTER);
+            qLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             qLabel.setStyle("-fx-text-fill: black;");
             
-            cardTile.getChildren().add(qLabel);
+            VBox.setVgrow(qLabel, Priority.ALWAYS);
+            
+            cardTile.getChildren().addAll(topBox, qLabel);
+            
+            // Editable by clicking the card
+            cardTile.setOnMouseClicked(e -> {
+                if (onEditCardRequested != null) {
+                    onEditCardRequested.accept(card);
+                }
+            });
+            
             cardsGrid.getChildren().add(cardTile);
         }
     }

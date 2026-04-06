@@ -18,12 +18,19 @@ public class CreateCardDialog {
     private final TextArea answerArea;
     private final Button saveButton;
     private Card result;
-
+    
+    // Default constructor for creating a new card
     public CreateCardDialog(Stage owner) {
+        this(owner, null);
+    }
+
+    public CreateCardDialog(Stage owner, Card cardToEdit) {
         stage = new Stage();
         stage.initOwner(owner);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Create New Flashcard");
+        
+        boolean isEditMode = cardToEdit != null;
+        stage.setTitle(isEditMode ? "Edit Flashcard" : "Create New Flashcard");
 
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
@@ -35,6 +42,7 @@ public class CreateCardDialog {
         questionArea.setPromptText("Enter the question here...");
         questionArea.setPrefRowCount(3);
         questionArea.setWrapText(true);
+        if (isEditMode) questionArea.setText(cardToEdit.getQuestion());
 
         Label aLabel = new Label("Answer (Back):");
         aLabel.setStyle("-fx-font-weight: bold;");
@@ -42,13 +50,14 @@ public class CreateCardDialog {
         answerArea.setPromptText("Enter the answer here...");
         answerArea.setPrefRowCount(3);
         answerArea.setWrapText(true);
+        if (isEditMode) answerArea.setText(cardToEdit.getAnswer());
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         
-        saveButton = new Button("Save Card");
+        saveButton = new Button(isEditMode ? "Save Changes" : "Save Card");
         saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
-        saveButton.setDisable(true);
+        saveButton.setDisable(!isEditMode);
         
         Button cancelButton = new Button("Cancel");
         cancelButton.setOnAction(e -> stage.close());
@@ -60,7 +69,13 @@ public class CreateCardDialog {
         answerArea.textProperty().addListener((obs, oldVal, newVal) -> validate());
 
         saveButton.setOnAction(e -> {
-            result = new Card(questionArea.getText().trim(), answerArea.getText().trim());
+            if (isEditMode) {
+                cardToEdit.setQuestion(questionArea.getText().trim());
+                cardToEdit.setAnswer(answerArea.getText().trim());
+                result = cardToEdit;
+            } else {
+                result = new Card(questionArea.getText().trim(), answerArea.getText().trim());
+            }
             stage.close();
         });
 

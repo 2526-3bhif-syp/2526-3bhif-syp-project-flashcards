@@ -27,6 +27,8 @@ public class MainPresenter {
         
         FlashcardsView flashcardsView = new FlashcardsView();
         flashcardsView.setOnAddCardRequested(() -> handleAddCardRequested(flashcardsView));
+        flashcardsView.setOnEditCardRequested(card -> handleEditCardRequested(flashcardsView, card));
+        flashcardsView.setOnDeleteCardRequested(card -> handleDeleteCardRequested(flashcardsView, card));
 
         // Views vorab erstellen
         views.put("Home", homeView);
@@ -45,7 +47,7 @@ public class MainPresenter {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
         CreateCardDialog dialog = new CreateCardDialog(owner);
         dialog.showAndWait().ifPresent(newCard -> {
-            // Dem aktuellen Deck im Modell hinzufügen
+            // Dem aktuellen Deck im Modell hinzufgen
             var decks = model.getDecks();
             if (!decks.isEmpty()) {
                 var deck = decks.get(0); 
@@ -56,6 +58,30 @@ public class MainPresenter {
                 flashcardsView.renderCards(deck.getCards());
             }
         });
+    }
+
+    private void handleEditCardRequested(FlashcardsView flashcardsView, Card cardToEdit) {
+        Stage owner = (Stage) flashcardsView.getScene().getWindow();
+        CreateCardDialog dialog = new CreateCardDialog(owner, cardToEdit);
+        dialog.showAndWait().ifPresent(updatedCard -> {
+            var decks = model.getDecks();
+            if (!decks.isEmpty()) {
+                var deck = decks.get(0);
+                deck.updateCard(updatedCard);
+                model.updateDeck(deck);
+                flashcardsView.renderCards(deck.getCards());
+            }
+        });
+    }
+
+    private void handleDeleteCardRequested(FlashcardsView flashcardsView, Card cardToDelete) {
+        var decks = model.getDecks();
+        if (!decks.isEmpty()) {
+            var deck = decks.get(0);
+            deck.removeCard(cardToDelete);
+            model.updateDeck(deck);
+            flashcardsView.renderCards(deck.getCards());
+        }
     }
 
     private void handleNavigation(String destination) {
@@ -81,6 +107,16 @@ public class MainPresenter {
 
     private void navigateTo(String destination, boolean addToHistory) {
         if (destination.equals(currentViewName)) return;
+
+        if (destination.equals("Flashcards")) {
+            var decks = model.getDecks();
+            if (!decks.isEmpty()) {
+                var deck = decks.get(0);
+                FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
+                fView.setDeckInfo(deck.getName(), "This deck is about basic " + deck.getName().toLowerCase() + " phrases.");
+                fView.renderCards(deck.getCards());
+            }
+        }
 
         Node targetView = views.get(destination);
         if (targetView != null) {
