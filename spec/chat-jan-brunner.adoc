@@ -148,3 +148,9 @@ There should be one button for import and one for export. After clicking you can
 
 * *Anfrage:* Erstens die transitions sollen immer funktionierne nicht nur einmalig. Macht das jetzt mal gescheidt. Zudem möchte ich das die schrift weiß bleiblt und der background sich ändert. Der scale effekt soll auch rückwerts sein nicht nur vorwärts.
   *Antwort:* Ich habe die Transitions mit einer reversiblen `ScaleTransition` neu implementiert, sodass sie bei jeder Interaktion flüssig funktionieren. Zudem wurde das Design auf weiße Schrift auf blauem Hintergrund (#2196F3) umgestellt, der sich beim Hovern verdunkelt.
+
+* *Anfrage:* Zudem soll ich den Import bedingung auch abbrechen können.
+  *Antwort:* Ich habe eine Abbrech-Option zum Import-Vorgang hinzugefügt. Sowohl im Format-Auswahl-Dialog als auch beim Duplikats-Check gibt es nun eine "Cancel"-Option, um den gesamten Vorgang abzubrechen.
+
+* *Anfrage:* mach die form wo wir beschreiben ob wir duplicates wollen auch schöner
+  *Antwort:* Ich habe den Standard-JavaFX-Alert für Duplikate durch einen maßgeschneiderten `DuplicateActionDialog` ersetzt, der sich nahtlos in das moderne Design der App einfügt und klare Handlungsoptionen bietet.
