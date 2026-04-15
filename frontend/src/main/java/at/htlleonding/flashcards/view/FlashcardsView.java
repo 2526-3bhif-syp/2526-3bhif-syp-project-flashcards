@@ -24,6 +24,7 @@ public class FlashcardsView extends HBox {
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
     private Runnable onImportRequested;
+    private Runnable onExportRequested;
 
     public FlashcardsView() {
         this.setPadding(new Insets(20));
@@ -58,8 +59,12 @@ public class FlashcardsView extends HBox {
         Button studyBtn = createSidebarButton("Study");
         Button exportBtn = createSidebarButton("Export");
         Button importBtn = createSidebarButton("Import");
+
         importBtn.setOnAction(e -> {
             if (onImportRequested != null) onImportRequested.run();
+        });
+        exportBtn.setOnAction(e -> {
+            if (onExportRequested != null) onExportRequested.run();
         });
 
         buttonBox.getChildren().addAll(studyBtn, exportBtn, importBtn);
@@ -131,6 +136,10 @@ public class FlashcardsView extends HBox {
 
     public void setOnImportRequested(Runnable callback) {
         this.onImportRequested = callback;
+    }
+
+    public void setOnExportRequested(Runnable callback) {
+        this.onExportRequested = callback;
     }
 
     public void renderCards(List<Card> cards) {

@@ -3,18 +3,14 @@ package at.htlleonding.flashcards.presenter;
 import at.htlleonding.flashcards.model.*;
 import at.htlleonding.flashcards.view.*;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.io.*;
+import java.util.*;
 
 public class MainPresenter {
     private final MainView view;
@@ -37,6 +33,7 @@ public class MainPresenter {
         flashcardsView.setOnEditCardRequested(card -> handleEditCardRequested(flashcardsView, card));
         flashcardsView.setOnDeleteCardRequested(card -> handleDeleteCardRequested(flashcardsView, card));
         flashcardsView.setOnImportRequested(() -> handleImportRequested(flashcardsView));
+        flashcardsView.setOnExportRequested(() -> handleExportRequested(flashcardsView));
 
         // Views vorab erstellen
         views.put("Home", homeView);
@@ -52,55 +49,91 @@ public class MainPresenter {
     }
 
     private void handleImportRequested(FlashcardsView flashcardsView) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Data Files", "*.json", "*.csv"));
-        File file = fileChooser.showOpenDialog(flashcardsView.getScene().getWindow());
+        List<String> formats = Arrays.asList("JSON", "CSV");
+        ChoiceDialog<String> formatDialog = new ChoiceDialog<>("JSON", formats);
+        formatDialog.setTitle("Select Import Format");
+        formatDialog.setHeaderText("Choose format:");
+        formatDialog.showAndWait().ifPresent(format -> {
+            FileChooser fc = new FileChooser();
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(format + " files", "*." + format.toLowerCase()));
+            File file = fc.showOpenDialog(flashcardsView.getScene().getWindow());
+            if (file != null) performImport(file, format, flashcardsView);
+        });
+    }
 
-        if (file != null) {
-            var decks = model.getDecks();
-            if (decks.isEmpty()) return;
-            var deck = decks.get(0);
+    private void performImport(File file, String format, FlashcardsView flashcardsView) {
+        var decks = model.getDecks();
+        if (decks.isEmpty()) return;
+        var deck = decks.get(0);
+
+        try {
             List<Card> importedCards = new ArrayList<>();
-
-            try {
-                if (file.getName().endsWith(".json")) {
-                    importedCards = new com.fasterxml.jackson.databind.ObjectMapper()
-                            .readValue(file, new com.fasterxml.jackson.core.type.TypeReference<List<Card>>() {});
-                } else if (file.getName().endsWith(".csv")) {
-                    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                        String line;
-                        while ((line = br.readLine()) != null) {
-                            String[] parts = line.split(",");
-                            if (parts.length >= 2) {
-                                importedCards.add(new Card(parts[0], parts[1]));
-                            }
+            if (format.equals("JSON")) {
+                importedCards = new com.fasterxml.jackson.databind.ObjectMapper()
+                        .readValue(file, new com.fasterxml.jackson.core.type.TypeReference<List<Card>>() {});
+            } else {
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        String[] parts = line.split(",");
+                        if (parts.length >= 2) {
+                            importedCards.add(new Card(parts[0], parts[1]));
                         }
                     }
                 }
-                
-                for (Card card : importedCards) {
-                    deck.addCard(card);
-                }
-                model.updateDeck(deck);
-                flashcardsView.renderCards(deck.getCards());
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        }
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Duplicates found");
+            alert.setContentText("Allow duplicates?");
+            ButtonType yes = new ButtonType("Yes");
+            ButtonType no = new ButtonType("No");
+            alert.getButtonTypes().setAll(yes, no);
+            boolean allowDuplicates = alert.showAndWait().orElse(no) == yes;
+
+            for (Card c : importedCards) {
+                if (!allowDuplicates && deck.getCards().stream().anyMatch(existing -> existing.getQuestion().equals(c.getQuestion()))) continue;
+                deck.addCard(c);
+            }
+            model.updateDeck(deck);
+            flashcardsView.renderCards(deck.getCards());
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void handleExportRequested(FlashcardsView flashcardsView) {
+        List<String> formats = Arrays.asList("JSON", "CSV");
+        ChoiceDialog<String> formatDialog = new ChoiceDialog<>("JSON", formats);
+        formatDialog.setTitle("Select Export Format");
+        formatDialog.showAndWait().ifPresent(format -> {
+            FileChooser fc = new FileChooser();
+            fc.setInitialFileName("export." + format.toLowerCase());
+            File file = fc.showSaveDialog(flashcardsView.getScene().getWindow());
+            if (file != null) performExport(file, format, flashcardsView);
+        });
+    }
+
+    private void performExport(File file, String format, FlashcardsView flashcardsView) {
+        var deck = model.getDecks().get(0);
+        try {
+            if (format.equals("JSON")) {
+                new com.fasterxml.jackson.databind.ObjectMapper().writeValue(file, deck.getCards());
+            } else {
+                try (PrintWriter pw = new PrintWriter(file)) {
+                    for (Card c : deck.getCards()) pw.println(c.getQuestion() + "," + c.getAnswer());
+                }
+            }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void handleAddCardRequested(FlashcardsView flashcardsView) {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
         CreateCardDialog dialog = new CreateCardDialog(owner);
         dialog.showAndWait().ifPresent(newCard -> {
-            // Dem aktuellen Deck im Modell hinzufgen
             var decks = model.getDecks();
             if (!decks.isEmpty()) {
                 var deck = decks.get(0); 
                 deck.addCard(newCard);
-                model.updateDeck(deck); // Explizit das Model triggern zum Speichern
-                
-                // View aktualisieren
+                model.updateDeck(deck);
                 flashcardsView.renderCards(deck.getCards());
             }
         });
@@ -141,19 +174,15 @@ public class MainPresenter {
     }
 
     private void handleDeckSelected(String deckName) {
-        // Dummy: Wir nehmen immer das erste Deck aus dem Modell
         var deck = model.getDecks().get(0); 
-        
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
         fView.setDeckInfo(deck.getName(), "This deck is about basic " + deck.getName().toLowerCase() + " phrases.");
         fView.renderCards(deck.getCards());
-        
         navigateTo("Flashcards", true);
     }
 
     private void navigateTo(String destination, boolean addToHistory) {
         if (destination.equals(currentViewName)) return;
-
         if (destination.equals("Flashcards")) {
             var decks = model.getDecks();
             if (!decks.isEmpty()) {
@@ -163,14 +192,12 @@ public class MainPresenter {
                 fView.renderCards(deck.getCards());
             }
         }
-
         Node targetView = views.get(destination);
         if (targetView != null) {
             if (addToHistory && currentViewName != null) {
                 backStack.push(currentViewName);
-                forwardStack.clear(); // Neue Navigation löscht den Vorwärts-Verlauf
+                forwardStack.clear();
             }
-            
             currentViewName = destination;
             view.setView(targetView);
             updateArrowStates();
