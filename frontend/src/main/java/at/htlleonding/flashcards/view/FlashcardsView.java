@@ -23,6 +23,7 @@ public class FlashcardsView extends HBox {
     private Runnable onAddCardRequested;
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
+    private Runnable onImportRequested;
 
     public FlashcardsView() {
         this.setPadding(new Insets(20));
@@ -54,11 +55,14 @@ public class FlashcardsView extends HBox {
         deckDescriptionLabel.setStyle("-fx-text-fill: #666666;");
 
         VBox buttonBox = new VBox(10);
-        buttonBox.getChildren().addAll(
-                createSidebarButton("Study"),
-                createSidebarButton("Export"),
-                createSidebarButton("Import")
-        );
+        Button studyBtn = createSidebarButton("Study");
+        Button exportBtn = createSidebarButton("Export");
+        Button importBtn = createSidebarButton("Import");
+        importBtn.setOnAction(e -> {
+            if (onImportRequested != null) onImportRequested.run();
+        });
+
+        buttonBox.getChildren().addAll(studyBtn, exportBtn, importBtn);
 
         deckInfoSidebar.getChildren().addAll(iconPlaceholder, deckTitleLabel, deckDescriptionLabel, new Region(), buttonBox);
         VBox.setVgrow(deckInfoSidebar.getChildren().get(3), Priority.ALWAYS); // Spacer
@@ -123,6 +127,10 @@ public class FlashcardsView extends HBox {
 
     public void setOnDeleteCardRequested(Consumer<Card> callback) {
         this.onDeleteCardRequested = callback;
+    }
+
+    public void setOnImportRequested(Runnable callback) {
+        this.onImportRequested = callback;
     }
 
     public void renderCards(List<Card> cards) {

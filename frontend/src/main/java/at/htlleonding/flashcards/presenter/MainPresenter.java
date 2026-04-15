@@ -3,9 +3,16 @@ package at.htlleonding.flashcards.presenter;
 import at.htlleonding.flashcards.model.*;
 import at.htlleonding.flashcards.view.*;
 import javafx.scene.Node;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -29,6 +36,7 @@ public class MainPresenter {
         flashcardsView.setOnAddCardRequested(() -> handleAddCardRequested(flashcardsView));
         flashcardsView.setOnEditCardRequested(card -> handleEditCardRequested(flashcardsView, card));
         flashcardsView.setOnDeleteCardRequested(card -> handleDeleteCardRequested(flashcardsView, card));
+        flashcardsView.setOnImportRequested(() -> handleImportRequested(flashcardsView));
 
         // Views vorab erstellen
         views.put("Home", homeView);
@@ -41,6 +49,44 @@ public class MainPresenter {
         
         // Initialer Zustand
         navigateTo("Home", false);
+    }
+
+    private void handleImportRequested(FlashcardsView flashcardsView) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Data Files", "*.json", "*.csv"));
+        File file = fileChooser.showOpenDialog(flashcardsView.getScene().getWindow());
+
+        if (file != null) {
+            var decks = model.getDecks();
+            if (decks.isEmpty()) return;
+            var deck = decks.get(0);
+            List<Card> importedCards = new ArrayList<>();
+
+            try {
+                if (file.getName().endsWith(".json")) {
+                    importedCards = new com.fasterxml.jackson.databind.ObjectMapper()
+                            .readValue(file, new com.fasterxml.jackson.core.type.TypeReference<List<Card>>() {});
+                } else if (file.getName().endsWith(".csv")) {
+                    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            String[] parts = line.split(",");
+                            if (parts.length >= 2) {
+                                importedCards.add(new Card(parts[0], parts[1]));
+                            }
+                        }
+                    }
+                }
+                
+                for (Card card : importedCards) {
+                    deck.addCard(card);
+                }
+                model.updateDeck(deck);
+                flashcardsView.renderCards(deck.getCards());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void handleAddCardRequested(FlashcardsView flashcardsView) {
