@@ -1,4 +1,7 @@
 = Chats - Lorenz Parzer
+:icons: font
+:toc: left
+
 
 == Session 1
 Erstelle mir ein schmale horizontale Navbar. Im Zentrum ist eine abgerundete Suchleiste mit einer Leselupe icon eingenommen. Die Suchleiste enthält den Platzhalter "Search". Der code sollte in einer neuen Datei               
@@ -27,4 +30,28 @@ du kannst ruhig die buttons noch ein stück größer machen damit der Text in
    einer angemessenen größe ist 
 
 kannst du das mit dem abgerundeten wieder aus der mainview löschen und es so 
-   machen wie vorher     
+   machen wie vorher
+
+
+== Session 3 (2026 04-15)
+
+=== User Story: Import Export Cards #8
+
+Frage: Lies dir agents.adoc durch und befolge die darin stehenden Anweisungen. Mache dir einen Überblick über das gesamte Projekt
+
+
+Frage: Hast du die CardImportExport.md gelesen. ich will das heute machen. bevor du beginnst will ich dass du mir fragen zur implmentierung stellst.
+
+Anfrage: 1. Format-Präferenz: In CardImportExport.md steht "JSON or CSV". In fsd.adoc steht "ausschließlich JSON". Sollen wir den Export für beide Formate bauen, oder bleiben wir bei dem professionelleren JSON, das auch Medien
+(Bilder/Audio) sauber verpacken kann (CSV ist mit Base64-Bildern extrem unübersichtlich)?
+Antwort: Mache es für json als auch für csv.
+
+Anfrage:  2. Dateiendung: Sollen wir die Dateien einfach als .json bzw. .csv exportieren, oder sollen wir eine eigene Endung wie .fdeck (Flashcard Deck) nutzen, um die Dateien der App zuzuordnen?
+Antwort: Nein bitte in .json und .csv exportieren
+
+Frage: Erstelle JUnit 5 Tests für die Persistence.java Klasse. Teste besonders, ob der CSV-Export auch dann funktioniert, wenn die Karten-Texte Kommas oder Anführungszeichen enthalten.
+
+=== Besprochene Themen
+* Implementierung der Export-Funktionalität (JSON & CSV)
+* Refactoring des Persistence-Layers (Persistence.java)
+* Erstellung von Unit-Tests für CSV-Sonderzeichen-Handling
