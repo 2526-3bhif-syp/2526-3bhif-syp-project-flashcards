@@ -94,7 +94,30 @@ public class FlashcardsView extends HBox {
     private Button createSidebarButton(String text) {
         Button btn = new Button(text);
         btn.setMaxWidth(Double.MAX_VALUE);
-        btn.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 5;");
+        
+        String defaultStyle = "-fx-background-color: #2196F3; -fx-border-color: #1976D2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;";
+        String hoverStyle = "-fx-background-color: #1565C0; -fx-border-color: #0D47A1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);";
+        
+        btn.setStyle(defaultStyle);
+
+        javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(200), btn);
+        scaleTransition.setFromX(1.0);
+        scaleTransition.setFromY(1.0);
+        scaleTransition.setToX(1.05);
+        scaleTransition.setToY(1.05);
+
+        btn.setOnMouseEntered(e -> {
+            btn.setStyle(hoverStyle);
+            scaleTransition.setRate(1.0);
+            scaleTransition.play();
+        });
+
+        btn.setOnMouseExited(e -> {
+            btn.setStyle(defaultStyle);
+            scaleTransition.setRate(-1.0);
+            scaleTransition.play();
+        });
+
         return btn;
     }
 

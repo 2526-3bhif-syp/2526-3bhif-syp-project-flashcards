@@ -5,7 +5,6 @@ import at.htlleonding.flashcards.view.*;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -35,25 +34,19 @@ public class MainPresenter {
         flashcardsView.setOnImportRequested(() -> handleImportRequested(flashcardsView));
         flashcardsView.setOnExportRequested(() -> handleExportRequested(flashcardsView));
 
-        // Views vorab erstellen
         views.put("Home", homeView);
         views.put("Flashcards", flashcardsView);
         views.put("Statistic", new StatisticView());
         views.put("Settings", new SettingsView());
 
-        // Navigation in der Sidebar registrieren
         view.getSidebar().setOnNavigationAction(this::handleNavigation);
         
-        // Initialer Zustand
         navigateTo("Home", false);
     }
 
     private void handleImportRequested(FlashcardsView flashcardsView) {
-        List<String> formats = Arrays.asList("JSON", "CSV");
-        ChoiceDialog<String> formatDialog = new ChoiceDialog<>("JSON", formats);
-        formatDialog.setTitle("Select Import Format");
-        formatDialog.setHeaderText("Choose format:");
-        formatDialog.showAndWait().ifPresent(format -> {
+        ImportFormatDialog dialog = new ImportFormatDialog((Stage) flashcardsView.getScene().getWindow(), "Import");
+        dialog.showAndWait().ifPresent(format -> {
             FileChooser fc = new FileChooser();
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(format + " files", "*." + format.toLowerCase()));
             File file = fc.showOpenDialog(flashcardsView.getScene().getWindow());
@@ -101,10 +94,8 @@ public class MainPresenter {
     }
 
     private void handleExportRequested(FlashcardsView flashcardsView) {
-        List<String> formats = Arrays.asList("JSON", "CSV");
-        ChoiceDialog<String> formatDialog = new ChoiceDialog<>("JSON", formats);
-        formatDialog.setTitle("Select Export Format");
-        formatDialog.showAndWait().ifPresent(format -> {
+        ImportFormatDialog dialog = new ImportFormatDialog((Stage) flashcardsView.getScene().getWindow(), "Export");
+        dialog.showAndWait().ifPresent(format -> {
             FileChooser fc = new FileChooser();
             fc.setInitialFileName("export." + format.toLowerCase());
             File file = fc.showSaveDialog(flashcardsView.getScene().getWindow());
