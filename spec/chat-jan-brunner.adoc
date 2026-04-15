@@ -62,3 +62,59 @@ Fragen an dich:
   * Jetzt implementiere das mit den Pfeilen. Das ich wieder zurück gehen kann oder nach vorne. Die Pfeile sollen nur auswählbar sein, wenn es möglich ist.
 
   * Die Tooltips bei den arrow icons sind ein wenig komisch. Sie bleiben bestehen, auch wenn ich mit der Maus weggehe.
+== Session 2
+
+* *Frage:* Werden Bilder/Audio als Dateien lokal gespeichert oder über eine URL referenziert?
+  *Antwort:* Relative Pfade für Bilder.
+
+* *Frage:* Soll es verschiedene Lern-Algorithmen geben?
+  *Antwort:* Derzeit noch keine Angaben, kommt erst später.
+
+* *Frage:* Welche Metriken sollen in den Statistiken erfasst werden?
+  *Antwort:* Derzeit noch unwichtig für uns.
+
+* *Frage:* Welche Dateiformate werden für Import/Export benötigt?
+  *Antwort:* JSON und CSV werden priorisiert.
+
+* *Frage:* Ist die Zielplattform definitiv Desktop?
+  *Antwort:* Ja, es ist eine Desktop-App.
+
+* *Frage:* Ist die Persistenzschicht definiert?
+  *Antwort:* Speicherung mit JSON-Files.
+
+* *Frage:* Gibt es ein spezifisches Design-System?
+  *Antwort:* Halte dich an das Styling im Frontend (existierende Struktur).
+
+* *Anfrage:* Nein, Dort schreibst du rein == Session 2 und dann halt meine Antworten auf deine Fragen falls du welche hast
+  *Antwort:* Ich habe den Abschnitt "Session 2" erstellt und werde dort nun alle weiteren Interaktionen und Antworten strukturieren.
+
+* *Anfrage:* Nein alles lassen und einfach mit der neuen überschrift Session 2 beginnen
+  *Antwort:* Verstanden, ich bewahre den bisherigen Inhalt vollständig und füge die neue Sektion an.
+
+* *Anfrage:* Nur überschrift und dann darunter deine Fragen mit meinen Antworten die ich dir im chat hier beantworte
+  *Antwort:* Ich werde die Fragen und deine Antworten in der neuen Sektion unter der Überschrift "Session 2" übersichtlich auflisten.
+
+* *Anfrage:* Nein nicht löschen einfach Überschrift Session 2 adden
+  *Antwort:* Ich habe die Überschrift hinzugefügt, ohne bestehende Inhalte zu verändern.
+
+* *Anfrage:* Relative Pfade für Bilder. ... (Antworten auf fachliche/technische Fragen)
+  *Antwort:* Danke für die Klärung. Ich werde diese Vorgaben bei der Implementierung konsequent berücksichtigen.
+
+* *Anfrage:* Nein wir machen jetzt die Import funktion. Hier kann ich Flashcards importen (JSON oder CSV). Sie werden dann dem Deck wo ich drinnen bin hinzugefügt
+  *Antwort:* Ich habe die Import-Funktion für JSON und CSV implementiert und in den Presenter integriert.
+
+* *Anfrage:* gib mir mal eine Beispiel JSON zum Testen.
+  *Antwort:* Hier ist das gewünschte Beispiel-JSON:
+[
+  {
+    "question": "Was ist das Java-Framework für die GUI?",
+    "answer": "JavaFX"
+  },
+  {
+    "question": "Was ist das Build-Tool für das Projekt?",
+    "answer": "Maven"
+  }
+]
+
+* *Anfrage:* jetzt nimm einfach alle die ich dir diese Session lang geschickt habe
+  *Antwort:* Ich habe alle Anfragen dieser Session mit den entsprechenden Antworten für den Kontext in das Dokument aufgenommen.
