@@ -118,3 +118,17 @@ Fragen an dich:
 
 * *Anfrage:* jetzt nimm einfach alle die ich dir diese Session lang geschickt habe
   *Antwort:* Ich habe alle Anfragen dieser Session mit den entsprechenden Antworten für den Kontext in das Dokument aufgenommen.
+
+* *Anfrage:* while exporting and importing, no data should get lost
+when importing the user should have the choice to allow duplicates or not
+There should be one button for import and one for export. After clicking you can choose the format
+  *Antwort:* Ich habe die Import- und Export-Buttons in der UI getrennt, Dialoge zur Formatwahl (JSON/CSV) hinzugefügt und eine Duplikatsprüfung bei der Import-Logik integriert, um Datenverlust zu vermeiden.
+
+* *Anfrage:* error im code fixe es
+  *Antwort:* Ich habe den  bereinigt und die fehlerhafte, doppelte Implementierung entfernt, um den stabilen Betrieb zu gewährleisten.
+
+* *Anfrage:* while exporting and importing, no data should get lost when importing the user should have the choice to allow duplicates or not. There should be one button for import and one for export. After clicking you can choose the format.
+  *Antwort:* Ich habe die Import- und Export-Buttons in der UI getrennt, Dialoge zur Formatwahl (JSON/CSV) hinzugefügt und eine Duplikatsprüfung bei der Import-Logik integriert.
+
+* *Anfrage:* error im code fixe es
+  *Antwort:* Ich habe den MainPresenter bereinigt und die fehlerhafte, doppelte Implementierung entfernt.
