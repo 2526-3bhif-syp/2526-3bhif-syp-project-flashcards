@@ -8,18 +8,19 @@ import java.util.List;
 
 public class Model {
     private List<Deck> decks = new ArrayList<>();
-    private static final String FILE_PATH = "decks.json";
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final Persistence persistence;
 
     public Model() {
-        load();
+        this.persistence = new Persistence();
+        this.decks = persistence.loadDecks();
+        
         if (decks.isEmpty()) {
             // Initial Dummy Data if no file exists
             Deck dummyDeck = new Deck("English");
             dummyDeck.addCard(new Card("Was ist Apfel auf Englisch?", "Apple"));
             dummyDeck.addCard(new Card("Was ist Hund auf Englisch?", "Dog"));
             decks.add(dummyDeck);
-            save();
+            persistence.saveDecks(decks);
         }
     }
 
@@ -31,29 +32,14 @@ public class Model {
         for (int i = 0; i < decks.size(); i++) {
             if (decks.get(i).getName().equals(updatedDeck.getName())) {
                 decks.set(i, updatedDeck);
-                save(); // Hier speichern
+                persistence.saveDecks(decks);
                 return;
             }
         }
     }
 
-    private void save() {
-        try {
-            mapper.writeValue(new File(FILE_PATH), decks);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void load() {
-        File file = new File(FILE_PATH);
-        if (file.exists()) {
-            try {
-                decks = mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, Deck.class));
-            } catch (IOException e) {
-                e.printStackTrace();
-                decks = new ArrayList<>();
-            }
-        }
+    public Persistence getPersistence() {
+        return persistence;
     }
 }
+
