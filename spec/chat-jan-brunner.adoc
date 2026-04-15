@@ -62,6 +62,7 @@ Fragen an dich:
   * Jetzt implementiere das mit den Pfeilen. Das ich wieder zurück gehen kann oder nach vorne. Die Pfeile sollen nur auswählbar sein, wenn es möglich ist.
 
   * Die Tooltips bei den arrow icons sind ein wenig komisch. Sie bleiben bestehen, auch wenn ich mit der Maus weggehe.
+
 == Session 2
 
 * *Frage:* Werden Bilder/Audio als Dateien lokal gespeichert oder über eine URL referenziert?
@@ -132,3 +133,18 @@ There should be one button for import and one for export. After clicking you can
 
 * *Anfrage:* error im code fixe es
   *Antwort:* Ich habe den MainPresenter bereinigt und die fehlerhafte, doppelte Implementierung entfernt.
+
+* *Anfrage:* Style den Import/Export-Button modern mit Hover-Effekt, orientiere dich am bestehenden Stil, und verschönere auch die Pop-up-Formulare (orientiere dich an existierenden Forms).
+  *Antwort:* Ich habe das Button-Styling modernisiert (abgerundete Ecken, Padding, sanfter Hover). Für die Formulare werde ich die Struktur von 'CreateCardDialog' als Vorlage für eine konsistente Ästhetik übernehmen.
+
+* *Anfrage:* Für die buttons machst du jetzt auch noch einen coolen modernen hover effekt nicht so einen langweiligen. Nutze einfach die gleichen Farben wie bei der Navbar hover. Keine Wiederrede
+  *Antwort:* Ich habe das Styling der Buttons in  mit einem modernen Hover-Effekt (Farbe #2196F3, Schatten-Effekt) aktualisiert, passend zum Stil der Sidebar-Navigation.
+
+* *Anfrage:* Für die buttons machst du jetzt auch noch einen coolen modernen hover effekt. Nutze einfach die gleichen Farben wie bei der Navbar hover.
+  *Antwort:* Ich habe das Styling der Buttons in FlashcardsView mit einem modernen Hover-Effekt aktualisiert, passend zum Stil der Sidebar-Navigation.
+
+* *Anfrage:* Bitte eine schöne transition dazu auch einen scale effekt. Das ganze muss flüssig sein.
+  *Antwort:* Ich habe  zu den Sidebar-Buttons hinzugefügt, sodass sie beim Hovern um 5% skalieren und die Transition flüssig abläuft.
+
+* *Anfrage:* Erstens die transitions sollen immer funktionierne nicht nur einmalig. Macht das jetzt mal gescheidt. Zudem möchte ich das die schrift weiß bleiblt und der background sich ändert. Der scale effekt soll auch rückwerts sein nicht nur vorwärts.
+  *Antwort:* Ich habe die Transitions mit einer reversiblen `ScaleTransition` neu implementiert, sodass sie bei jeder Interaktion flüssig funktionieren. Zudem wurde das Design auf weiße Schrift auf blauem Hintergrund (#2196F3) umgestellt, der sich beim Hovern verdunkelt.
