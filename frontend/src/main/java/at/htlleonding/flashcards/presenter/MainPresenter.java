@@ -76,16 +76,15 @@ public class MainPresenter {
                 }
             }
 
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Duplicates found");
-            alert.setContentText("Allow duplicates?");
-            ButtonType yes = new ButtonType("Yes");
-            ButtonType no = new ButtonType("No");
-            alert.getButtonTypes().setAll(yes, no);
-            boolean allowDuplicates = alert.showAndWait().orElse(no) == yes;
+            DuplicateActionDialog duplicateDialog = new DuplicateActionDialog((Stage) flashcardsView.getScene().getWindow());
+            DuplicateActionDialog.Action action = duplicateDialog.showAndWait().orElse(DuplicateActionDialog.Action.CANCEL);
+            
+            if (action == DuplicateActionDialog.Action.CANCEL) return;
+            
+            boolean allowDuplicates = (action == DuplicateActionDialog.Action.ALLOW_ALL);
 
             for (Card c : importedCards) {
-                if (!allowDuplicates && deck.getCards().stream().anyMatch(existing -> existing.getQuestion().equals(c.getQuestion()))) continue;
+                if (!allowDuplicates && deck.getCards().stream().anyMatch(existing -> existing.getQuestion().equalsIgnoreCase(c.getQuestion().trim()))) continue;
                 deck.addCard(c);
             }
             model.updateDeck(deck);

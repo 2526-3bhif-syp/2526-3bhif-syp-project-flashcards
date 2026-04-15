@@ -35,6 +35,8 @@ public class ImportFormatDialog {
 
         Button jsonBtn = createStyledButton("JSON");
         Button csvBtn = createStyledButton("CSV");
+        Button cancelBtn = createStyledButton("Cancel");
+        cancelBtn.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #cccccc; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: #666666;");
 
         jsonBtn.setOnAction(e -> {
             selectedFormat = "JSON";
@@ -44,8 +46,12 @@ public class ImportFormatDialog {
             selectedFormat = "CSV";
             stage.close();
         });
+        cancelBtn.setOnAction(e -> {
+            selectedFormat = null;
+            stage.close();
+        });
 
-        formatButtons.getChildren().addAll(jsonBtn, csvBtn);
+        formatButtons.getChildren().addAll(jsonBtn, csvBtn, cancelBtn);
         root.getChildren().addAll(label, formatButtons);
 
         Scene scene = new Scene(root);
