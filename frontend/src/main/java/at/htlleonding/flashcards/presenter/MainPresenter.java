@@ -60,20 +60,11 @@ public class MainPresenter {
         var deck = decks.get(0);
 
         try {
-            List<Card> importedCards = new ArrayList<>();
-            if (format.equals("JSON")) {
-                importedCards = new com.fasterxml.jackson.databind.ObjectMapper()
-                        .readValue(file, new com.fasterxml.jackson.core.type.TypeReference<List<Card>>() {});
+            Deck importedDeck;
+            if ("JSON".equalsIgnoreCase(format)) {
+                importedDeck = model.getPersistence().importFromJSON(file);
             } else {
-                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        String[] parts = line.split(",");
-                        if (parts.length >= 2) {
-                            importedCards.add(new Card(parts[0], parts[1]));
-                        }
-                    }
-                }
+                importedDeck = model.getPersistence().importFromCSV(file);
             }
 
             DuplicateActionDialog duplicateDialog = new DuplicateActionDialog((Stage) flashcardsView.getScene().getWindow());
@@ -83,13 +74,17 @@ public class MainPresenter {
             
             boolean allowDuplicates = (action == DuplicateActionDialog.Action.ALLOW_ALL);
 
-            for (Card c : importedCards) {
-                if (!allowDuplicates && deck.getCards().stream().anyMatch(existing -> existing.getQuestion().equalsIgnoreCase(c.getQuestion().trim()))) continue;
+            for (Card c : importedDeck.getCards()) {
+                if (!allowDuplicates && deck.getCards().stream().anyMatch(existing -> 
+                    existing.getQuestion().equalsIgnoreCase(c.getQuestion().trim()))) continue;
                 deck.addCard(c);
             }
             model.updateDeck(deck);
             flashcardsView.renderCards(deck.getCards());
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Fehler beim Importieren: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     private void handleExportRequested(FlashcardsView flashcardsView) {
@@ -97,22 +92,27 @@ public class MainPresenter {
         dialog.showAndWait().ifPresent(format -> {
             FileChooser fc = new FileChooser();
             fc.setInitialFileName("export." + format.toLowerCase());
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(format + " files", "*." + format.toLowerCase()));
             File file = fc.showSaveDialog(flashcardsView.getScene().getWindow());
-            if (file != null) performExport(file, format, flashcardsView);
+            if (file != null) performExport(file, format);
         });
     }
 
-    private void performExport(File file, String format, FlashcardsView flashcardsView) {
-        var deck = model.getDecks().get(0);
+    private void performExport(File file, String format) {
+        var decks = model.getDecks();
+        if (decks.isEmpty()) return;
+        var deck = decks.get(0); // Exporting the first deck as a placeholder for now
+
         try {
-            if (format.equals("JSON")) {
-                new com.fasterxml.jackson.databind.ObjectMapper().writeValue(file, deck.getCards());
-            } else {
-                try (PrintWriter pw = new PrintWriter(file)) {
-                    for (Card c : deck.getCards()) pw.println(c.getQuestion() + "," + c.getAnswer());
-                }
+            if ("JSON".equalsIgnoreCase(format)) {
+                model.getPersistence().exportToJSON(deck, file);
+            } else if ("CSV".equalsIgnoreCase(format)) {
+                model.getPersistence().exportToCSV(deck, file);
             }
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Fehler beim Exportieren: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     private void handleAddCardRequested(FlashcardsView flashcardsView) {
