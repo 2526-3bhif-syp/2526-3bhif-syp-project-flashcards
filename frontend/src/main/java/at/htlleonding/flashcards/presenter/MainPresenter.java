@@ -67,21 +67,64 @@ public class MainPresenter {
                 importedDeck = model.getPersistence().importFromCSV(file);
             }
 
-            DuplicateActionDialog duplicateDialog = new DuplicateActionDialog((Stage) flashcardsView.getScene().getWindow());
-            DuplicateActionDialog.Action action = duplicateDialog.showAndWait().orElse(DuplicateActionDialog.Action.CANCEL);
+            if (importedDeck == null || importedDeck.getCards().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "No cards found in the imported file.");
+                alert.showAndWait();
+                return;
+            }
+
+            // Clean imported cards: remove those with null/empty question or answer
+            List<Card> validImportedCards = importedDeck.getCards().stream()
+                .filter(c -> c != null && 
+                             c.getQuestion() != null && !c.getQuestion().isBlank() &&
+                             c.getAnswer() != null && !c.getAnswer().isBlank())
+                .toList();
+
+            if (validImportedCards.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Import failed: No valid cards (missing question or answer) found.");
+                alert.showAndWait();
+                return;
+            }
+
+            // Check if duplicates exist
+            boolean hasDuplicates = validImportedCards.stream().anyMatch(importedCard -> 
+                deck.getCards().stream().anyMatch(existing -> 
+                    existing.getQuestion() != null && 
+                    existing.getQuestion().trim().equalsIgnoreCase(importedCard.getQuestion().trim())
+                )
+            );
+
+            DuplicateActionDialog.Action action = DuplicateActionDialog.Action.ALLOW_ALL;
+            if (hasDuplicates) {
+                DuplicateActionDialog duplicateDialog = new DuplicateActionDialog((Stage) flashcardsView.getScene().getWindow());
+                action = duplicateDialog.showAndWait().orElse(DuplicateActionDialog.Action.CANCEL);
+            }
             
             if (action == DuplicateActionDialog.Action.CANCEL) return;
             
             boolean allowDuplicates = (action == DuplicateActionDialog.Action.ALLOW_ALL);
+            int importedCount = 0;
 
-            for (Card c : importedDeck.getCards()) {
-                if (!allowDuplicates && deck.getCards().stream().anyMatch(existing -> 
-                    existing.getQuestion().equalsIgnoreCase(c.getQuestion().trim()))) continue;
+            for (Card c : validImportedCards) {
+                boolean isDuplicate = deck.getCards().stream().anyMatch(existing -> 
+                    existing.getQuestion() != null && 
+                    existing.getQuestion().trim().equalsIgnoreCase(c.getQuestion().trim())
+                );
+
+                if (!allowDuplicates && isDuplicate) continue;
+                
                 deck.addCard(c);
+                importedCount++;
             }
+            
             model.updateDeck(deck);
             flashcardsView.renderCards(deck.getCards());
+            
+            Alert success = new Alert(Alert.AlertType.INFORMATION, importedCount + " cards successfully imported.");
+            success.showAndWait();
+            
         } catch (Exception e) {
+            e.printStackTrace(); // For debugging in console
             Alert alert = new Alert(Alert.AlertType.ERROR, "Fehler beim Importieren: " + e.getMessage());
             alert.showAndWait();
         }
