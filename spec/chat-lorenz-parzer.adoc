@@ -55,3 +55,14 @@ Frage: Erstelle JUnit 5 Tests für die Persistence.java Klasse. Teste besonders,
 * Implementierung der Export-Funktionalität (JSON & CSV)
 * Refactoring des Persistence-Layers (Persistence.java)
 * Erstellung von Unit-Tests für CSV-Sonderzeichen-Handling
+
+
+
+== Session 4 (2026 04-16)
+
+Frage: Lies dir spec files durch und mache dir einen Überblick über das Projekt. Achte besonders auf Import Export
+
+Frage: Beim Import taucht ein Fehler auf. analysiere ihn und fixe ihn
+
+=== Besprochene Themen
+* Fehleranalyse, Robustheit im Import
