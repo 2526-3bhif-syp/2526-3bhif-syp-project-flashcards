@@ -274,6 +274,20 @@ public class MainPresenter {
     private void navigateTo(String destination, boolean addToHistory) {
         if (destination.equals(currentViewName)) return;
 
+        if (destination.equals("Home")) {
+            refreshHomeView();
+        } else if (destination.equals("Flashcards")) {
+            FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
+            if (fView.getDeckTitle().isEmpty()) {
+                List<Deck> decks = model.getDecks();
+                if (!decks.isEmpty()) {
+                    Deck first = decks.get(0);
+                    fView.setDeckInfo(first.getName(), first.getDescription() != null ? first.getDescription() : "", first.getIconId());
+                    fView.renderCards(first.getCards());
+                }
+            }
+        }
+
         Node targetView = views.get(destination);
         if (targetView != null) {
             if (addToHistory && currentViewName != null) {
