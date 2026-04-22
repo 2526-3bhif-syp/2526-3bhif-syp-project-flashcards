@@ -5,9 +5,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 
 import java.util.List;
@@ -66,9 +66,7 @@ public class HomeView extends VBox {
 
     public void renderDecks(List<Deck> decks) {
         deckGrid.getChildren().clear();
-
         addPlusTile();
-
         for (Deck deck : decks) {
             addDeckTile(deck);
         }
@@ -77,43 +75,54 @@ public class HomeView extends VBox {
     // ── tile builders ──────────────────────────────────────────────────────
 
     private void addPlusTile() {
-        VBox tile = new VBox();
+        StackPane tile = new StackPane();
         tile.setPrefSize(150, 200);
-        tile.setAlignment(Pos.CENTER);
-        tile.setStyle("-fx-background-color: white; " +
-                     "-fx-border-color: #cccccc; " +
-                     "-fx-border-radius: 15; " +
-                     "-fx-background-radius: 15; " +
-                     "-fx-cursor: hand;");
+        tile.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1; " +
+                      "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;");
 
         Label plusLabel = new Label("+");
         plusLabel.setStyle("-fx-font-size: 60px; -fx-text-fill: #999999;");
 
         tile.getChildren().add(plusLabel);
         tile.setOnMouseClicked(e -> {
-            if (onCreateDeckRequested != null) {
-                onCreateDeckRequested.run();
-            }
+            if (onCreateDeckRequested != null) onCreateDeckRequested.run();
         });
 
         deckGrid.getChildren().add(tile);
     }
 
     private void addDeckTile(Deck deck) {
-        VBox tile = new VBox();
+        StackPane tile = new StackPane();
         tile.setPrefSize(150, 200);
-        tile.setPadding(new Insets(5));
-        tile.setAlignment(Pos.TOP_CENTER);
-        tile.setSpacing(10);
-        tile.setStyle("-fx-background-color: white; " +
-                     "-fx-border-color: #cccccc; " +
-                     "-fx-border-radius: 15; " +
-                     "-fx-background-radius: 15; " +
-                     "-fx-cursor: hand;");
+        tile.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1; " +
+                      "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;");
 
-        // Action buttons at the top
-        HBox topBox = new HBox();
-        topBox.setAlignment(Pos.TOP_CENTER);
+        // ── Centered content (icon + name) ─────────────────────────────────
+        VBox content = new VBox(10);
+        content.setAlignment(Pos.CENTER);
+
+        Image iconImage = IconManager.getIcon(deck.getIconId());
+        ImageView iconView = new ImageView(iconImage);
+        iconView.setFitWidth(80);
+        iconView.setFitHeight(80);
+        iconView.setPreserveRatio(true);
+
+        Label deckLabel = new Label(deck.getName() != null ? deck.getName() : "");
+        deckLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
+        deckLabel.setWrapText(true);
+        deckLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        deckLabel.setMaxWidth(130);
+
+        content.getChildren().addAll(iconView, deckLabel);
+
+        // ── Overlay row for edit / delete buttons ───────────────────────────
+        HBox topRow = new HBox();
+        topRow.setPadding(new Insets(8));
+        topRow.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        // pickOnBounds=false means transparent areas in topRow don't swallow
+        // mouse events intended for the tile click handler
+        topRow.setPickOnBounds(false);
+        StackPane.setAlignment(topRow, Pos.TOP_LEFT);
 
         Button editBtn = new Button("✎");
         editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
@@ -121,9 +130,7 @@ public class HomeView extends VBox {
         editBtn.setOnMouseExited(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
         editBtn.setOnAction(e -> {
             e.consume();
-            if (onEditDeckRequested != null) {
-                onEditDeckRequested.accept(deck);
-            }
+            if (onEditDeckRequested != null) onEditDeckRequested.accept(deck);
         });
 
         Region spacer = new Region();
@@ -135,37 +142,15 @@ public class HomeView extends VBox {
         deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
         deleteBtn.setOnAction(e -> {
             e.consume();
-            if (onDeleteDeckRequested != null) {
-                onDeleteDeckRequested.accept(deck);
-            }
+            if (onDeleteDeckRequested != null) onDeleteDeckRequested.accept(deck);
         });
 
-        topBox.getChildren().addAll(editBtn, spacer, deleteBtn);
+        topRow.getChildren().addAll(editBtn, spacer, deleteBtn);
 
-        // Icon
-        Image iconImage = IconManager.getIcon(deck.getIconId());
-        ImageView iconView = new ImageView(iconImage);
-        iconView.setFitWidth(100);
-        iconView.setFitHeight(100);
-        iconView.setPreserveRatio(true);
-
-        VBox iconContainer = new VBox();
-        iconContainer.setAlignment(Pos.CENTER);
-        iconContainer.setMinWidth(100);
-        iconContainer.setMinHeight(100);
-        iconContainer.getChildren().add(iconView);
-
-        Label deckLabel = new Label(deck.getName());
-        deckLabel.setStyle("-fx-font-weight: bold;");
-        deckLabel.setWrapText(true);
-        deckLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-
-        tile.getChildren().addAll(topBox, iconContainer, deckLabel);
+        tile.getChildren().addAll(content, topRow);
 
         tile.setOnMouseClicked(e -> {
-            if (onDeckSelected != null) {
-                onDeckSelected.accept(deck);
-            }
+            if (onDeckSelected != null) onDeckSelected.accept(deck);
         });
 
         deckGrid.getChildren().add(tile);

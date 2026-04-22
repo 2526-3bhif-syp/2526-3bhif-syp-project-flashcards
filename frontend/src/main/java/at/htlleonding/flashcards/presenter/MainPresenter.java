@@ -277,14 +277,12 @@ public class MainPresenter {
         if (destination.equals("Home")) {
             refreshHomeView();
         } else if (destination.equals("Flashcards")) {
+            // Sidebar navigation = general view: no deck info, show all available cards
             FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
-            if (fView.getDeckTitle().isEmpty()) {
-                List<Deck> decks = model.getDecks();
-                if (!decks.isEmpty()) {
-                    Deck first = decks.get(0);
-                    fView.setDeckInfo(first.getName(), first.getDescription() != null ? first.getDescription() : "", first.getIconId());
-                    fView.renderCards(first.getCards());
-                }
+            fView.clearDeckInfo();
+            List<Deck> decks = model.getDecks();
+            if (!decks.isEmpty()) {
+                fView.renderCards(decks.get(0).getCards());
             }
         }
 

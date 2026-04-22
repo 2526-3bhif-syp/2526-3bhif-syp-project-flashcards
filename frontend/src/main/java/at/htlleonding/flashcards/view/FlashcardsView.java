@@ -26,10 +26,11 @@ public class FlashcardsView extends HBox {
     // ── ui references ──────────────────────────────────────────────────────
     private FlowPane cardsGrid;
     private VBox detailPanel;
+    private VBox contentArea;      // card detail / placeholder inside detailPanel
+    private HBox deckInfoRow;      // deck icon + name at top of detailPanel (top right)
     private Button selectToggleBtn;
     private Button exportSelectedBtn;
     private Label deckTitleLabel;
-    private Label deckDescriptionLabel;
     private ImageView iconView;
 
     // ── callbacks ──────────────────────────────────────────────────────────
@@ -55,28 +56,6 @@ public class FlashcardsView extends HBox {
     // ── layout builders ────────────────────────────────────────────────────
 
     private VBox buildLeftSide() {
-        // Deck info header
-        deckTitleLabel = new Label("");
-        deckTitleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-
-        deckDescriptionLabel = new Label("");
-        deckDescriptionLabel.setStyle("-fx-text-fill: #666666; -fx-font-size: 13px;");
-        deckDescriptionLabel.setWrapText(true);
-
-        Image defaultIcon = IconManager.getIcon("default");
-        iconView = new ImageView(defaultIcon);
-        iconView.setFitWidth(36);
-        iconView.setFitHeight(36);
-        iconView.setPreserveRatio(true);
-
-        VBox titleBox = new VBox(2, deckTitleLabel, deckDescriptionLabel);
-        titleBox.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(titleBox, Priority.ALWAYS);
-
-        HBox deckHeader = new HBox(10, iconView, titleBox);
-        deckHeader.setAlignment(Pos.CENTER_LEFT);
-
-        // Action bar
         HBox actionBar = new HBox(10);
         actionBar.setAlignment(Pos.CENTER_LEFT);
 
@@ -113,8 +92,7 @@ public class FlashcardsView extends HBox {
 
         addPlusCard();
 
-        VBox left = new VBox(10, deckHeader, actionBar, scrollPane);
-        return left;
+        return new VBox(10, actionBar, scrollPane);
     }
 
     private VBox buildDetailPanel() {
@@ -123,7 +101,65 @@ public class FlashcardsView extends HBox {
         panel.setMinWidth(230);
         panel.setPadding(new Insets(16));
         panel.setSpacing(0);
-        panel.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; -fx-border-radius: 12; -fx-background-radius: 12;");
+        panel.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; " +
+                       "-fx-border-radius: 12; -fx-background-radius: 12;");
+
+        // ── Deck info row (top right, hidden until a deck is selected) ─────
+        deckTitleLabel = new Label("");
+        deckTitleLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+        deckTitleLabel.setWrapText(true);
+
+        Image defaultIcon = IconManager.getIcon("default");
+        iconView = new ImageView(defaultIcon);
+        iconView.setFitWidth(28);
+        iconView.setFitHeight(28);
+        iconView.setPreserveRatio(true);
+
+        deckInfoRow = new HBox(8, iconView, deckTitleLabel);
+        deckInfoRow.setAlignment(Pos.CENTER_LEFT);
+        deckInfoRow.setVisible(false);
+        deckInfoRow.setManaged(false);
+
+        Separator separator = new Separator();
+        separator.setPadding(new Insets(6, 0, 6, 0));
+        separator.visibleProperty().bind(deckInfoRow.visibleProperty());
+        separator.managedProperty().bind(deckInfoRow.managedProperty());
+
+        // ── Content area (grows, holds card detail or placeholder) ─────────
+        contentArea = new VBox();
+        VBox.setVgrow(contentArea, Priority.ALWAYS);
+        showPlaceholder();
+
+        panel.getChildren().addAll(deckInfoRow, separator, contentArea);
+        return panel;
+    }
+
+    // ── deck info (top right) ──────────────────────────────────────────────
+
+    public String getDeckTitle() {
+        return deckTitleLabel.getText();
+    }
+
+    public void setDeckInfo(String title, String description, String iconId) {
+        deckTitleLabel.setText(title != null ? title : "");
+        Image iconImage = IconManager.getIcon(iconId);
+        if (iconImage != null) iconView.setImage(iconImage);
+        deckInfoRow.setVisible(true);
+        deckInfoRow.setManaged(true);
+    }
+
+    public void clearDeckInfo() {
+        deckInfoRow.setVisible(false);
+        deckInfoRow.setManaged(false);
+        deckTitleLabel.setText("");
+        selectedDetailCard = null;
+        showPlaceholder();
+    }
+
+    // ── detail panel content ───────────────────────────────────────────────
+
+    private void showPlaceholder() {
+        contentArea.getChildren().clear();
 
         Label placeholder = new Label("Select a card\nto see details");
         placeholder.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 14px;");
@@ -133,14 +169,13 @@ public class FlashcardsView extends HBox {
         placeholder.setTextAlignment(TextAlignment.CENTER);
         VBox.setVgrow(placeholder, Priority.ALWAYS);
 
-        panel.getChildren().add(placeholder);
-        return panel;
+        contentArea.getChildren().add(placeholder);
     }
 
     private void showCardDetail(Card card) {
         selectedDetailCard = card;
-        detailPanel.getChildren().clear();
-        detailPanel.setSpacing(10);
+        contentArea.getChildren().clear();
+        contentArea.setSpacing(10);
 
         // ── Question box ──────────────────────────────────────────────────
         VBox questionBox = new VBox(6);
@@ -170,7 +205,7 @@ public class FlashcardsView extends HBox {
 
         answerBox.getChildren().addAll(aHeader, aText);
 
-        detailPanel.getChildren().addAll(questionBox, answerBox);
+        contentArea.getChildren().addAll(questionBox, answerBox);
 
         // ── Tags ──────────────────────────────────────────────────────────
         if (card.getTags() != null && !card.getTags().isEmpty()) {
@@ -182,13 +217,13 @@ public class FlashcardsView extends HBox {
                 chip.setStyle("-fx-background-color: #EEEEEE; -fx-border-color: #BDBDBD; -fx-border-radius: 12; -fx-background-radius: 12; -fx-font-size: 11px; -fx-text-fill: #555555;");
                 tagsPane.getChildren().add(chip);
             }
-            detailPanel.getChildren().add(tagsPane);
+            contentArea.getChildren().add(tagsPane);
         }
 
         // ── Spacer ────────────────────────────────────────────────────────
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
-        detailPanel.getChildren().add(spacer);
+        contentArea.getChildren().add(spacer);
 
         // ── Buttons ───────────────────────────────────────────────────────
         Button editBtn = createActionButton("Edit", "#607D8B", "#455A64");
@@ -199,8 +234,7 @@ public class FlashcardsView extends HBox {
         exportCardBtn.setMaxWidth(Double.MAX_VALUE);
         exportCardBtn.setOnAction(e -> { if (onExportCardRequested != null) onExportCardRequested.accept(card); });
 
-        VBox btnBox = new VBox(8, editBtn, exportCardBtn);
-        detailPanel.getChildren().add(btnBox);
+        contentArea.getChildren().add(new VBox(8, editBtn, exportCardBtn));
     }
 
     // ── select mode ────────────────────────────────────────────────────────
@@ -213,9 +247,9 @@ public class FlashcardsView extends HBox {
             exportSelectedBtn.setVisible(true);
             exportSelectedBtn.setManaged(true);
             updateExportSelectedLabel();
-            // Reset detail panel to placeholder while in select mode
-            buildDetailPanel();
-            detailPanel.getChildren().clear();
+
+            // Replace content area with select-mode hint
+            contentArea.getChildren().clear();
             Label hint = new Label("Select cards\nto export");
             hint.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 14px;");
             hint.setAlignment(Pos.CENTER);
@@ -223,11 +257,12 @@ public class FlashcardsView extends HBox {
             hint.setMaxHeight(Double.MAX_VALUE);
             hint.setTextAlignment(TextAlignment.CENTER);
             VBox.setVgrow(hint, Priority.ALWAYS);
-            detailPanel.getChildren().add(hint);
+            contentArea.getChildren().add(hint);
         } else {
             selectToggleBtn.setText("Select");
             exportSelectedBtn.setVisible(false);
             exportSelectedBtn.setManaged(false);
+            showPlaceholder();
         }
         renderCards(currentCards);
     }
@@ -235,19 +270,6 @@ public class FlashcardsView extends HBox {
     private void updateExportSelectedLabel() {
         exportSelectedBtn.setText("Export Selected (" + selectedCards.size() + ")");
         exportSelectedBtn.setDisable(selectedCards.isEmpty());
-    }
-
-    // ── deck info ──────────────────────────────────────────────────────────
-
-    public String getDeckTitle() {
-        return deckTitleLabel.getText();
-    }
-
-    public void setDeckInfo(String title, String description, String iconId) {
-        deckTitleLabel.setText(title);
-        deckDescriptionLabel.setText(description);
-        Image iconImage = IconManager.getIcon(iconId);
-        iconView.setImage(iconImage);
     }
 
     // ── card rendering ─────────────────────────────────────────────────────
@@ -279,7 +301,8 @@ public class FlashcardsView extends HBox {
             cardTile.setPadding(new Insets(5));
             cardTile.setAlignment(Pos.TOP_CENTER);
             cardTile.setStyle(String.format(
-                "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: %s; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;",
+                "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: %s; " +
+                "-fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;",
                 bgColor, borderColor, isSelected ? "2" : "1"
             ));
 
