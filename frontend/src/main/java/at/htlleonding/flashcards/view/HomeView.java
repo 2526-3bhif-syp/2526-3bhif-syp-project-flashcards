@@ -133,14 +133,14 @@ public class HomeView extends VBox {
         // Icon Anzeige
         Image iconImage = IconManager.getIcon(deck.getIconId());
         ImageView iconView = new ImageView(iconImage);
-        iconView.setFitWidth(60);
-        iconView.setFitHeight(60);
+        iconView.setFitWidth(100);
+        iconView.setFitHeight(100);
         iconView.setPreserveRatio(true);
         
         VBox iconContainer = new VBox();
         iconContainer.setAlignment(Pos.CENTER);
-        iconContainer.setMinWidth(60);
-        iconContainer.setMinHeight(60);
+        iconContainer.setMinWidth(100);
+        iconContainer.setMinHeight(100);
         iconContainer.getChildren().add(iconView);
 
         Label deckLabel = new Label(deck.getName());

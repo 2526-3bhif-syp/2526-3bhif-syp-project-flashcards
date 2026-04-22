@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#fce4ec" stroke="#FF1744" stroke-width="6"/>
+  <!-- Paint palette -->
+  <circle cx="100" cy="100" r="35" fill="none" stroke="#FF1744" stroke-width="8"/>
+  <!-- Color dots -->
+  <circle cx="80" cy="80" r="9" fill="#FF1744"/>
+  <circle cx="120" cy="80" r="9" fill="#FF1744"/>
+  <circle cx="100" cy="120" r="9" fill="#FF1744"/>
+  <circle cx="85" cy="100" r="9" fill="none" stroke="#FF1744" stroke-width="5"/>
+</svg>

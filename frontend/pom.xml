@@ -14,7 +14,7 @@
         <maven.compiler.source>26</maven.compiler.source>
         <maven.compiler.target>26</maven.compiler.target>
         <junit.version>5.12.1</junit.version>
-        <javafx.version>26</javafx.version>
+        <javafx.version>21</javafx.version>
     </properties>
 
     <dependencies>
@@ -60,8 +60,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>26</source>
-                    <target>26</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
             <plugin>

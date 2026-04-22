@@ -137,3 +137,9 @@ Wo und wie werden die Karten gespeichert?
 * Als nächstes machen wir Deck icons, issue nr 26; Stehle mir Fragen zu impl. Entscheidungen bevor du mit den coden anfängst; 
 
 * 1: The icons should be selected from a range of predefined set of icons, so storing the icon id for each deck will be enough & the Aspect ratio should be 1x1; 2: When editing/creation a deck, the form should a predefined set of built-in glyphs/icons to choose from. No custom uploads for the icons; 3: There should be a fixed default-deck icon, if nothing is choosen", 4: A Simple square display for the icon is sufficient 
+
+* DO NOT COMMIT YOURSELF UNLESS EXPLICITY TOLD SO!!! But the icons finally do work. However they look strange, maybe increasing the stroke width will improve how they look
+
+* you are currently executing the command to convert the svg to pngs yourself everytime, instead generate a shell script that can be more reliably reused. Also place the svgs and pngs in seperate directories;
+
+* The icons still look a bit strange: Can you increase the size that are displayed with on the collections, as well as making the stroke width a bit more thicker and using more contrasting colors for the icons

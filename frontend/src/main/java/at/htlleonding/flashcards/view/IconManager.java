@@ -10,8 +10,8 @@ import java.util.*;
  * This provides SVG-quality vector graphics (rendered once to PNG) with full JavaFX compatibility.
  */
 public class IconManager {
-    private static final String ICON_DIRECTORY = "at/htlleonding/flashcards/icons/";
-    private static final String ICON_EXTENSION = ".png";  // Changed from .svg to .png
+    private static final String ICON_DIRECTORY = "at/htlleonding/flashcards/icons/png/";
+    private static final String ICON_EXTENSION = ".png";
     
     private static final Map<String, Image> ICON_CACHE = new HashMap<>();
     
