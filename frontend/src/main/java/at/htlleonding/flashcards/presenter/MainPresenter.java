@@ -35,7 +35,6 @@ public class MainPresenter {
         flashcardsView.setOnEditCardRequested(card -> handleEditCardRequested(flashcardsView, card));
         flashcardsView.setOnDeleteCardRequested(card -> handleDeleteCardRequested(flashcardsView, card));
         flashcardsView.setOnImportRequested(() -> handleImportRequested(flashcardsView));
-        flashcardsView.setOnExportRequested(() -> handleExportDeckFromFlashcardsView(flashcardsView));
         flashcardsView.setOnExportCardRequested(card -> handleCardExportRequested(card, flashcardsView));
         flashcardsView.setOnExportSelectedCardsRequested(cards -> handleCardsExportRequested(cards, flashcardsView));
 
@@ -162,19 +161,6 @@ public class MainPresenter {
         } catch (Exception e) {
             e.printStackTrace();
             alert(Alert.AlertType.ERROR, "Import failed: " + e.getMessage());
-        }
-    }
-
-    private void handleExportDeckFromFlashcardsView(FlashcardsView flashcardsView) {
-        var decks = model.getDecks();
-        if (decks.isEmpty()) return;
-        Deck deck = decks.get(0);
-        File file = saveDialog(flashcardsView, deck.getName() + ".json");
-        if (file == null) return;
-        try {
-            model.getPersistence().exportToJSON(deck, file);
-        } catch (IOException e) {
-            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
         }
     }
 

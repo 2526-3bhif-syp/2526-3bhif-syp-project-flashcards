@@ -32,7 +32,6 @@ public class FlashcardsView extends HBox {
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
     private Runnable onImportRequested;
-    private Runnable onExportRequested;           // export whole deck
     private Consumer<Card> onExportCardRequested; // export single card
     private Consumer<List<Card>> onExportSelectedCardsRequested;
 
@@ -55,9 +54,7 @@ public class FlashcardsView extends HBox {
         actionBar.setAlignment(Pos.CENTER_LEFT);
 
         Button importBtn = createActionButton("Import", "#2196F3", "#1565C0");
-        Button exportBtn = createActionButton("Export Deck", "#2196F3", "#1565C0");
         importBtn.setOnAction(e -> { if (onImportRequested != null) onImportRequested.run(); });
-        exportBtn.setOnAction(e -> { if (onExportRequested != null) onExportRequested.run(); });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -74,7 +71,7 @@ public class FlashcardsView extends HBox {
             }
         });
 
-        actionBar.getChildren().addAll(importBtn, exportBtn, spacer, selectToggleBtn, exportSelectedBtn);
+        actionBar.getChildren().addAll(importBtn, spacer, selectToggleBtn, exportSelectedBtn);
 
         cardsGrid = new FlowPane();
         cardsGrid.setHgap(15);
@@ -318,7 +315,6 @@ public class FlashcardsView extends HBox {
     public void setOnEditCardRequested(Consumer<Card> cb) { this.onEditCardRequested = cb; }
     public void setOnDeleteCardRequested(Consumer<Card> cb) { this.onDeleteCardRequested = cb; }
     public void setOnImportRequested(Runnable cb) { this.onImportRequested = cb; }
-    public void setOnExportRequested(Runnable cb) { this.onExportRequested = cb; }
     public void setOnExportCardRequested(Consumer<Card> cb) { this.onExportCardRequested = cb; }
     public void setOnExportSelectedCardsRequested(Consumer<List<Card>> cb) { this.onExportSelectedCardsRequested = cb; }
 }
