@@ -9,12 +9,13 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MainPresenter {
     private final MainView view;
     private final Model model;
     private final Map<String, Node> views = new HashMap<>();
-    
+
     private final Stack<String> backStack = new Stack<>();
     private final Stack<String> forwardStack = new Stack<>();
     private String currentViewName;
@@ -22,16 +23,21 @@ public class MainPresenter {
     public MainPresenter(MainView view) {
         this.view = view;
         this.model = new Model();
-        
+
         HomeView homeView = new HomeView();
         homeView.setOnDeckSelected(this::handleDeckSelected);
-        
+        homeView.setOnImportDeckRequested(() -> handleDeckImportRequested(homeView));
+        homeView.setOnExportDeckRequested(deckName -> handleDeckExportRequested(deckName, homeView));
+        homeView.setOnExportSelectedDecksRequested(names -> handleDecksExportRequested(names, homeView));
+
         FlashcardsView flashcardsView = new FlashcardsView();
         flashcardsView.setOnAddCardRequested(() -> handleAddCardRequested(flashcardsView));
         flashcardsView.setOnEditCardRequested(card -> handleEditCardRequested(flashcardsView, card));
         flashcardsView.setOnDeleteCardRequested(card -> handleDeleteCardRequested(flashcardsView, card));
         flashcardsView.setOnImportRequested(() -> handleImportRequested(flashcardsView));
-        flashcardsView.setOnExportRequested(() -> handleExportRequested(flashcardsView));
+        flashcardsView.setOnExportRequested(() -> handleExportDeckFromFlashcardsView(flashcardsView));
+        flashcardsView.setOnExportCardRequested(card -> handleCardExportRequested(card, flashcardsView));
+        flashcardsView.setOnExportSelectedCardsRequested(cards -> handleCardsExportRequested(cards, flashcardsView));
 
         views.put("Home", homeView);
         views.put("Flashcards", flashcardsView);
@@ -39,9 +45,56 @@ public class MainPresenter {
         views.put("Settings", new SettingsView());
 
         view.getSidebar().setOnNavigationAction(this::handleNavigation);
-        
+
         navigateTo("Home", false);
     }
+
+    // ── Home: deck import / export ─────────────────────────────────────────
+
+    private void handleDeckImportRequested(HomeView homeView) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Import Deck");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));
+        File file = fc.showOpenDialog(homeView.getScene().getWindow());
+        if (file == null) return;
+
+        try {
+            List<Deck> imported = model.getPersistence().importDecksFromJSON(file);
+            for (Deck deck : imported) {
+                model.addOrMergeDeck(deck);
+            }
+            refreshHomeView();
+            alert(Alert.AlertType.INFORMATION, imported.size() + " deck(s) imported successfully.");
+        } catch (Exception e) {
+            alert(Alert.AlertType.ERROR, "Import failed: " + e.getMessage());
+        }
+    }
+
+    private void handleDeckExportRequested(String deckName, HomeView homeView) {
+        Deck deck = findDeck(deckName);
+        if (deck == null) return;
+        File file = saveDialog(homeView, deckName + ".json");
+        if (file == null) return;
+        try {
+            model.getPersistence().exportToJSON(deck, file);
+        } catch (IOException e) {
+            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
+        }
+    }
+
+    private void handleDecksExportRequested(List<String> deckNames, HomeView homeView) {
+        List<Deck> decks = deckNames.stream().map(this::findDeck).filter(Objects::nonNull).collect(Collectors.toList());
+        if (decks.isEmpty()) return;
+        File file = saveDialog(homeView, "decks_export.json");
+        if (file == null) return;
+        try {
+            model.getPersistence().exportDecksToJSON(decks, file);
+        } catch (IOException e) {
+            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
+        }
+    }
+
+    // ── Flashcards: card import / export ───────────────────────────────────
 
     private void handleImportRequested(FlashcardsView flashcardsView) {
         FileChooser fc = new FileChooser();
@@ -60,89 +113,92 @@ public class MainPresenter {
             Deck importedDeck = model.getPersistence().importFromJSON(file);
 
             if (importedDeck == null || importedDeck.getCards().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "No cards found in the imported file.");
-                alert.showAndWait();
+                alert(Alert.AlertType.INFORMATION, "No cards found in the imported file.");
                 return;
             }
 
-            // Clean imported cards: remove those with null/empty question or answer
             List<Card> validImportedCards = importedDeck.getCards().stream()
-                .filter(c -> c != null && 
+                .filter(c -> c != null &&
                              c.getQuestion() != null && !c.getQuestion().isBlank() &&
                              c.getAnswer() != null && !c.getAnswer().isBlank())
                 .toList();
 
             if (validImportedCards.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Import failed: No valid cards (missing question or answer) found.");
-                alert.showAndWait();
+                alert(Alert.AlertType.WARNING, "No valid cards (missing question or answer) found.");
                 return;
             }
 
-            // Check if duplicates exist
-            boolean hasDuplicates = validImportedCards.stream().anyMatch(importedCard -> 
-                deck.getCards().stream().anyMatch(existing -> 
-                    existing.getQuestion() != null && 
-                    existing.getQuestion().trim().equalsIgnoreCase(importedCard.getQuestion().trim())
+            boolean hasDuplicates = validImportedCards.stream().anyMatch(ic ->
+                deck.getCards().stream().anyMatch(ex ->
+                    ex.getQuestion() != null &&
+                    ex.getQuestion().trim().equalsIgnoreCase(ic.getQuestion().trim())
                 )
             );
 
             DuplicateActionDialog.Action action = DuplicateActionDialog.Action.ALLOW_ALL;
             if (hasDuplicates) {
-                DuplicateActionDialog duplicateDialog = new DuplicateActionDialog((Stage) flashcardsView.getScene().getWindow());
-                action = duplicateDialog.showAndWait().orElse(DuplicateActionDialog.Action.CANCEL);
+                DuplicateActionDialog dialog = new DuplicateActionDialog((Stage) flashcardsView.getScene().getWindow());
+                action = dialog.showAndWait().orElse(DuplicateActionDialog.Action.CANCEL);
             }
-            
+
             if (action == DuplicateActionDialog.Action.CANCEL) return;
-            
+
             boolean allowDuplicates = (action == DuplicateActionDialog.Action.ALLOW_ALL);
-            int importedCount = 0;
-
+            int count = 0;
             for (Card c : validImportedCards) {
-                boolean isDuplicate = deck.getCards().stream().anyMatch(existing -> 
-                    existing.getQuestion() != null && 
-                    existing.getQuestion().trim().equalsIgnoreCase(c.getQuestion().trim())
+                boolean isDuplicate = deck.getCards().stream().anyMatch(ex ->
+                    ex.getQuestion() != null &&
+                    ex.getQuestion().trim().equalsIgnoreCase(c.getQuestion().trim())
                 );
-
                 if (!allowDuplicates && isDuplicate) continue;
-                
                 deck.addCard(c);
-                importedCount++;
+                count++;
             }
-            
+
             model.updateDeck(deck);
             flashcardsView.renderCards(deck.getCards());
-            
-            Alert success = new Alert(Alert.AlertType.INFORMATION, importedCount + " cards successfully imported.");
-            success.showAndWait();
-            
+            alert(Alert.AlertType.INFORMATION, count + " cards imported successfully.");
+
         } catch (Exception e) {
-            e.printStackTrace(); // For debugging in console
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Fehler beim Importieren: " + e.getMessage());
-            alert.showAndWait();
+            e.printStackTrace();
+            alert(Alert.AlertType.ERROR, "Import failed: " + e.getMessage());
         }
     }
 
-    private void handleExportRequested(FlashcardsView flashcardsView) {
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Export JSON");
-        fc.setInitialFileName("export.json");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));
-        File file = fc.showSaveDialog(flashcardsView.getScene().getWindow());
-        if (file != null) performExport(file);
-    }
-
-    private void performExport(File file) {
+    private void handleExportDeckFromFlashcardsView(FlashcardsView flashcardsView) {
         var decks = model.getDecks();
         if (decks.isEmpty()) return;
-        var deck = decks.get(0);
-
+        Deck deck = decks.get(0);
+        File file = saveDialog(flashcardsView, deck.getName() + ".json");
+        if (file == null) return;
         try {
             model.getPersistence().exportToJSON(deck, file);
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Fehler beim Exportieren: " + e.getMessage());
-            alert.showAndWait();
+            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
         }
     }
+
+    private void handleCardExportRequested(Card card, FlashcardsView flashcardsView) {
+        File file = saveDialog(flashcardsView, "card_export.json");
+        if (file == null) return;
+        try {
+            model.getPersistence().exportCardToJSON(card, file);
+        } catch (IOException e) {
+            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
+        }
+    }
+
+    private void handleCardsExportRequested(List<Card> cards, FlashcardsView flashcardsView) {
+        File file = saveDialog(flashcardsView, "cards_export.json");
+        if (file == null) return;
+        try {
+            model.getPersistence().exportCardsToJSON(cards, file);
+        } catch (IOException e) {
+            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
+        }
+    }
+
+    // ── Flashcards: card CRUD ──────────────────────────────────────────────
 
     private void handleAddCardRequested(FlashcardsView flashcardsView) {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
@@ -150,7 +206,7 @@ public class MainPresenter {
         dialog.showAndWait().ifPresent(newCard -> {
             var decks = model.getDecks();
             if (!decks.isEmpty()) {
-                var deck = decks.get(0); 
+                var deck = decks.get(0);
                 deck.addCard(newCard);
                 model.updateDeck(deck);
                 flashcardsView.renderCards(deck.getCards());
@@ -182,32 +238,35 @@ public class MainPresenter {
         }
     }
 
-    private void handleNavigation(String destination) {
-        if (destination.equals("Back")) {
-            goBack();
-        } else if (destination.equals("Forward")) {
-            goForward();
-        } else {
-            navigateTo(destination, true);
-        }
-    }
+    // ── navigation ─────────────────────────────────────────────────────────
 
     private void handleDeckSelected(String deckName) {
-        var deck = model.getDecks().get(0);
+        Deck deck = findDeck(deckName);
+        if (deck == null) return;
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
         fView.renderCards(deck.getCards());
         navigateTo("Flashcards", true);
     }
 
+    private void handleNavigation(String destination) {
+        if (destination.equals("Back")) goBack();
+        else if (destination.equals("Forward")) goForward();
+        else navigateTo(destination, true);
+    }
+
     private void navigateTo(String destination, boolean addToHistory) {
         if (destination.equals(currentViewName)) return;
-        if (destination.equals("Flashcards")) {
+
+        if (destination.equals("Home")) {
+            refreshHomeView();
+        } else if (destination.equals("Flashcards")) {
             var decks = model.getDecks();
             if (!decks.isEmpty()) {
                 FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
                 fView.renderCards(decks.get(0).getCards());
             }
         }
+
         Node targetView = views.get(destination);
         if (targetView != null) {
             if (addToHistory && currentViewName != null) {
@@ -243,7 +302,28 @@ public class MainPresenter {
         view.getSidebar().setForwardEnabled(!forwardStack.isEmpty());
     }
 
-    public MainView getView() {
-        return view;
+    // ── helpers ────────────────────────────────────────────────────────────
+
+    private void refreshHomeView() {
+        HomeView hv = (HomeView) views.get("Home");
+        List<String> names = model.getDecks().stream().map(Deck::getName).toList();
+        hv.renderDecks(names);
     }
+
+    private Deck findDeck(String name) {
+        return model.getDecks().stream().filter(d -> d.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    private File saveDialog(Node anchor, String initialName) {
+        FileChooser fc = new FileChooser();
+        fc.setInitialFileName(initialName);
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));
+        return fc.showSaveDialog(anchor.getScene().getWindow());
+    }
+
+    private void alert(Alert.AlertType type, String message) {
+        new Alert(type, message).showAndWait();
+    }
+
+    public MainView getView() { return view; }
 }
