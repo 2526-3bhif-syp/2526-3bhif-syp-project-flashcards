@@ -73,7 +73,7 @@ public class Persistence {
                 }
                 // Array of cards
                 List<Card> cards = mapper.convertValue(node, new TypeReference<List<Card>>() {});
-                Deck deck = new Deck("Imported Deck");
+                Deck deck = new Deck("Imported Deck", "");
                 if (cards != null) deck.setCards(cards);
                 return deck;
             } else {
@@ -82,7 +82,7 @@ public class Persistence {
                 } else if (node.has("question")) {
                     // Single card object
                     Card card = mapper.treeToValue(node, Card.class);
-                    Deck deck = new Deck("Imported");
+                    Deck deck = new Deck("Imported", "");
                     deck.addCard(card);
                     return deck;
                 }
