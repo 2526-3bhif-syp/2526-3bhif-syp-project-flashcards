@@ -143,3 +143,5 @@ Wo und wie werden die Karten gespeichert?
 * you are currently executing the command to convert the svg to pngs yourself everytime, instead generate a shell script that can be more reliably reused. Also place the svgs and pngs in seperate directories;
 
 * The icons still look a bit strange: Can you increase the size that are displayed with on the collections, as well as making the stroke width a bit more thicker and using more contrasting colors for the icons
+
+* Now they look great! But somewhere in the process there must have been a style change that has effected the Flashcard view. The Dock on the right that informs you about the deck you are currently viewing is no longer clearly visualy seperated from the card grid. Fix this, as well centering the Title of the deck under its icon
