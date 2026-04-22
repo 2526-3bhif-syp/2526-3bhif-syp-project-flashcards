@@ -4,7 +4,6 @@ import at.htlleonding.flashcards.model.*;
 import at.htlleonding.flashcards.view.*;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -45,27 +44,20 @@ public class MainPresenter {
     }
 
     private void handleImportRequested(FlashcardsView flashcardsView) {
-        ImportFormatDialog dialog = new ImportFormatDialog((Stage) flashcardsView.getScene().getWindow(), "Import");
-        dialog.showAndWait().ifPresent(format -> {
-            FileChooser fc = new FileChooser();
-            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(format + " files", "*." + format.toLowerCase()));
-            File file = fc.showOpenDialog(flashcardsView.getScene().getWindow());
-            if (file != null) performImport(file, format, flashcardsView);
-        });
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Import JSON");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));
+        File file = fc.showOpenDialog(flashcardsView.getScene().getWindow());
+        if (file != null) performImport(file, flashcardsView);
     }
 
-    private void performImport(File file, String format, FlashcardsView flashcardsView) {
+    private void performImport(File file, FlashcardsView flashcardsView) {
         var decks = model.getDecks();
         if (decks.isEmpty()) return;
         var deck = decks.get(0);
 
         try {
-            Deck importedDeck;
-            if ("JSON".equalsIgnoreCase(format)) {
-                importedDeck = model.getPersistence().importFromJSON(file);
-            } else {
-                importedDeck = model.getPersistence().importFromCSV(file);
-            }
+            Deck importedDeck = model.getPersistence().importFromJSON(file);
 
             if (importedDeck == null || importedDeck.getCards().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "No cards found in the imported file.");
@@ -131,27 +123,21 @@ public class MainPresenter {
     }
 
     private void handleExportRequested(FlashcardsView flashcardsView) {
-        ImportFormatDialog dialog = new ImportFormatDialog((Stage) flashcardsView.getScene().getWindow(), "Export");
-        dialog.showAndWait().ifPresent(format -> {
-            FileChooser fc = new FileChooser();
-            fc.setInitialFileName("export." + format.toLowerCase());
-            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(format + " files", "*." + format.toLowerCase()));
-            File file = fc.showSaveDialog(flashcardsView.getScene().getWindow());
-            if (file != null) performExport(file, format);
-        });
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Export JSON");
+        fc.setInitialFileName("export.json");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));
+        File file = fc.showSaveDialog(flashcardsView.getScene().getWindow());
+        if (file != null) performExport(file);
     }
 
-    private void performExport(File file, String format) {
+    private void performExport(File file) {
         var decks = model.getDecks();
         if (decks.isEmpty()) return;
-        var deck = decks.get(0); // Exporting the first deck as a placeholder for now
+        var deck = decks.get(0);
 
         try {
-            if ("JSON".equalsIgnoreCase(format)) {
-                model.getPersistence().exportToJSON(deck, file);
-            } else if ("CSV".equalsIgnoreCase(format)) {
-                model.getPersistence().exportToCSV(deck, file);
-            }
+            model.getPersistence().exportToJSON(deck, file);
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Fehler beim Exportieren: " + e.getMessage());
             alert.showAndWait();

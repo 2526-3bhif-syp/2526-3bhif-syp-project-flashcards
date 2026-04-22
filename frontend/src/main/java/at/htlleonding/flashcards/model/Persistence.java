@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Persistence {
@@ -53,25 +52,6 @@ public class Persistence {
     }
 
     /**
-     * Exports a deck to a CSV file.
-     * Format: Question,Answer,Tags(comma separated and quoted)
-     */
-    public void exportToCSV(Deck deck, File file) throws IOException {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(file))) {
-            // Header
-            pw.println("Question,Answer,Tags");
-            
-            for (Card card : deck.getCards()) {
-                String q = escapeCSV(card.getQuestion());
-                String a = escapeCSV(card.getAnswer());
-                String tags = escapeCSV(String.join(";", card.getTags()));
-                
-                pw.printf("%s,%s,%s%n", q, a, tags);
-            }
-        }
-    }
-
-    /**
      * Imports a deck from a JSON file.
      * Supports both a single Deck object, a List of Decks, or a List of Cards.
      */
@@ -102,62 +82,4 @@ public class Persistence {
         }
     }
 
-    /**
-     * Imports a deck from a CSV file.
-     */
-    public Deck importFromCSV(File file) throws IOException {
-        Deck deck = new Deck(file.getName().replace(".csv", ""));
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line = br.readLine(); // Skip header
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue;
-                String[] parts = parseCSVLine(line);
-                if (parts.length >= 2) {
-                    String q = parts[0].trim();
-                    String a = parts[1].trim();
-                    if (!q.isEmpty() && !a.isEmpty()) {
-                        Card card = new Card(q, a);
-                        if (parts.length >= 3 && !parts[2].isEmpty()) {
-                            card.setTags(Arrays.asList(parts[2].split(";")));
-                        }
-                        deck.addCard(card);
-                    }
-                }
-            }
-        }
-        return deck;
-    }
-
-    private String[] parseCSVLine(String line) {
-        List<String> result = new ArrayList<>();
-        boolean inQuotes = false;
-        StringBuilder sb = new StringBuilder();
-        
-        for (int i = 0; i < line.length(); i++) {
-            char c = line.charAt(i);
-            if (c == '\"') {
-                if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '\"') {
-                    sb.append('\"'); // escaped quote
-                    i++;
-                } else {
-                    inQuotes = !inQuotes;
-                }
-            } else if (c == ',' && !inQuotes) {
-                result.add(sb.toString());
-                sb.setLength(0);
-            } else {
-                sb.append(c);
-            }
-        }
-        result.add(sb.toString());
-        return result.toArray(new String[0]);
-    }
-
-    private String escapeCSV(String text) {
-        if (text == null) return "";
-        if (text.contains(",") || text.contains("\"") || text.contains("\n")) {
-            return "\"" + text.replace("\"", "\"\"") + "\"";
-        }
-        return text;
-    }
 }
