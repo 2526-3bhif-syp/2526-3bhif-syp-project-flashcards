@@ -41,7 +41,8 @@ public class FlashcardsView extends HBox {
         deckInfoSidebar = new VBox();
         deckInfoSidebar.setPrefWidth(200);
         deckInfoSidebar.setSpacing(15);
-        deckInfoSidebar.setPadding(new Insets(10));
+        deckInfoSidebar.setPadding(new Insets(15));
+        deckInfoSidebar.setStyle("-fx-border-color: #cccccc; -fx-border-width: 1; -fx-background-color: #f9f9f9; -fx-border-radius: 8; -fx-background-radius: 8;");
 
         // Icon Anzeige
         Image defaultIconImage = IconManager.getIcon("default");
@@ -57,11 +58,15 @@ public class FlashcardsView extends HBox {
         iconContainer.getChildren().add(iconView);
 
         deckTitleLabel = new Label("Deck Title");
-        deckTitleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        deckTitleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-alignment: center;");
+        deckTitleLabel.setWrapText(true);
+        deckTitleLabel.setMaxWidth(Double.MAX_VALUE);
+        deckTitleLabel.setAlignment(Pos.CENTER);
 
         deckDescriptionLabel = new Label("No description available.");
         deckDescriptionLabel.setWrapText(true);
-        deckDescriptionLabel.setStyle("-fx-text-fill: #666666;");
+        deckDescriptionLabel.setStyle("-fx-text-fill: #666666; -fx-text-alignment: center;");
+        deckDescriptionLabel.setAlignment(Pos.CENTER);
 
         VBox buttonBox = new VBox(10);
         buttonBox.getChildren().addAll(
