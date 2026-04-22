@@ -78,9 +78,13 @@ public class MainPresenter {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
         CreateCardDialog dialog = new CreateCardDialog(owner, cardToEdit);
         dialog.showAndWait().ifPresent(updatedCard -> {
-            var decks = model.getDecks();
-            if (!decks.isEmpty()) {
-                var deck = decks.get(0);
+            String currentDeckName = flashcardsView.getDeckTitle();
+            Deck deck = model.getDecks().stream()
+                    .filter(d -> d.getName().equals(currentDeckName))
+                    .findFirst()
+                    .orElse(null);
+                    
+            if (deck != null) {
                 deck.updateCard(updatedCard);
                 model.updateDeck(deck);
                 flashcardsView.renderCards(deck.getCards());
@@ -89,9 +93,13 @@ public class MainPresenter {
     }
 
     private void handleDeleteCardRequested(FlashcardsView flashcardsView, Card cardToDelete) {
-        var decks = model.getDecks();
-        if (!decks.isEmpty()) {
-            var deck = decks.get(0);
+        String currentDeckName = flashcardsView.getDeckTitle();
+        Deck deck = model.getDecks().stream()
+                .filter(d -> d.getName().equals(currentDeckName))
+                .findFirst()
+                .orElse(null);
+                
+        if (deck != null) {
             deck.removeCard(cardToDelete);
             model.updateDeck(deck);
             flashcardsView.renderCards(deck.getCards());
@@ -124,16 +132,6 @@ public class MainPresenter {
 
     private void navigateTo(String destination, boolean addToHistory) {
         if (destination.equals(currentViewName)) return;
-
-        if (destination.equals("Flashcards")) {
-            var decks = model.getDecks();
-            if (!decks.isEmpty()) {
-                var deck = decks.get(0);
-                FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
-                fView.setDeckInfo(deck.getName(), "This deck is about basic " + deck.getName().toLowerCase() + " phrases.");
-                fView.renderCards(deck.getCards());
-            }
-        }
 
         Node targetView = views.get(destination);
         if (targetView != null) {
