@@ -19,6 +19,17 @@ public class HomeView extends VBox {
     private Consumer<Deck> onDeleteDeckRequested;
     private Runnable onCreateDeckRequested;
 
+    private static final java.util.Map<String, String> ICONS = java.util.Map.of(
+        "default", "🗂",
+        "math", "➕",
+        "science", "🧪",
+        "history", "📜",
+        "language", "🗣",
+        "code", "💻",
+        "art", "🎨",
+        "music", "🎵"
+    );
+
     public HomeView() {
         this.setPadding(new Insets(20));
         this.setSpacing(20);
@@ -128,18 +139,20 @@ public class HomeView extends VBox {
         
         topBox.getChildren().addAll(editBtn, spacer, deleteBtn);
 
-        // Icon Platzhalter
-        Rectangle iconPlaceholder = new Rectangle(60, 40);
-        iconPlaceholder.setFill(Color.TRANSPARENT);
-        iconPlaceholder.setStroke(Color.GRAY);
-        iconPlaceholder.setStrokeWidth(1);
+        // Icon Anzeige
+        String glyph = ICONS.getOrDefault(deck.getIconId(), ICONS.get("default"));
+        Label iconLabel = new Label(glyph);
+        iconLabel.setStyle("-fx-font-size: 50px;");
+        iconLabel.setMinWidth(60);
+        iconLabel.setMinHeight(60);
+        iconLabel.setAlignment(Pos.CENTER);
 
         Label deckLabel = new Label(deck.getName());
         deckLabel.setStyle("-fx-font-weight: bold;");
         deckLabel.setWrapText(true);
         deckLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        tile.getChildren().addAll(topBox, iconPlaceholder, deckLabel);
+        tile.getChildren().addAll(topBox, iconLabel, deckLabel);
         
         tile.setOnMouseClicked(e -> {
             if (onDeckSelected != null) {

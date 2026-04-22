@@ -53,6 +53,7 @@ public class MainPresenter {
         dialog.showAndWait().ifPresent(deckResult -> {
             deck.setName(deckResult.name());
             deck.setDescription(deckResult.description());
+            deck.setIconId(deckResult.iconId());
             model.updateDeck(deck);
             homeView.renderDecks(model.getDecks());
         });
@@ -95,7 +96,7 @@ public class MainPresenter {
         Stage owner = (Stage) homeView.getScene().getWindow();
         CreateDeckDialog dialog = new CreateDeckDialog(owner);
         dialog.showAndWait().ifPresent(deckResult -> {
-            Deck newDeck = new Deck(deckResult.name(), deckResult.description());
+            Deck newDeck = new Deck(deckResult.name(), deckResult.description(), deckResult.iconId());
             model.addDeck(newDeck);
             homeView.renderDecks(model.getDecks());
         });
@@ -145,7 +146,7 @@ public class MainPresenter {
 
     private void handleDeckSelected(Deck deck) {
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
-        fView.setDeckInfo(deck.getName(), deck.getDescription() != null ? deck.getDescription() : "");
+        fView.setDeckInfo(deck.getName(), deck.getDescription() != null ? deck.getDescription() : "", deck.getIconId());
         fView.renderCards(deck.getCards());
         
         navigateTo("Flashcards", true);

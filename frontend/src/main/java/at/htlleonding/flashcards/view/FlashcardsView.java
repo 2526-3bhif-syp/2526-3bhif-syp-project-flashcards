@@ -20,9 +20,21 @@ public class FlashcardsView extends HBox {
     private FlowPane cardsGrid;
     private Label deckTitleLabel;
     private Label deckDescriptionLabel;
+    private Label iconLabel;
     private Runnable onAddCardRequested;
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
+
+    private static final java.util.Map<String, String> ICONS = java.util.Map.of(
+        "default", "🗂",
+        "math", "➕",
+        "science", "🧪",
+        "history", "📜",
+        "language", "🗣",
+        "code", "💻",
+        "art", "🎨",
+        "music", "🎵"
+    );
 
     public FlashcardsView() {
         this.setPadding(new Insets(20));
@@ -40,11 +52,12 @@ public class FlashcardsView extends HBox {
         deckInfoSidebar.setSpacing(15);
         deckInfoSidebar.setPadding(new Insets(10));
 
-        // Icon Platzhalter
-        Rectangle iconPlaceholder = new Rectangle(80, 60);
-        iconPlaceholder.setFill(Color.TRANSPARENT);
-        iconPlaceholder.setStroke(Color.GRAY);
-        iconPlaceholder.setStrokeWidth(1);
+        // Icon Anzeige
+        iconLabel = new Label("🗂");
+        iconLabel.setStyle("-fx-font-size: 60px;");
+        iconLabel.setAlignment(Pos.CENTER);
+        iconLabel.setMinWidth(80);
+        iconLabel.setMinHeight(80);
 
         deckTitleLabel = new Label("Deck Title");
         deckTitleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
@@ -60,7 +73,7 @@ public class FlashcardsView extends HBox {
                 createSidebarButton("Import")
         );
 
-        deckInfoSidebar.getChildren().addAll(iconPlaceholder, deckTitleLabel, deckDescriptionLabel, new Region(), buttonBox);
+        deckInfoSidebar.getChildren().addAll(iconLabel, deckTitleLabel, deckDescriptionLabel, new Region(), buttonBox);
         VBox.setVgrow(deckInfoSidebar.getChildren().get(3), Priority.ALWAYS); // Spacer
     }
 
@@ -112,9 +125,10 @@ public class FlashcardsView extends HBox {
         return deckTitleLabel.getText();
     }
 
-    public void setDeckInfo(String title, String description) {
+    public void setDeckInfo(String title, String description, String iconId) {
         deckTitleLabel.setText(title);
         deckDescriptionLabel.setText(description);
+        iconLabel.setText(ICONS.getOrDefault(iconId, ICONS.get("default")));
     }
 
     public void setOnAddCardRequested(Runnable callback) {

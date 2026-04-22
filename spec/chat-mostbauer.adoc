@@ -131,3 +131,9 @@ Wo und wie werden die Karten gespeichert?
 * Das design der neuen buttons stimmt nicht mit dem Plan überein. Schaue dir noch einmal den design plan an (asciidocs/docs/images/gui.jpeg). Die buttons sollen gleich gestyled sein wie die edit und delete buttons der cards
 
 * Ändere das design buttons für die collections damit es mit den design buttons der cards zusammen passt
+
+== Session 6 (2026-04-22) 
+
+* Als nächstes machen wir Deck icons, issue nr 26; Stehle mir Fragen zu impl. Entscheidungen bevor du mit den coden anfängst; 
+
+* 1: The icons should be selected from a range of predefined set of icons, so storing the icon id for each deck will be enough & the Aspect ratio should be 1x1; 2: When editing/creation a deck, the form should a predefined set of built-in glyphs/icons to choose from. No custom uploads for the icons; 3: There should be a fixed default-deck icon, if nothing is choosen", 4: A Simple square display for the icon is sufficient 
