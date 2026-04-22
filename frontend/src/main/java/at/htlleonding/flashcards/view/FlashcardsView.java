@@ -108,6 +108,10 @@ public class FlashcardsView extends HBox {
         cardsGrid.getChildren().add(plusCard);
     }
 
+    public String getDeckTitle() {
+        return deckTitleLabel.getText();
+    }
+
     public void setDeckInfo(String title, String description) {
         deckTitleLabel.setText(title);
         deckDescriptionLabel.setText(description);

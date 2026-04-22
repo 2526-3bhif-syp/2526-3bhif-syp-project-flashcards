@@ -24,6 +24,8 @@ public class MainPresenter {
         
         HomeView homeView = new HomeView();
         homeView.setOnDeckSelected(this::handleDeckSelected);
+        homeView.setOnCreateDeckRequested(() -> handleCreateDeckRequested(homeView));
+        homeView.renderDecks(model.getDecks());
         
         FlashcardsView flashcardsView = new FlashcardsView();
         flashcardsView.setOnAddCardRequested(() -> handleAddCardRequested(flashcardsView));
@@ -47,16 +49,28 @@ public class MainPresenter {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
         CreateCardDialog dialog = new CreateCardDialog(owner);
         dialog.showAndWait().ifPresent(newCard -> {
-            // Dem aktuellen Deck im Modell hinzufgen
-            var decks = model.getDecks();
-            if (!decks.isEmpty()) {
-                var deck = decks.get(0); 
+            // Das aktuell angezeigte Deck finden
+            String currentDeckName = ((FlashcardsView) views.get("Flashcards")).getDeckTitle();
+            Deck deck = model.getDecks().stream()
+                    .filter(d -> d.getName().equals(currentDeckName))
+                    .findFirst()
+                    .orElse(null);
+
+            if (deck != null) {
                 deck.addCard(newCard);
-                model.updateDeck(deck); // Explizit das Model triggern zum Speichern
-                
-                // View aktualisieren
+                model.updateDeck(deck);
                 flashcardsView.renderCards(deck.getCards());
             }
+        });
+    }
+
+    private void handleCreateDeckRequested(HomeView homeView) {
+        Stage owner = (Stage) homeView.getScene().getWindow();
+        CreateDeckDialog dialog = new CreateDeckDialog(owner);
+        dialog.showAndWait().ifPresent(deckResult -> {
+            Deck newDeck = new Deck(deckResult.name(), deckResult.description());
+            model.addDeck(newDeck);
+            homeView.renderDecks(model.getDecks());
         });
     }
 
@@ -95,11 +109,14 @@ public class MainPresenter {
     }
 
     private void handleDeckSelected(String deckName) {
-        // Dummy: Wir nehmen immer das erste Deck aus dem Modell
-        var deck = model.getDecks().get(0); 
+        // Deck aus dem Modell anhand des Namens finden
+        Deck deck = model.getDecks().stream()
+                .filter(d -> d.getName().equals(deckName))
+                .findFirst()
+                .orElse(model.getDecks().get(0)); 
         
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
-        fView.setDeckInfo(deck.getName(), "This deck is about basic " + deck.getName().toLowerCase() + " phrases.");
+        fView.setDeckInfo(deck.getName(), deck.getDescription() != null ? deck.getDescription() : "");
         fView.renderCards(deck.getCards());
         
         navigateTo("Flashcards", true);

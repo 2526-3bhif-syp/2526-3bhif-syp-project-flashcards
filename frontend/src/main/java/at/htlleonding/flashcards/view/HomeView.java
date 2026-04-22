@@ -1,5 +1,6 @@
 package at.htlleonding.flashcards.view;
 
+import at.htlleonding.flashcards.model.Deck;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -7,11 +8,13 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class HomeView extends VBox {
     private FlowPane deckGrid;
     private Consumer<String> onDeckSelected;
+    private Runnable onCreateDeckRequested;
 
     public HomeView() {
         this.setPadding(new Insets(20));
@@ -25,13 +28,48 @@ public class HomeView extends VBox {
         deckGrid.setVgap(20);
 
         this.getChildren().addAll(title, deckGrid);
-        
-        // Initial Dummy Deck
-        addDeckTile("English");
     }
 
     public void setOnDeckSelected(Consumer<String> callback) {
         this.onDeckSelected = callback;
+    }
+
+    public void setOnCreateDeckRequested(Runnable callback) {
+        this.onCreateDeckRequested = callback;
+    }
+
+    public void renderDecks(List<Deck> decks) {
+        deckGrid.getChildren().clear();
+        
+        // "+" Kachel hinzufügen
+        addPlusTile();
+        
+        for (Deck deck : decks) {
+            addDeckTile(deck.getName());
+        }
+    }
+
+    private void addPlusTile() {
+        VBox tile = new VBox();
+        tile.setPrefSize(150, 200);
+        tile.setAlignment(Pos.CENTER);
+        tile.setStyle("-fx-background-color: white; " +
+                     "-fx-border-color: #cccccc; " +
+                     "-fx-border-radius: 15; " +
+                     "-fx-background-radius: 15; " +
+                     "-fx-cursor: hand;");
+
+        Label plusLabel = new Label("+");
+        plusLabel.setStyle("-fx-font-size: 60px; -fx-text-fill: #999999;");
+
+        tile.getChildren().add(plusLabel);
+        tile.setOnMouseClicked(e -> {
+            if (onCreateDeckRequested != null) {
+                onCreateDeckRequested.run();
+            }
+        });
+
+        deckGrid.getChildren().add(tile);
     }
 
     private void addDeckTile(String name) {

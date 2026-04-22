@@ -15,7 +15,7 @@ public class Model {
         load();
         if (decks.isEmpty()) {
             // Initial Dummy Data if no file exists
-            Deck dummyDeck = new Deck("English");
+            Deck dummyDeck = new Deck("English", "Basic English vocabulary");
             dummyDeck.addCard(new Card("Was ist Apfel auf Englisch?", "Apple"));
             dummyDeck.addCard(new Card("Was ist Hund auf Englisch?", "Dog"));
             decks.add(dummyDeck);
@@ -25,6 +25,11 @@ public class Model {
 
     public List<Deck> getDecks() {
         return new ArrayList<>(decks);
+    }
+    
+    public void addDeck(Deck deck) {
+        this.decks.add(deck);
+        save();
     }
     
     public void updateDeck(Deck updatedDeck) {

@@ -6,17 +6,19 @@ import java.util.List;
 
 public class Deck {
     private String name;
+    private String description;
     private List<Card> cards;
 
     public Deck() {
         this.cards = new ArrayList<>();
     }
 
-    public Deck(String name) {
+    public Deck(String name, String description) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Deck name is mandatory.");
         }
         this.name = name;
+        this.description = description;
         this.cards = new ArrayList<>();
     }
 
@@ -45,6 +47,9 @@ public class Deck {
     // Getters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
     
     public List<Card> getCards() { return new ArrayList<>(cards); }
     
