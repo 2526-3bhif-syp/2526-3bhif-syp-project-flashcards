@@ -1,37 +1,29 @@
 package at.htlleonding.flashcards.view;
 
+import at.htlleonding.flashcards.model.Deck;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class HomeView extends VBox {
 
-    // ── state ──────────────────────────────────────────────────────────────
-    private List<String> currentDeckNames = new ArrayList<>();
-    private boolean selectMode = false;
-    private final Set<String> selectedDeckNames = new LinkedHashSet<>();
-
     // ── ui references ──────────────────────────────────────────────────────
     private FlowPane deckGrid;
-    private Button selectToggleBtn;
-    private Button exportSelectedBtn;
 
     // ── callbacks ──────────────────────────────────────────────────────────
-    private Consumer<String> onDeckSelected;
+    private Consumer<Deck> onDeckSelected;
+    private Consumer<Deck> onEditDeckRequested;
+    private Consumer<Deck> onDeleteDeckRequested;
+    private Runnable onCreateDeckRequested;
     private Runnable onImportDeckRequested;
-    private Consumer<String> onExportDeckRequested;
-    private Consumer<List<String>> onExportSelectedDecksRequested;
 
     public HomeView() {
         this.setPadding(new Insets(20));
@@ -52,20 +44,7 @@ public class HomeView extends VBox {
         Button importBtn = createActionButton("Import Deck", "#2196F3", "#1565C0");
         importBtn.setOnAction(e -> { if (onImportDeckRequested != null) onImportDeckRequested.run(); });
 
-        selectToggleBtn = createActionButton("Select", "#607D8B", "#455A64");
-        selectToggleBtn.setOnAction(e -> toggleSelectMode());
-
-        exportSelectedBtn = createActionButton("Export Selected (0)", "#FF9800", "#E65100");
-        exportSelectedBtn.setVisible(false);
-        exportSelectedBtn.setManaged(false);
-        exportSelectedBtn.setDisable(true);
-        exportSelectedBtn.setOnAction(e -> {
-            if (onExportSelectedDecksRequested != null && !selectedDeckNames.isEmpty()) {
-                onExportSelectedDecksRequested.accept(new ArrayList<>(selectedDeckNames));
-            }
-        });
-
-        HBox header = new HBox(10, title, spacer, importBtn, selectToggleBtn, exportSelectedBtn);
+        HBox header = new HBox(10, title, spacer, importBtn);
         header.setAlignment(Pos.CENTER_LEFT);
         return header;
     }
@@ -85,107 +64,111 @@ public class HomeView extends VBox {
 
     // ── public API ─────────────────────────────────────────────────────────
 
-    public void renderDecks(List<String> deckNames) {
-        currentDeckNames = deckNames;
+    public void renderDecks(List<Deck> decks) {
         deckGrid.getChildren().clear();
-        for (String name : deckNames) {
-            deckGrid.getChildren().add(buildDeckTile(name));
+
+        addPlusTile();
+
+        for (Deck deck : decks) {
+            addDeckTile(deck);
         }
     }
 
-    // ── select mode ────────────────────────────────────────────────────────
+    // ── tile builders ──────────────────────────────────────────────────────
 
-    private void toggleSelectMode() {
-        selectMode = !selectMode;
-        selectedDeckNames.clear();
-        if (selectMode) {
-            selectToggleBtn.setText("Cancel");
-            exportSelectedBtn.setVisible(true);
-            exportSelectedBtn.setManaged(true);
-            updateExportSelectedLabel();
-        } else {
-            selectToggleBtn.setText("Select");
-            exportSelectedBtn.setVisible(false);
-            exportSelectedBtn.setManaged(false);
-        }
-        renderDecks(currentDeckNames);
-    }
-
-    private void updateExportSelectedLabel() {
-        exportSelectedBtn.setText("Export Selected (" + selectedDeckNames.size() + ")");
-        exportSelectedBtn.setDisable(selectedDeckNames.isEmpty());
-    }
-
-    // ── tile builder ───────────────────────────────────────────────────────
-
-    private StackPane buildDeckTile(String name) {
-        boolean isSelected = selectedDeckNames.contains(name);
-        String borderColor = isSelected ? "#2196F3" : "#cccccc";
-        String bgColor     = isSelected ? "#E3F2FD" : "white";
-        String borderWidth = isSelected ? "2" : "1";
-
-        StackPane tile = new StackPane();
+    private void addPlusTile() {
+        VBox tile = new VBox();
         tile.setPrefSize(150, 200);
-        tile.setStyle(String.format(
-            "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: %s; -fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
-            bgColor, borderColor, borderWidth
-        ));
+        tile.setAlignment(Pos.CENTER);
+        tile.setStyle("-fx-background-color: white; " +
+                     "-fx-border-color: #cccccc; " +
+                     "-fx-border-radius: 15; " +
+                     "-fx-background-radius: 15; " +
+                     "-fx-cursor: hand;");
 
-        // Centered content — natural preferred size so StackPane truly centers it
-        VBox content = new VBox(10);
-        content.setAlignment(Pos.CENTER);
+        Label plusLabel = new Label("+");
+        plusLabel.setStyle("-fx-font-size: 60px; -fx-text-fill: #999999;");
 
-        Rectangle iconPlaceholder = new Rectangle(60, 40);
-        iconPlaceholder.setFill(Color.TRANSPARENT);
-        iconPlaceholder.setStroke(Color.GRAY);
-        iconPlaceholder.setStrokeWidth(1);
-
-        Label deckLabel = new Label(name);
-        deckLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
-
-        content.getChildren().addAll(iconPlaceholder, deckLabel);
-
-        // Full-size overlay for top button/checkmark — pickOnBounds=false so
-        // transparent areas don't swallow clicks intended for the tile
-        HBox topRow = new HBox();
-        topRow.setPadding(new Insets(8));
-        topRow.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        topRow.setPickOnBounds(false);
-
-        if (selectMode) {
-            Label check = new Label(isSelected ? "✔" : "○");
-            check.setStyle("-fx-font-size: 14px; -fx-text-fill: " + (isSelected ? "#2196F3" : "#bbbbbb") + ";");
-            StackPane.setAlignment(topRow, Pos.TOP_LEFT);
-            topRow.getChildren().add(check);
-        } else {
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-            Button exportBtn = new Button("↑");
-            exportBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
-            exportBtn.setOnMouseEntered(ev -> exportBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #2196F3; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
-            exportBtn.setOnMouseExited(ev -> exportBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
-            exportBtn.setOnAction(e -> {
-                e.consume();
-                if (onExportDeckRequested != null) onExportDeckRequested.accept(name);
-            });
-            StackPane.setAlignment(topRow, Pos.TOP_LEFT);
-            topRow.getChildren().addAll(spacer, exportBtn);
-        }
-
-        tile.getChildren().addAll(content, topRow);
-
+        tile.getChildren().add(plusLabel);
         tile.setOnMouseClicked(e -> {
-            if (selectMode) {
-                if (selectedDeckNames.contains(name)) selectedDeckNames.remove(name);
-                else selectedDeckNames.add(name);
-                updateExportSelectedLabel();
-                renderDecks(currentDeckNames);
-            } else {
-                if (onDeckSelected != null) onDeckSelected.accept(name);
+            if (onCreateDeckRequested != null) {
+                onCreateDeckRequested.run();
             }
         });
 
-        return tile;
+        deckGrid.getChildren().add(tile);
+    }
+
+    private void addDeckTile(Deck deck) {
+        VBox tile = new VBox();
+        tile.setPrefSize(150, 200);
+        tile.setPadding(new Insets(5));
+        tile.setAlignment(Pos.TOP_CENTER);
+        tile.setSpacing(10);
+        tile.setStyle("-fx-background-color: white; " +
+                     "-fx-border-color: #cccccc; " +
+                     "-fx-border-radius: 15; " +
+                     "-fx-background-radius: 15; " +
+                     "-fx-cursor: hand;");
+
+        // Action buttons at the top
+        HBox topBox = new HBox();
+        topBox.setAlignment(Pos.TOP_CENTER);
+
+        Button editBtn = new Button("✎");
+        editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+        editBtn.setOnMouseEntered(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+        editBtn.setOnMouseExited(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+        editBtn.setOnAction(e -> {
+            e.consume();
+            if (onEditDeckRequested != null) {
+                onEditDeckRequested.accept(deck);
+            }
+        });
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Button deleteBtn = new Button("✖");
+        deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+        deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #dc3545; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+        deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+        deleteBtn.setOnAction(e -> {
+            e.consume();
+            if (onDeleteDeckRequested != null) {
+                onDeleteDeckRequested.accept(deck);
+            }
+        });
+
+        topBox.getChildren().addAll(editBtn, spacer, deleteBtn);
+
+        // Icon
+        Image iconImage = IconManager.getIcon(deck.getIconId());
+        ImageView iconView = new ImageView(iconImage);
+        iconView.setFitWidth(100);
+        iconView.setFitHeight(100);
+        iconView.setPreserveRatio(true);
+
+        VBox iconContainer = new VBox();
+        iconContainer.setAlignment(Pos.CENTER);
+        iconContainer.setMinWidth(100);
+        iconContainer.setMinHeight(100);
+        iconContainer.getChildren().add(iconView);
+
+        Label deckLabel = new Label(deck.getName());
+        deckLabel.setStyle("-fx-font-weight: bold;");
+        deckLabel.setWrapText(true);
+        deckLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        tile.getChildren().addAll(topBox, iconContainer, deckLabel);
+
+        tile.setOnMouseClicked(e -> {
+            if (onDeckSelected != null) {
+                onDeckSelected.accept(deck);
+            }
+        });
+
+        deckGrid.getChildren().add(tile);
     }
 
     // ── helpers ────────────────────────────────────────────────────────────
@@ -202,8 +185,9 @@ public class HomeView extends VBox {
 
     // ── callback setters ───────────────────────────────────────────────────
 
-    public void setOnDeckSelected(Consumer<String> cb) { this.onDeckSelected = cb; }
+    public void setOnDeckSelected(Consumer<Deck> cb) { this.onDeckSelected = cb; }
+    public void setOnEditDeckRequested(Consumer<Deck> cb) { this.onEditDeckRequested = cb; }
+    public void setOnDeleteDeckRequested(Consumer<Deck> cb) { this.onDeleteDeckRequested = cb; }
+    public void setOnCreateDeckRequested(Runnable cb) { this.onCreateDeckRequested = cb; }
     public void setOnImportDeckRequested(Runnable cb) { this.onImportDeckRequested = cb; }
-    public void setOnExportDeckRequested(Consumer<String> cb) { this.onExportDeckRequested = cb; }
-    public void setOnExportSelectedDecksRequested(Consumer<List<String>> cb) { this.onExportSelectedDecksRequested = cb; }
 }

@@ -12,7 +12,8 @@ public class Model {
         this.decks = persistence.loadDecks();
 
         if (decks.isEmpty()) {
-            Deck dummyDeck = new Deck("English");
+            // Initial Dummy Data if no file exists
+            Deck dummyDeck = new Deck("English", "Basic English vocabulary");
             dummyDeck.addCard(new Card("Was ist Apfel auf Englisch?", "Apple"));
             dummyDeck.addCard(new Card("Was ist Hund auf Englisch?", "Dog"));
             decks.add(dummyDeck);
@@ -24,14 +25,24 @@ public class Model {
         return new ArrayList<>(decks);
     }
 
+    public void addDeck(Deck deck) {
+        this.decks.add(deck);
+        persistence.saveDecks(decks);
+    }
+
     public void updateDeck(Deck updatedDeck) {
         for (int i = 0; i < decks.size(); i++) {
-            if (decks.get(i).getName().equals(updatedDeck.getName())) {
+            if (decks.get(i).getId().equals(updatedDeck.getId())) {
                 decks.set(i, updatedDeck);
                 persistence.saveDecks(decks);
                 return;
             }
         }
+    }
+
+    public void removeDeck(Deck deck) {
+        decks.removeIf(d -> d.getId().equals(deck.getId()));
+        persistence.saveDecks(decks);
     }
 
     /**

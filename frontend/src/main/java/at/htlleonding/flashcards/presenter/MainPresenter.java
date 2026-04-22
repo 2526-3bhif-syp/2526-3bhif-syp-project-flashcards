@@ -27,8 +27,10 @@ public class MainPresenter {
         HomeView homeView = new HomeView();
         homeView.setOnDeckSelected(this::handleDeckSelected);
         homeView.setOnImportDeckRequested(() -> handleDeckImportRequested(homeView));
-        homeView.setOnExportDeckRequested(deckName -> handleDeckExportRequested(deckName, homeView));
-        homeView.setOnExportSelectedDecksRequested(names -> handleDecksExportRequested(names, homeView));
+        homeView.setOnCreateDeckRequested(() -> handleCreateDeckRequested(homeView));
+        homeView.setOnEditDeckRequested(deck -> handleEditDeckRequested(homeView, deck));
+        homeView.setOnDeleteDeckRequested(deck -> handleDeleteDeckRequested(homeView, deck));
+        homeView.renderDecks(model.getDecks());
 
         FlashcardsView flashcardsView = new FlashcardsView();
         flashcardsView.setOnAddCardRequested(() -> handleAddCardRequested(flashcardsView));
@@ -48,7 +50,7 @@ public class MainPresenter {
         navigateTo("Home", false);
     }
 
-    // ── Home: deck import / export ─────────────────────────────────────────
+    // ── Home: deck import ──────────────────────────────────────────────────
 
     private void handleDeckImportRequested(HomeView homeView) {
         FileChooser fc = new FileChooser();
@@ -69,28 +71,42 @@ public class MainPresenter {
         }
     }
 
-    private void handleDeckExportRequested(String deckName, HomeView homeView) {
-        Deck deck = findDeck(deckName);
-        if (deck == null) return;
-        File file = saveDialog(homeView, deckName + ".json");
-        if (file == null) return;
-        try {
-            model.getPersistence().exportToJSON(deck, file);
-        } catch (IOException e) {
-            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
-        }
+    // ── Home: deck CRUD ────────────────────────────────────────────────────
+
+    private void handleCreateDeckRequested(HomeView homeView) {
+        Stage owner = (Stage) homeView.getScene().getWindow();
+        CreateDeckDialog dialog = new CreateDeckDialog(owner);
+        dialog.showAndWait().ifPresent(deckResult -> {
+            Deck newDeck = new Deck(deckResult.name(), deckResult.description(), deckResult.iconId());
+            model.addDeck(newDeck);
+            homeView.renderDecks(model.getDecks());
+        });
     }
 
-    private void handleDecksExportRequested(List<String> deckNames, HomeView homeView) {
-        List<Deck> decks = deckNames.stream().map(this::findDeck).filter(Objects::nonNull).collect(Collectors.toList());
-        if (decks.isEmpty()) return;
-        File file = saveDialog(homeView, "decks_export.json");
-        if (file == null) return;
-        try {
-            model.getPersistence().exportDecksToJSON(decks, file);
-        } catch (IOException e) {
-            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
-        }
+    private void handleEditDeckRequested(HomeView homeView, Deck deck) {
+        Stage owner = (Stage) homeView.getScene().getWindow();
+        CreateDeckDialog dialog = new CreateDeckDialog(owner, deck);
+        dialog.showAndWait().ifPresent(deckResult -> {
+            deck.setName(deckResult.name());
+            deck.setDescription(deckResult.description());
+            deck.setIconId(deckResult.iconId());
+            model.updateDeck(deck);
+            homeView.renderDecks(model.getDecks());
+        });
+    }
+
+    private void handleDeleteDeckRequested(HomeView homeView, Deck deck) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Deck");
+        alert.setHeaderText("Are you sure you want to delete the deck \"" + deck.getName() + "\"?");
+        alert.setContentText("This deck contains " + deck.getCardCount() + " cards. This action cannot be undone.");
+
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == javafx.scene.control.ButtonType.OK) {
+                model.removeDeck(deck);
+                homeView.renderDecks(model.getDecks());
+            }
+        });
     }
 
     // ── Flashcards: card import / export ───────────────────────────────────
@@ -104,9 +120,12 @@ public class MainPresenter {
     }
 
     private void performImport(File file, FlashcardsView flashcardsView) {
-        var decks = model.getDecks();
-        if (decks.isEmpty()) return;
-        var deck = decks.get(0);
+        String currentDeckName = flashcardsView.getDeckTitle();
+        Deck deck = model.getDecks().stream()
+                .filter(d -> d.getName().equals(currentDeckName))
+                .findFirst()
+                .orElse(null);
+        if (deck == null) return;
 
         try {
             Deck importedDeck = model.getPersistence().importFromJSON(file);
@@ -190,9 +209,14 @@ public class MainPresenter {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
         CreateCardDialog dialog = new CreateCardDialog(owner);
         dialog.showAndWait().ifPresent(newCard -> {
-            var decks = model.getDecks();
-            if (!decks.isEmpty()) {
-                var deck = decks.get(0);
+            // Find the currently displayed deck
+            String currentDeckName = ((FlashcardsView) views.get("Flashcards")).getDeckTitle();
+            Deck deck = model.getDecks().stream()
+                    .filter(d -> d.getName().equals(currentDeckName))
+                    .findFirst()
+                    .orElse(null);
+
+            if (deck != null) {
                 deck.addCard(newCard);
                 model.updateDeck(deck);
                 flashcardsView.renderCards(deck.getCards());
@@ -204,9 +228,13 @@ public class MainPresenter {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
         CreateCardDialog dialog = new CreateCardDialog(owner, cardToEdit);
         dialog.showAndWait().ifPresent(updatedCard -> {
-            var decks = model.getDecks();
-            if (!decks.isEmpty()) {
-                var deck = decks.get(0);
+            String currentDeckName = flashcardsView.getDeckTitle();
+            Deck deck = model.getDecks().stream()
+                    .filter(d -> d.getName().equals(currentDeckName))
+                    .findFirst()
+                    .orElse(null);
+
+            if (deck != null) {
                 deck.updateCard(updatedCard);
                 model.updateDeck(deck);
                 flashcardsView.renderCards(deck.getCards());
@@ -215,9 +243,13 @@ public class MainPresenter {
     }
 
     private void handleDeleteCardRequested(FlashcardsView flashcardsView, Card cardToDelete) {
-        var decks = model.getDecks();
-        if (!decks.isEmpty()) {
-            var deck = decks.get(0);
+        String currentDeckName = flashcardsView.getDeckTitle();
+        Deck deck = model.getDecks().stream()
+                .filter(d -> d.getName().equals(currentDeckName))
+                .findFirst()
+                .orElse(null);
+
+        if (deck != null) {
             deck.removeCard(cardToDelete);
             model.updateDeck(deck);
             flashcardsView.renderCards(deck.getCards());
@@ -226,10 +258,9 @@ public class MainPresenter {
 
     // ── navigation ─────────────────────────────────────────────────────────
 
-    private void handleDeckSelected(String deckName) {
-        Deck deck = findDeck(deckName);
-        if (deck == null) return;
+    private void handleDeckSelected(Deck deck) {
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
+        fView.setDeckInfo(deck.getName(), deck.getDescription() != null ? deck.getDescription() : "", deck.getIconId());
         fView.renderCards(deck.getCards());
         navigateTo("Flashcards", true);
     }
@@ -242,16 +273,6 @@ public class MainPresenter {
 
     private void navigateTo(String destination, boolean addToHistory) {
         if (destination.equals(currentViewName)) return;
-
-        if (destination.equals("Home")) {
-            refreshHomeView();
-        } else if (destination.equals("Flashcards")) {
-            var decks = model.getDecks();
-            if (!decks.isEmpty()) {
-                FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
-                fView.renderCards(decks.get(0).getCards());
-            }
-        }
 
         Node targetView = views.get(destination);
         if (targetView != null) {
@@ -292,12 +313,7 @@ public class MainPresenter {
 
     private void refreshHomeView() {
         HomeView hv = (HomeView) views.get("Home");
-        List<String> names = model.getDecks().stream().map(Deck::getName).toList();
-        hv.renderDecks(names);
-    }
-
-    private Deck findDeck(String name) {
-        return model.getDecks().stream().filter(d -> d.getName().equals(name)).findFirst().orElse(null);
+        hv.renderDecks(model.getDecks());
     }
 
     private File saveDialog(Node anchor, String initialName) {

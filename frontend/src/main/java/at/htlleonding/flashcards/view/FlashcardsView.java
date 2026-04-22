@@ -4,6 +4,8 @@ import at.htlleonding.flashcards.model.Card;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 
@@ -26,13 +28,16 @@ public class FlashcardsView extends HBox {
     private VBox detailPanel;
     private Button selectToggleBtn;
     private Button exportSelectedBtn;
+    private Label deckTitleLabel;
+    private Label deckDescriptionLabel;
+    private ImageView iconView;
 
     // ── callbacks ──────────────────────────────────────────────────────────
     private Runnable onAddCardRequested;
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
     private Runnable onImportRequested;
-    private Consumer<Card> onExportCardRequested; // export single card
+    private Consumer<Card> onExportCardRequested;
     private Consumer<List<Card>> onExportSelectedCardsRequested;
 
     public FlashcardsView() {
@@ -50,6 +55,28 @@ public class FlashcardsView extends HBox {
     // ── layout builders ────────────────────────────────────────────────────
 
     private VBox buildLeftSide() {
+        // Deck info header
+        deckTitleLabel = new Label("");
+        deckTitleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        deckDescriptionLabel = new Label("");
+        deckDescriptionLabel.setStyle("-fx-text-fill: #666666; -fx-font-size: 13px;");
+        deckDescriptionLabel.setWrapText(true);
+
+        Image defaultIcon = IconManager.getIcon("default");
+        iconView = new ImageView(defaultIcon);
+        iconView.setFitWidth(36);
+        iconView.setFitHeight(36);
+        iconView.setPreserveRatio(true);
+
+        VBox titleBox = new VBox(2, deckTitleLabel, deckDescriptionLabel);
+        titleBox.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(titleBox, Priority.ALWAYS);
+
+        HBox deckHeader = new HBox(10, iconView, titleBox);
+        deckHeader.setAlignment(Pos.CENTER_LEFT);
+
+        // Action bar
         HBox actionBar = new HBox(10);
         actionBar.setAlignment(Pos.CENTER_LEFT);
 
@@ -86,7 +113,7 @@ public class FlashcardsView extends HBox {
 
         addPlusCard();
 
-        VBox left = new VBox(15, actionBar, scrollPane);
+        VBox left = new VBox(10, deckHeader, actionBar, scrollPane);
         return left;
     }
 
@@ -208,6 +235,19 @@ public class FlashcardsView extends HBox {
     private void updateExportSelectedLabel() {
         exportSelectedBtn.setText("Export Selected (" + selectedCards.size() + ")");
         exportSelectedBtn.setDisable(selectedCards.isEmpty());
+    }
+
+    // ── deck info ──────────────────────────────────────────────────────────
+
+    public String getDeckTitle() {
+        return deckTitleLabel.getText();
+    }
+
+    public void setDeckInfo(String title, String description, String iconId) {
+        deckTitleLabel.setText(title);
+        deckDescriptionLabel.setText(description);
+        Image iconImage = IconManager.getIcon(iconId);
+        iconView.setImage(iconImage);
     }
 
     // ── card rendering ─────────────────────────────────────────────────────
