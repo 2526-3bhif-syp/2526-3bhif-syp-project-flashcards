@@ -118,27 +118,44 @@ public class HomeView extends VBox {
 
     // ── tile builder ───────────────────────────────────────────────────────
 
-    private VBox buildDeckTile(String name) {
+    private StackPane buildDeckTile(String name) {
         boolean isSelected = selectedDeckNames.contains(name);
         String borderColor = isSelected ? "#2196F3" : "#cccccc";
-        String bgColor = isSelected ? "#E3F2FD" : "white";
+        String bgColor     = isSelected ? "#E3F2FD" : "white";
         String borderWidth = isSelected ? "2" : "1";
 
-        VBox tile = new VBox();
+        StackPane tile = new StackPane();
         tile.setPrefSize(150, 200);
-        tile.setAlignment(Pos.TOP_CENTER);
-        tile.setSpacing(0);
         tile.setStyle(String.format(
             "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: %s; -fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
             bgColor, borderColor, borderWidth
         ));
 
-        // Top row: checkmark (select mode) or export button (normal mode)
+        // Centered content — natural preferred size so StackPane truly centers it
+        VBox content = new VBox(10);
+        content.setAlignment(Pos.CENTER);
+
+        Rectangle iconPlaceholder = new Rectangle(60, 40);
+        iconPlaceholder.setFill(Color.TRANSPARENT);
+        iconPlaceholder.setStroke(Color.GRAY);
+        iconPlaceholder.setStrokeWidth(1);
+
+        Label deckLabel = new Label(name);
+        deckLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
+
+        content.getChildren().addAll(iconPlaceholder, deckLabel);
+
+        // Full-size overlay for top button/checkmark — pickOnBounds=false so
+        // transparent areas don't swallow clicks intended for the tile
         HBox topRow = new HBox();
-        topRow.setPadding(new Insets(8, 8, 0, 8));
+        topRow.setPadding(new Insets(8));
+        topRow.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        topRow.setPickOnBounds(false);
+
         if (selectMode) {
             Label check = new Label(isSelected ? "✔" : "○");
             check.setStyle("-fx-font-size: 14px; -fx-text-fill: " + (isSelected ? "#2196F3" : "#bbbbbb") + ";");
+            StackPane.setAlignment(topRow, Pos.TOP_LEFT);
             topRow.getChildren().add(check);
         } else {
             Region spacer = new Region();
@@ -151,26 +168,11 @@ public class HomeView extends VBox {
                 e.consume();
                 if (onExportDeckRequested != null) onExportDeckRequested.accept(name);
             });
+            StackPane.setAlignment(topRow, Pos.TOP_LEFT);
             topRow.getChildren().addAll(spacer, exportBtn);
         }
 
-        // Center icon + label
-        VBox center = new VBox(10);
-        center.setAlignment(Pos.CENTER);
-        center.setPadding(new Insets(10, 0, 10, 0));
-        VBox.setVgrow(center, Priority.ALWAYS);
-
-        Rectangle iconPlaceholder = new Rectangle(60, 40);
-        iconPlaceholder.setFill(Color.TRANSPARENT);
-        iconPlaceholder.setStroke(Color.GRAY);
-        iconPlaceholder.setStrokeWidth(1);
-
-        Label deckLabel = new Label(name);
-        deckLabel.setStyle("-fx-font-weight: bold;");
-
-        center.getChildren().addAll(iconPlaceholder, deckLabel);
-
-        tile.getChildren().addAll(topRow, center);
+        tile.getChildren().addAll(content, topRow);
 
         tile.setOnMouseClicked(e -> {
             if (selectMode) {
