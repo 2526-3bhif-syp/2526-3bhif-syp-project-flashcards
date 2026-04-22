@@ -193,9 +193,8 @@ public class MainPresenter {
     }
 
     private void handleDeckSelected(String deckName) {
-        var deck = model.getDecks().get(0); 
+        var deck = model.getDecks().get(0);
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
-        fView.setDeckInfo(deck.getName(), "This deck is about basic " + deck.getName().toLowerCase() + " phrases.");
         fView.renderCards(deck.getCards());
         navigateTo("Flashcards", true);
     }
@@ -205,10 +204,8 @@ public class MainPresenter {
         if (destination.equals("Flashcards")) {
             var decks = model.getDecks();
             if (!decks.isEmpty()) {
-                var deck = decks.get(0);
                 FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
-                fView.setDeckInfo(deck.getName(), "This deck is about basic " + deck.getName().toLowerCase() + " phrases.");
-                fView.renderCards(deck.getCards());
+                fView.renderCards(decks.get(0).getCards());
             }
         }
         Node targetView = views.get(destination);

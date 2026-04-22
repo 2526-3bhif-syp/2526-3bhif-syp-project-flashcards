@@ -3,23 +3,17 @@ package at.htlleonding.flashcards.view;
 import at.htlleonding.flashcards.model.Card;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class FlashcardsView extends HBox {
-    private VBox deckInfoSidebar;
     private FlowPane cardsGrid;
-    private Label deckTitleLabel;
-    private Label deckDescriptionLabel;
+    private VBox detailPanel;
+
     private Runnable onAddCardRequested;
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
@@ -28,96 +22,106 @@ public class FlashcardsView extends HBox {
 
     public FlashcardsView() {
         this.setPadding(new Insets(20));
-        this.setSpacing(30);
+        this.setSpacing(20);
 
-        initSidebar();
-        initCardsGrid();
+        VBox leftSide = buildLeftSide();
+        HBox.setHgrow(leftSide, Priority.ALWAYS);
 
-        this.getChildren().addAll(deckInfoSidebar, cardsGrid);
+        detailPanel = buildDetailPanel();
+
+        this.getChildren().addAll(leftSide, detailPanel);
     }
 
-    private void initSidebar() {
-        deckInfoSidebar = new VBox();
-        deckInfoSidebar.setPrefWidth(200);
-        deckInfoSidebar.setSpacing(15);
-        deckInfoSidebar.setPadding(new Insets(10));
+    private VBox buildLeftSide() {
+        HBox actionBar = new HBox(10);
+        actionBar.setAlignment(Pos.CENTER_LEFT);
 
-        // Icon Platzhalter
-        Rectangle iconPlaceholder = new Rectangle(80, 60);
-        iconPlaceholder.setFill(Color.TRANSPARENT);
-        iconPlaceholder.setStroke(Color.GRAY);
-        iconPlaceholder.setStrokeWidth(1);
+        Button importBtn = createActionButton("Import");
+        Button exportBtn = createActionButton("Export");
+        importBtn.setOnAction(e -> { if (onImportRequested != null) onImportRequested.run(); });
+        exportBtn.setOnAction(e -> { if (onExportRequested != null) onExportRequested.run(); });
 
-        deckTitleLabel = new Label("Deck Title");
-        deckTitleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        actionBar.getChildren().addAll(importBtn, exportBtn);
 
-        deckDescriptionLabel = new Label("No description available.");
-        deckDescriptionLabel.setWrapText(true);
-        deckDescriptionLabel.setStyle("-fx-text-fill: #666666;");
-
-        VBox buttonBox = new VBox(10);
-        Button studyBtn = createSidebarButton("Study");
-        Button exportBtn = createSidebarButton("Export");
-        Button importBtn = createSidebarButton("Import");
-
-        importBtn.setOnAction(e -> {
-            if (onImportRequested != null) onImportRequested.run();
-        });
-        exportBtn.setOnAction(e -> {
-            if (onExportRequested != null) onExportRequested.run();
-        });
-
-        buttonBox.getChildren().addAll(studyBtn, exportBtn, importBtn);
-
-        deckInfoSidebar.getChildren().addAll(iconPlaceholder, deckTitleLabel, deckDescriptionLabel, new Region(), buttonBox);
-        VBox.setVgrow(deckInfoSidebar.getChildren().get(3), Priority.ALWAYS); // Spacer
-    }
-
-    private void initCardsGrid() {
         cardsGrid = new FlowPane();
         cardsGrid.setHgap(15);
         cardsGrid.setVgap(15);
         cardsGrid.setPadding(new Insets(10));
-        cardsGrid.setPrefWrapLength(600); // Breite setzen, damit FlowPane korrekt umbricht
+        cardsGrid.setPrefWrapLength(600);
 
         ScrollPane scrollPane = new ScrollPane(cardsGrid);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
-        
-        HBox.setHgrow(scrollPane, Priority.ALWAYS);
-        this.getChildren().add(scrollPane);
-        
-        // Initialer "+" Button
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
+
         addPlusCard();
+
+        VBox left = new VBox(15, actionBar, scrollPane);
+        return left;
     }
 
-    private Button createSidebarButton(String text) {
+    private VBox buildDetailPanel() {
+        VBox panel = new VBox();
+        panel.setPrefWidth(220);
+        panel.setMinWidth(220);
+        panel.setPadding(new Insets(15));
+        panel.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-radius: 10; -fx-background-radius: 10;");
+
+        Label placeholder = new Label("Select a card\nto see details");
+        placeholder.setStyle("-fx-text-fill: #999999; -fx-font-size: 14px;");
+        placeholder.setAlignment(Pos.CENTER);
+        placeholder.setMaxWidth(Double.MAX_VALUE);
+        placeholder.setTextAlignment(TextAlignment.CENTER);
+        VBox.setVgrow(placeholder, Priority.ALWAYS);
+
+        panel.getChildren().add(placeholder);
+        return panel;
+    }
+
+    private void showCardDetail(Card card) {
+        detailPanel.getChildren().clear();
+
+        Label qHeader = new Label("Question");
+        qHeader.setStyle("-fx-font-size: 11px; -fx-text-fill: #888888; -fx-font-weight: bold;");
+
+        Label qText = new Label(card.getQuestion());
+        qText.setWrapText(true);
+        qText.setStyle("-fx-font-size: 14px; -fx-text-fill: #222222;");
+
+        Separator sep1 = new Separator();
+        VBox.setMargin(sep1, new Insets(8, 0, 8, 0));
+
+        Label aHeader = new Label("Answer");
+        aHeader.setStyle("-fx-font-size: 11px; -fx-text-fill: #888888; -fx-font-weight: bold;");
+
+        Label aText = new Label(card.getAnswer());
+        aText.setWrapText(true);
+        aText.setStyle("-fx-font-size: 14px; -fx-text-fill: #222222;");
+
+        detailPanel.getChildren().addAll(qHeader, qText, sep1, aHeader, aText);
+
+        if (card.getTags() != null && !card.getTags().isEmpty()) {
+            Separator sep2 = new Separator();
+            VBox.setMargin(sep2, new Insets(8, 0, 8, 0));
+
+            Label tHeader = new Label("Tags");
+            tHeader.setStyle("-fx-font-size: 11px; -fx-text-fill: #888888; -fx-font-weight: bold;");
+
+            Label tText = new Label(String.join(", ", card.getTags()));
+            tText.setWrapText(true);
+            tText.setStyle("-fx-font-size: 13px; -fx-text-fill: #555555;");
+
+            detailPanel.getChildren().addAll(sep2, tHeader, tText);
+        }
+    }
+
+    private Button createActionButton(String text) {
         Button btn = new Button(text);
-        btn.setMaxWidth(Double.MAX_VALUE);
-        
-        String defaultStyle = "-fx-background-color: #2196F3; -fx-border-color: #1976D2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;";
-        String hoverStyle = "-fx-background-color: #1565C0; -fx-border-color: #0D47A1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);";
-        
+        String defaultStyle = "-fx-background-color: #2196F3; -fx-border-color: #1976D2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;";
+        String hoverStyle   = "-fx-background-color: #1565C0; -fx-border-color: #0D47A1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;";
         btn.setStyle(defaultStyle);
-
-        javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(200), btn);
-        scaleTransition.setFromX(1.0);
-        scaleTransition.setFromY(1.0);
-        scaleTransition.setToX(1.05);
-        scaleTransition.setToY(1.05);
-
-        btn.setOnMouseEntered(e -> {
-            btn.setStyle(hoverStyle);
-            scaleTransition.setRate(1.0);
-            scaleTransition.play();
-        });
-
-        btn.setOnMouseExited(e -> {
-            btn.setStyle(defaultStyle);
-            scaleTransition.setRate(-1.0);
-            scaleTransition.play();
-        });
-
+        btn.setOnMouseEntered(e -> btn.setStyle(hoverStyle));
+        btn.setOnMouseExited(e -> btn.setStyle(defaultStyle));
         return btn;
     }
 
@@ -129,78 +133,46 @@ public class FlashcardsView extends HBox {
 
         Label plusLabel = new Label("+");
         plusLabel.setStyle("-fx-font-size: 40px; -fx-text-fill: #999999;");
-
         plusCard.getChildren().add(plusLabel);
+
         plusCard.setOnMouseClicked(e -> {
-            if (onAddCardRequested != null) {
-                onAddCardRequested.run();
-            }
+            if (onAddCardRequested != null) onAddCardRequested.run();
         });
 
         cardsGrid.getChildren().add(plusCard);
     }
 
-    public void setDeckInfo(String title, String description) {
-        deckTitleLabel.setText(title);
-        deckDescriptionLabel.setText(description);
-    }
-
-    public void setOnAddCardRequested(Runnable callback) {
-        this.onAddCardRequested = callback;
-    }
-
-    public void setOnEditCardRequested(Consumer<Card> callback) {
-        this.onEditCardRequested = callback;
-    }
-
-    public void setOnDeleteCardRequested(Consumer<Card> callback) {
-        this.onDeleteCardRequested = callback;
-    }
-
-    public void setOnImportRequested(Runnable callback) {
-        this.onImportRequested = callback;
-    }
-
-    public void setOnExportRequested(Runnable callback) {
-        this.onExportRequested = callback;
-    }
-
     public void renderCards(List<Card> cards) {
-        // Erst alles außer dem "+" Button entfernen
         cardsGrid.getChildren().clear();
         addPlusCard();
 
         for (Card card : cards) {
             VBox cardTile = new VBox();
             cardTile.setPrefSize(120, 160);
-            cardTile.setPadding(new Insets(5)); // Reduced padding to move closer to corners
+            cardTile.setPadding(new Insets(5));
             cardTile.setAlignment(Pos.TOP_CENTER);
             cardTile.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;");
-            
+
             HBox topBox = new HBox();
-            
+
             Button editBtn = new Button("✎");
             editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
             editBtn.setOnMouseEntered(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
             editBtn.setOnMouseExited(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
-            
             editBtn.setOnAction(e -> {
                 e.consume();
-                if (onEditCardRequested != null) {
-                    onEditCardRequested.accept(card);
-                }
+                if (onEditCardRequested != null) onEditCardRequested.accept(card);
             });
-            
+
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
-            
+
             Button deleteBtn = new Button("✖");
             deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
             deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #dc3545; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
             deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
-            
             deleteBtn.setOnAction(e -> {
-                e.consume(); // Prevent launching edit mode
+                e.consume();
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Delete Card");
                 alert.setHeaderText("Delete Flashcard");
@@ -211,27 +183,29 @@ public class FlashcardsView extends HBox {
                     }
                 });
             });
+
             topBox.getChildren().addAll(editBtn, spacer, deleteBtn);
-            
+
             Label qLabel = new Label(card.getQuestion());
             qLabel.setWrapText(true);
-            qLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+            qLabel.setTextAlignment(TextAlignment.CENTER);
             qLabel.setAlignment(Pos.CENTER);
             qLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             qLabel.setStyle("-fx-text-fill: black;");
-            
             VBox.setVgrow(qLabel, Priority.ALWAYS);
-            
+
             cardTile.getChildren().addAll(topBox, qLabel);
-            
-            // Editable by clicking the card
-            cardTile.setOnMouseClicked(e -> {
-                if (onEditCardRequested != null) {
-                    onEditCardRequested.accept(card);
-                }
-            });
-            
+
+            // Click tile → show details in right panel
+            cardTile.setOnMouseClicked(e -> showCardDetail(card));
+
             cardsGrid.getChildren().add(cardTile);
         }
     }
+
+    public void setOnAddCardRequested(Runnable callback) { this.onAddCardRequested = callback; }
+    public void setOnEditCardRequested(Consumer<Card> callback) { this.onEditCardRequested = callback; }
+    public void setOnDeleteCardRequested(Consumer<Card> callback) { this.onDeleteCardRequested = callback; }
+    public void setOnImportRequested(Runnable callback) { this.onImportRequested = callback; }
+    public void setOnExportRequested(Runnable callback) { this.onExportRequested = callback; }
 }
