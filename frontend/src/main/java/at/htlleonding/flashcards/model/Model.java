@@ -34,12 +34,17 @@ public class Model {
     
     public void updateDeck(Deck updatedDeck) {
         for (int i = 0; i < decks.size(); i++) {
-            if (decks.get(i).getName().equals(updatedDeck.getName())) {
+            if (decks.get(i).getId().equals(updatedDeck.getId())) {
                 decks.set(i, updatedDeck);
                 save(); // Hier speichern
                 return;
             }
         }
+    }
+
+    public void removeDeck(Deck deck) {
+        decks.removeIf(d -> d.getId().equals(deck.getId()));
+        save();
     }
 
     private void save() {

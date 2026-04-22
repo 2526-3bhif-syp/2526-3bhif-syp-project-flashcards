@@ -25,6 +25,8 @@ public class MainPresenter {
         HomeView homeView = new HomeView();
         homeView.setOnDeckSelected(this::handleDeckSelected);
         homeView.setOnCreateDeckRequested(() -> handleCreateDeckRequested(homeView));
+        homeView.setOnEditDeckRequested(deck -> handleEditDeckRequested(homeView, deck));
+        homeView.setOnDeleteDeckRequested(deck -> handleDeleteDeckRequested(homeView, deck));
         homeView.renderDecks(model.getDecks());
         
         FlashcardsView flashcardsView = new FlashcardsView();
@@ -43,6 +45,31 @@ public class MainPresenter {
         
         // Initialer Zustand
         navigateTo("Home", false);
+    }
+
+    private void handleEditDeckRequested(HomeView homeView, Deck deck) {
+        Stage owner = (Stage) homeView.getScene().getWindow();
+        CreateDeckDialog dialog = new CreateDeckDialog(owner, deck);
+        dialog.showAndWait().ifPresent(deckResult -> {
+            deck.setName(deckResult.name());
+            deck.setDescription(deckResult.description());
+            model.updateDeck(deck);
+            homeView.renderDecks(model.getDecks());
+        });
+    }
+
+    private void handleDeleteDeckRequested(HomeView homeView, Deck deck) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Deck");
+        alert.setHeaderText("Are you sure you want to delete the deck \"" + deck.getName() + "\"?");
+        alert.setContentText("This deck contains " + deck.getCardCount() + " cards. This action cannot be undone.");
+
+        alert.showAndWait().ifPresent(buttonType -> {
+            if (buttonType == javafx.scene.control.ButtonType.OK) {
+                model.removeDeck(deck);
+                homeView.renderDecks(model.getDecks());
+            }
+        });
     }
 
     private void handleAddCardRequested(FlashcardsView flashcardsView) {
@@ -116,13 +143,7 @@ public class MainPresenter {
         }
     }
 
-    private void handleDeckSelected(String deckName) {
-        // Deck aus dem Modell anhand des Namens finden
-        Deck deck = model.getDecks().stream()
-                .filter(d -> d.getName().equals(deckName))
-                .findFirst()
-                .orElse(model.getDecks().get(0)); 
-        
+    private void handleDeckSelected(Deck deck) {
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
         fView.setDeckInfo(deck.getName(), deck.getDescription() != null ? deck.getDescription() : "");
         fView.renderCards(deck.getCards());

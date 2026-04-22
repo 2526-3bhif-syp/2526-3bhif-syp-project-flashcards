@@ -1,5 +1,6 @@
 package at.htlleonding.flashcards.view;
 
+import at.htlleonding.flashcards.model.Deck;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,10 +22,19 @@ public class CreateDeckDialog {
     public static record DeckResult(String name, String description) {}
 
     public CreateDeckDialog(Stage owner) {
+        this(owner, null);
+    }
+
+    public CreateDeckDialog(Stage owner, Deck deckToEdit) {
         stage = new Stage();
         stage.initOwner(owner);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Create New Deck");
+        
+        if (deckToEdit == null) {
+            stage.setTitle("Create New Deck");
+        } else {
+            stage.setTitle("Edit Deck");
+        }
 
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
@@ -42,12 +52,20 @@ public class CreateDeckDialog {
         descriptionArea.setPrefRowCount(3);
         descriptionArea.setWrapText(true);
 
+        if (deckToEdit != null) {
+            nameField.setText(deckToEdit.getName());
+            descriptionArea.setText(deckToEdit.getDescription());
+        }
+
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         
-        saveButton = new Button("Create Deck");
+        saveButton = new Button(deckToEdit == null ? "Create Deck" : "Save Changes");
         saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
-        saveButton.setDisable(true);
+        
+        if (deckToEdit == null) {
+            saveButton.setDisable(true);
+        }
         
         Button cancelButton = new Button("Cancel");
         cancelButton.setOnAction(e -> stage.close());

@@ -3,17 +3,21 @@ package at.htlleonding.flashcards.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Deck {
+    private String id;
     private String name;
     private String description;
     private List<Card> cards;
 
     public Deck() {
+        this.id = UUID.randomUUID().toString();
         this.cards = new ArrayList<>();
     }
 
     public Deck(String name, String description) {
+        this.id = UUID.randomUUID().toString();
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Deck name is mandatory.");
         }
@@ -45,6 +49,9 @@ public class Deck {
     }
 
     // Getters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 

@@ -113,5 +113,15 @@ Wo und wie werden die Karten gespeichert?
 * Schreibe diese info in das passende agenten files: Du kannst alle unsere user stories mit der gh cli sehen, nicht mehr durch locale markdown dateien in spec/stories
 
 * Plane die implementierung für Card Collections; Stelle mir Fragen wenn du dir unsicher bist und warte auf meine Bestätigung bevor du anfängst zu coden
-
+ 
 * 1: Beim erstellen eines Decks soll man Namen und Beschreibung angeben können; 2: Nein, Löschen und Editieren von Decks soll jetzt noch nicht implementiert werden; 3. Nein, wenn ein neues Deck erstellt wird, soll man nicht direkt in die FlashcardsView springen; 4. Wir bleiben derzeit noch bei den grauen Rechtecken, Deck icons kommen erst später;
+
+* Wenn man ein neues Deck erstellt, erscheint es neben alten und ist persistenz. Aber wenn man auf das Deck clickt, öffnet sich das Beispiel Deck: "English"
+
+=== Session 5 (2026-4-22)
+
+* Siehe dir die User story für das bearbeiten und löschen von card collections an mit der gh cli. Beginne dann mich zu fragen wenn umsätzungsdetails offen sind. Code noch nicht, warte auf meine Bestätigung
+
+* 1: Ja, das design der edit/delete buttons soll konsistent mit den design der Karten sein. Und sie sollen immer sichtbar sein, nicht nur beim hovern; 2: Ja, verwende eine UUID für die Decks, um Probleme beim Umbennen zu vermeiden; 3: Ja, die Anzahl der Karten im Deck soll in der Warnung vor dem Löschen inkludiert sein; 4: Ja, erweitere den existerienden Dialog, statt einen neuen zu machen
+
+* Ja, passt. Fang mit der impl. an
