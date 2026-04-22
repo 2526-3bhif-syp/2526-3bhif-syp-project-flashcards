@@ -102,7 +102,9 @@ public class HomeView extends VBox {
         topBox.setAlignment(Pos.TOP_CENTER);
         
         Button editBtn = new Button("✎");
-        editBtn.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand; -fx-font-size: 12px; -fx-padding: 2 6; -fx-background-radius: 5;");
+        editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+        editBtn.setOnMouseEntered(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+        editBtn.setOnMouseExited(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
         editBtn.setOnAction(e -> {
             e.consume();
             if (onEditDeckRequested != null) {
@@ -114,7 +116,9 @@ public class HomeView extends VBox {
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
         Button deleteBtn = new Button("✖");
-        deleteBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-cursor: hand; -fx-font-size: 12px; -fx-padding: 2 6; -fx-background-radius: 5;");
+        deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+        deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #dc3545; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+        deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
         deleteBtn.setOnAction(e -> {
             e.consume();
             if (onDeleteDeckRequested != null) {

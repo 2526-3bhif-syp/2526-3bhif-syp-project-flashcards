@@ -131,6 +131,7 @@ frontend/src/main/java/at/htlleonding/flashcards/
 === Regeln
 
 * **Kein FXML:** UI wird ausschließlich in Java-Code gebaut.
+* **GUI Design:** Ein GUI Plan existiert in "asciidocs/docs/images/gui.jpeg"
 * **Single Source of Truth:** Anforderungen kommen aus `fsd.adoc`.
 * **State Management:** Navigation über `MainPresenter` (Stack-basiert wie bereits vorhanden).
 * **Fehlerbehandlung:** Robuste Fehlerbehandlung beim Datei-I/O (JSON).
