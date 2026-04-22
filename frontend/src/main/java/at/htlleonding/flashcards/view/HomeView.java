@@ -108,9 +108,10 @@ public class HomeView extends VBox {
         iconView.setPreserveRatio(true);
 
         Label deckLabel = new Label(deck.getName() != null ? deck.getName() : "");
-        deckLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
+        deckLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #333333;");
         deckLabel.setWrapText(true);
         deckLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        deckLabel.setAlignment(Pos.CENTER);
         deckLabel.setMaxWidth(130);
 
         content.getChildren().addAll(iconView, deckLabel);
