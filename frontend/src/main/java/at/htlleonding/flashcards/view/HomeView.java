@@ -5,6 +5,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -18,17 +20,6 @@ public class HomeView extends VBox {
     private Consumer<Deck> onEditDeckRequested;
     private Consumer<Deck> onDeleteDeckRequested;
     private Runnable onCreateDeckRequested;
-
-    private static final java.util.Map<String, String> ICONS = java.util.Map.of(
-        "default", "🗂",
-        "math", "➕",
-        "science", "🧪",
-        "history", "📜",
-        "language", "🗣",
-        "code", "💻",
-        "art", "🎨",
-        "music", "🎵"
-    );
 
     public HomeView() {
         this.setPadding(new Insets(20));
@@ -140,19 +131,24 @@ public class HomeView extends VBox {
         topBox.getChildren().addAll(editBtn, spacer, deleteBtn);
 
         // Icon Anzeige
-        String glyph = ICONS.getOrDefault(deck.getIconId(), ICONS.get("default"));
-        Label iconLabel = new Label(glyph);
-        iconLabel.setStyle("-fx-font-size: 50px;");
-        iconLabel.setMinWidth(60);
-        iconLabel.setMinHeight(60);
-        iconLabel.setAlignment(Pos.CENTER);
+        Image iconImage = IconManager.getIcon(deck.getIconId());
+        ImageView iconView = new ImageView(iconImage);
+        iconView.setFitWidth(60);
+        iconView.setFitHeight(60);
+        iconView.setPreserveRatio(true);
+        
+        VBox iconContainer = new VBox();
+        iconContainer.setAlignment(Pos.CENTER);
+        iconContainer.setMinWidth(60);
+        iconContainer.setMinHeight(60);
+        iconContainer.getChildren().add(iconView);
 
         Label deckLabel = new Label(deck.getName());
         deckLabel.setStyle("-fx-font-weight: bold;");
         deckLabel.setWrapText(true);
         deckLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        tile.getChildren().addAll(topBox, iconLabel, deckLabel);
+        tile.getChildren().addAll(topBox, iconContainer, deckLabel);
         
         tile.setOnMouseClicked(e -> {
             if (onDeckSelected != null) {

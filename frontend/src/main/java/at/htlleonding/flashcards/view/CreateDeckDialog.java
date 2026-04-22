@@ -5,6 +5,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -20,18 +22,7 @@ public class CreateDeckDialog {
     private final Button saveButton;
     private String selectedIconId = "default";
     private DeckResult result;
-
-    private static final java.util.Map<String, String> ICONS = java.util.LinkedHashMap.newLinkedHashMap(8);
-    static {
-        ICONS.put("default", "🗂");
-        ICONS.put("math", "±");
-        ICONS.put("science", "\uD83D\uDDFA");
-        ICONS.put("history", "📜");
-        ICONS.put("language", "🗣");
-        ICONS.put("code", "💻");
-        ICONS.put("art", "🎨");
-        ICONS.put("music", "🎵");
-    }
+    private Button selectedButton;
 
     public static record DeckResult(String name, String description, String iconId) {}
 
@@ -73,21 +64,41 @@ public class CreateDeckDialog {
         FlowPane iconPicker = new FlowPane(10, 10);
         iconPicker.setAlignment(Pos.CENTER_LEFT);
         
-        ICONS.forEach((id, glyph) -> {
-            Button iconBtn = new Button(glyph);
-            iconBtn.setPrefSize(40, 40);
-            updateIconButtonStyle(iconBtn, id.equals(selectedIconId));
+        // Create icon buttons with proper selection tracking
+        for (String iconId : IconManager.getAvailableIconIds()) {
+            Image iconImage = IconManager.getIcon(iconId);
+            ImageView iconView = new ImageView(iconImage);
+            iconView.setFitWidth(40);
+            iconView.setFitHeight(40);
+            iconView.setPreserveRatio(true);
+            
+            Button iconBtn = new Button();
+            iconBtn.setGraphic(iconView);
+            iconBtn.setPrefSize(50, 50);
+            iconBtn.setUserData(iconId); // Store the icon ID as user data
+            
+            boolean isSelected = iconId.equals(selectedIconId);
+            updateIconButtonStyle(iconBtn, isSelected);
+            
+            if (isSelected) {
+                selectedButton = iconBtn;
+            }
             
             iconBtn.setOnAction(e -> {
-                selectedIconId = id;
-                iconPicker.getChildren().forEach(node -> {
-                    if (node instanceof Button b) {
-                        updateIconButtonStyle(b, glyph.equals(b.getText()));
-                    }
-                });
+                selectedIconId = iconId;
+                
+                // Deselect previous button
+                if (selectedButton != null) {
+                    updateIconButtonStyle(selectedButton, false);
+                }
+                
+                // Select new button
+                selectedButton = iconBtn;
+                updateIconButtonStyle(selectedButton, true);
             });
+            
             iconPicker.getChildren().add(iconBtn);
-        });
+        }
 
         if (deckToEdit != null) {
             nameField.setText(deckToEdit.getName());
@@ -125,9 +136,9 @@ public class CreateDeckDialog {
 
     private void updateIconButtonStyle(Button btn, boolean selected) {
         if (selected) {
-            btn.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 0;");
+            btn.setStyle("-fx-background-color: #007bff; -fx-border-color: #007bff; -fx-border-radius: 5; -fx-padding: 0;");
         } else {
-            btn.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #cccccc; -fx-text-fill: black; -fx-font-size: 18px; -fx-padding: 0;");
+            btn.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 0;");
         }
     }
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#ffe0b2" stroke="#FF5722" stroke-width="2"/>
+  <!-- Music notes -->
+  <ellipse cx="70" cy="120" rx="6" ry="8" fill="#FF5722"/>
+  <line x1="76" y1="120" x2="76" y2="60" stroke="#FF5722" stroke-width="3"/>
+  <ellipse cx="110" cy="110" rx="6" ry="8" fill="#FF5722"/>
+  <line x1="116" y1="110" x2="116" y2="50" stroke="#FF5722" stroke-width="3"/>
+  <!-- Connecting beam -->
+  <path d="M 76 60 Q 96 55 116 50" fill="none" stroke="#FF5722" stroke-width="3" stroke-linecap="round"/>
+</svg>

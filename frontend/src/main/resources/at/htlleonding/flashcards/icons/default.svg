@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#f0f0f0" stroke="#666666" stroke-width="2"/>
+  <!-- Folder icon -->
+  <path d="M 50 60 L 80 60 L 90 40 L 150 40 Q 160 40 160 50 L 160 150 Q 160 160 150 160 L 50 160 Q 40 160 40 150 L 40 70 Q 40 60 50 60 Z" 
+        fill="none" stroke="#666666" stroke-width="3" stroke-linejoin="round"/>
+</svg>

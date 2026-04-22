@@ -8,6 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,21 +22,10 @@ public class FlashcardsView extends HBox {
     private FlowPane cardsGrid;
     private Label deckTitleLabel;
     private Label deckDescriptionLabel;
-    private Label iconLabel;
+    private ImageView iconView;
     private Runnable onAddCardRequested;
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
-
-    private static final java.util.Map<String, String> ICONS = java.util.Map.of(
-        "default", "🗂",
-        "math", "➕",
-        "science", "🧪",
-        "history", "📜",
-        "language", "🗣",
-        "code", "💻",
-        "art", "🎨",
-        "music", "🎵"
-    );
 
     public FlashcardsView() {
         this.setPadding(new Insets(20));
@@ -53,11 +44,17 @@ public class FlashcardsView extends HBox {
         deckInfoSidebar.setPadding(new Insets(10));
 
         // Icon Anzeige
-        iconLabel = new Label("🗂");
-        iconLabel.setStyle("-fx-font-size: 60px;");
-        iconLabel.setAlignment(Pos.CENTER);
-        iconLabel.setMinWidth(80);
-        iconLabel.setMinHeight(80);
+        Image defaultIconImage = IconManager.getIcon("default");
+        iconView = new ImageView(defaultIconImage);
+        iconView.setFitWidth(80);
+        iconView.setFitHeight(80);
+        iconView.setPreserveRatio(true);
+        
+        VBox iconContainer = new VBox();
+        iconContainer.setAlignment(Pos.CENTER);
+        iconContainer.setMinWidth(80);
+        iconContainer.setMinHeight(80);
+        iconContainer.getChildren().add(iconView);
 
         deckTitleLabel = new Label("Deck Title");
         deckTitleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
@@ -73,7 +70,7 @@ public class FlashcardsView extends HBox {
                 createSidebarButton("Import")
         );
 
-        deckInfoSidebar.getChildren().addAll(iconLabel, deckTitleLabel, deckDescriptionLabel, new Region(), buttonBox);
+        deckInfoSidebar.getChildren().addAll(iconContainer, deckTitleLabel, deckDescriptionLabel, new Region(), buttonBox);
         VBox.setVgrow(deckInfoSidebar.getChildren().get(3), Priority.ALWAYS); // Spacer
     }
 
@@ -128,7 +125,9 @@ public class FlashcardsView extends HBox {
     public void setDeckInfo(String title, String description, String iconId) {
         deckTitleLabel.setText(title);
         deckDescriptionLabel.setText(description);
-        iconLabel.setText(ICONS.getOrDefault(iconId, ICONS.get("default")));
+        
+        Image iconImage = IconManager.getIcon(iconId);
+        iconView.setImage(iconImage);
     }
 
     public void setOnAddCardRequested(Runnable callback) {
