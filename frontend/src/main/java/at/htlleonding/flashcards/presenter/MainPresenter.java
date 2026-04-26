@@ -4,6 +4,7 @@ import at.htlleonding.flashcards.model.*;
 import at.htlleonding.flashcards.view.*;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -19,6 +20,7 @@ public class MainPresenter {
     private final Stack<String> backStack = new Stack<>();
     private final Stack<String> forwardStack = new Stack<>();
     private String currentViewName;
+    private Deck currentDeck; // null = "all cards" mode
 
     public MainPresenter(MainView view) {
         this.view = view;
@@ -120,12 +122,12 @@ public class MainPresenter {
     }
 
     private void performImport(File file, FlashcardsView flashcardsView) {
-        String currentDeckName = flashcardsView.getDeckTitle();
-        Deck deck = model.getDecks().stream()
-                .filter(d -> d.getName().equals(currentDeckName))
-                .findFirst()
-                .orElse(null);
-        if (deck == null) return;
+        Deck resolved = currentDeck;
+        if (resolved == null) {
+            resolved = pickDeck((Stage) flashcardsView.getScene().getWindow());
+            if (resolved == null) return;
+        }
+        final Deck deck = resolved;
 
         try {
             Deck importedDeck = model.getPersistence().importFromJSON(file);
@@ -174,7 +176,7 @@ public class MainPresenter {
             }
 
             model.updateDeck(deck);
-            flashcardsView.renderCards(deck.getCards());
+            refreshFlashcardsView();
             alert(Alert.AlertType.INFORMATION, count + " cards imported successfully.");
 
         } catch (Exception e) {
@@ -207,58 +209,40 @@ public class MainPresenter {
 
     private void handleAddCardRequested(FlashcardsView flashcardsView) {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
+        Deck deck = currentDeck != null ? currentDeck : pickDeck(owner);
+        if (deck == null) return;
         CreateCardDialog dialog = new CreateCardDialog(owner);
         dialog.showAndWait().ifPresent(newCard -> {
-            // Find the currently displayed deck
-            String currentDeckName = ((FlashcardsView) views.get("Flashcards")).getDeckTitle();
-            Deck deck = model.getDecks().stream()
-                    .filter(d -> d.getName().equals(currentDeckName))
-                    .findFirst()
-                    .orElse(null);
-
-            if (deck != null) {
-                deck.addCard(newCard);
-                model.updateDeck(deck);
-                flashcardsView.renderCards(deck.getCards());
-            }
+            deck.addCard(newCard);
+            model.updateDeck(deck);
+            refreshFlashcardsView();
         });
     }
 
     private void handleEditCardRequested(FlashcardsView flashcardsView, Card cardToEdit) {
         Stage owner = (Stage) flashcardsView.getScene().getWindow();
+        Deck deck = currentDeck != null ? currentDeck : findDeckForCard(cardToEdit);
+        if (deck == null) return;
         CreateCardDialog dialog = new CreateCardDialog(owner, cardToEdit);
         dialog.showAndWait().ifPresent(updatedCard -> {
-            String currentDeckName = flashcardsView.getDeckTitle();
-            Deck deck = model.getDecks().stream()
-                    .filter(d -> d.getName().equals(currentDeckName))
-                    .findFirst()
-                    .orElse(null);
-
-            if (deck != null) {
-                deck.updateCard(updatedCard);
-                model.updateDeck(deck);
-                flashcardsView.renderCards(deck.getCards());
-            }
+            deck.updateCard(updatedCard);
+            model.updateDeck(deck);
+            refreshFlashcardsView();
         });
     }
 
     private void handleDeleteCardRequested(FlashcardsView flashcardsView, Card cardToDelete) {
-        String currentDeckName = flashcardsView.getDeckTitle();
-        Deck deck = model.getDecks().stream()
-                .filter(d -> d.getName().equals(currentDeckName))
-                .findFirst()
-                .orElse(null);
-
-        if (deck != null) {
-            deck.removeCard(cardToDelete);
-            model.updateDeck(deck);
-            flashcardsView.renderCards(deck.getCards());
-        }
+        Deck deck = currentDeck != null ? currentDeck : findDeckForCard(cardToDelete);
+        if (deck == null) return;
+        deck.removeCard(cardToDelete);
+        model.updateDeck(deck);
+        refreshFlashcardsView();
     }
 
     // ── navigation ─────────────────────────────────────────────────────────
 
     private void handleDeckSelected(Deck deck) {
+        currentDeck = deck;
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
         fView.setDeckInfo(deck.getName(), deck.getDescription() != null ? deck.getDescription() : "", deck.getIconId());
         fView.renderCards(deck.getCards());
@@ -268,7 +252,10 @@ public class MainPresenter {
     private void handleNavigation(String destination) {
         if (destination.equals("Back")) goBack();
         else if (destination.equals("Forward")) goForward();
-        else navigateTo(destination, true);
+        else {
+            if (destination.equals("Flashcards")) currentDeck = null;
+            navigateTo(destination, true);
+        }
     }
 
     private void navigateTo(String destination, boolean addToHistory) {
@@ -276,16 +263,13 @@ public class MainPresenter {
 
         if (destination.equals("Home")) {
             refreshHomeView();
-        } else if (destination.equals("Flashcards")) {
+        } else if (destination.equals("Flashcards") && currentDeck == null) {
             FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
-            List<Deck> decks = model.getDecks();
-            if (!decks.isEmpty()) {
-                Deck first = decks.get(0);
-                fView.setDeckInfo(first.getName(), first.getDescription() != null ? first.getDescription() : "", first.getIconId());
-                fView.renderCards(first.getCards());
-            } else {
-                fView.clearDeckInfo();
-            }
+            fView.clearDeckInfo();
+            List<Card> allCards = model.getDecks().stream()
+                    .flatMap(d -> d.getCards().stream())
+                    .collect(Collectors.toList());
+            fView.renderCards(allCards);
         }
 
         Node targetView = views.get(destination);
@@ -339,6 +323,42 @@ public class MainPresenter {
 
     private void alert(Alert.AlertType type, String message) {
         new Alert(type, message).showAndWait();
+    }
+
+    private Deck findDeckForCard(Card card) {
+        return model.getDecks().stream()
+                .filter(d -> d.getCards().stream().anyMatch(c -> c.getId().equals(card.getId())))
+                .findFirst().orElse(null);
+    }
+
+    private Deck pickDeck(Stage owner) {
+        List<Deck> decks = model.getDecks();
+        if (decks.isEmpty()) {
+            alert(Alert.AlertType.WARNING, "No decks available. Create a deck first.");
+            return null;
+        }
+        if (decks.size() == 1) return decks.get(0);
+        List<String> names = decks.stream().map(Deck::getName).collect(Collectors.toList());
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(names.get(0), names);
+        dialog.initOwner(owner);
+        dialog.setTitle("Select Deck");
+        dialog.setHeaderText("Choose the deck:");
+        dialog.setContentText("Deck:");
+        return dialog.showAndWait()
+                .flatMap(name -> decks.stream().filter(d -> d.getName().equals(name)).findFirst())
+                .orElse(null);
+    }
+
+    private void refreshFlashcardsView() {
+        FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
+        if (currentDeck != null) {
+            fView.renderCards(currentDeck.getCards());
+        } else {
+            List<Card> allCards = model.getDecks().stream()
+                    .flatMap(d -> d.getCards().stream())
+                    .collect(Collectors.toList());
+            fView.renderCards(allCards);
+        }
     }
 
     public MainView getView() { return view; }
