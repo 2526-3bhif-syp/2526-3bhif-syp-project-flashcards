@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 public class DuplicateActionDialog {
-    public enum Action { ALLOW_ALL, SKIP, CANCEL }
+    public enum Action { ALLOW_ALL, REPLACE, SKIP, CANCEL }
     
     private final Stage stage;
     private Action selectedAction = Action.CANCEL;
@@ -32,7 +32,7 @@ public class DuplicateActionDialog {
         Label headerLabel = new Label("Duplicate Cards Detected");
         headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;");
 
-        Label subLabel = new Label("How would you like to proceed with the import?");
+        Label subLabel = new Label("Some cards already exist in this deck. How would you like to proceed?");
         subLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #666666;");
         subLabel.setWrapText(true);
 
@@ -40,24 +40,17 @@ public class DuplicateActionDialog {
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(10, 0, 0, 0));
 
-        Button allowAllBtn = createStyledButton("Allow All", "#2196F3", "white");
-        Button skipBtn = createStyledButton("Skip Duplicates", "white", "#555555");
-        Button cancelBtn = createStyledButton("Cancel Import", "#f8f9fa", "#666666");
+        Button allowAllBtn  = createStyledButton("Import All (keep both)", "#2196F3", "white");
+        Button replaceBtn   = createStyledButton("Replace Duplicates",     "#FF9800", "white");
+        Button skipBtn      = createStyledButton("Skip Duplicates",         "white",   "#555555");
+        Button cancelBtn    = createStyledButton("Cancel Import",           "#f8f9fa", "#666666");
 
-        allowAllBtn.setOnAction(e -> {
-            selectedAction = Action.ALLOW_ALL;
-            stage.close();
-        });
-        skipBtn.setOnAction(e -> {
-            selectedAction = Action.SKIP;
-            stage.close();
-        });
-        cancelBtn.setOnAction(e -> {
-            selectedAction = Action.CANCEL;
-            stage.close();
-        });
+        allowAllBtn.setOnAction(e -> { selectedAction = Action.ALLOW_ALL; stage.close(); });
+        replaceBtn .setOnAction(e -> { selectedAction = Action.REPLACE;   stage.close(); });
+        skipBtn    .setOnAction(e -> { selectedAction = Action.SKIP;      stage.close(); });
+        cancelBtn  .setOnAction(e -> { selectedAction = Action.CANCEL;    stage.close(); });
 
-        buttonBox.getChildren().addAll(allowAllBtn, skipBtn, cancelBtn);
+        buttonBox.getChildren().addAll(allowAllBtn, replaceBtn, skipBtn, cancelBtn);
         root.getChildren().addAll(headerLabel, subLabel, buttonBox);
 
         Scene scene = new Scene(root);

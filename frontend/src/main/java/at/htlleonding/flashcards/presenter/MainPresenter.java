@@ -203,14 +203,19 @@ public class MainPresenter {
 
             if (action == DuplicateActionDialog.Action.CANCEL) return;
 
-            boolean allowDuplicates = (action == DuplicateActionDialog.Action.ALLOW_ALL);
             int count = 0;
             for (Card c : validImportedCards) {
-                boolean isDuplicate = deck.getCards().stream().anyMatch(ex ->
-                    ex.getQuestion() != null &&
-                    ex.getQuestion().trim().equalsIgnoreCase(c.getQuestion().trim())
-                );
-                if (!allowDuplicates && isDuplicate) continue;
+                Card existing = deck.getCards().stream()
+                    .filter(ex -> ex.getQuestion() != null &&
+                                  ex.getQuestion().trim().equalsIgnoreCase(c.getQuestion().trim()))
+                    .findFirst().orElse(null);
+                boolean isDuplicate = existing != null;
+
+                if (isDuplicate) {
+                    if (action == DuplicateActionDialog.Action.SKIP) continue;
+                    if (action == DuplicateActionDialog.Action.REPLACE) deck.removeCard(existing);
+                    // ALLOW_ALL: fall through and add anyway
+                }
                 deck.addCard(c);
                 count++;
             }

@@ -11,14 +11,6 @@ public class Model {
         this.persistence = new Persistence();
         this.decks = persistence.loadDecks();
 
-        if (decks.isEmpty()) {
-            // Initial Dummy Data if no file exists
-            Deck dummyDeck = new Deck("English", "Basic English vocabulary");
-            dummyDeck.addCard(new Card("Was ist Apfel auf Englisch?", "Apple"));
-            dummyDeck.addCard(new Card("Was ist Hund auf Englisch?", "Dog"));
-            decks.add(dummyDeck);
-            persistence.saveDecks(decks);
-        }
     }
 
     public List<Deck> getDecks() {
