@@ -11,9 +11,13 @@ public class Model {
     private final Persistence persistence;
 
     public Model() {
-        this.persistence = new Persistence();
+        this(new Persistence());
+    }
+
+    public Model(Persistence persistence) {
+        this.persistence = persistence;
         this.decks = persistence.loadDecks();
-        
+
         if (decks.isEmpty()) {
             // Initial Dummy Data if no file exists
             Deck dummyDeck = new Deck("English");
@@ -27,7 +31,7 @@ public class Model {
     public List<Deck> getDecks() {
         return new ArrayList<>(decks);
     }
-    
+
     public void updateDeck(Deck updatedDeck) {
         for (int i = 0; i < decks.size(); i++) {
             if (decks.get(i).getName().equals(updatedDeck.getName())) {
@@ -36,6 +40,7 @@ public class Model {
                 return;
             }
         }
+        throw new IllegalArgumentException("Deck with name " + updatedDeck.getName() + " not found");
     }
 
     public Persistence getPersistence() {
