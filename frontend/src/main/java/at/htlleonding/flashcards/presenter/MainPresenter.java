@@ -117,6 +117,8 @@ public class MainPresenter {
         if (file == null) return;
         try {
             model.getPersistence().exportDecksToJSON(decks, file);
+            homeView.exitSelectMode();
+            homeView.renderDecks(model.getDecks());
             alert(Alert.AlertType.INFORMATION, decks.size() + " deck(s) exported successfully.");
         } catch (IOException e) {
             alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
@@ -245,6 +247,8 @@ public class MainPresenter {
         if (file == null) return;
         try {
             model.getPersistence().exportCardsToJSON(cards, file);
+            flashcardsView.exitSelectMode();
+            refreshFlashcardsView();
         } catch (IOException e) {
             alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
         }
