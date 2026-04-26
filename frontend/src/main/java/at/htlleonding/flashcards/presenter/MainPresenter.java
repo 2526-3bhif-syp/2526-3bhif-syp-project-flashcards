@@ -32,6 +32,9 @@ public class MainPresenter {
         homeView.setOnCreateDeckRequested(() -> handleCreateDeckRequested(homeView));
         homeView.setOnEditDeckRequested(deck -> handleEditDeckRequested(homeView, deck));
         homeView.setOnDeleteDeckRequested(deck -> handleDeleteDeckRequested(homeView, deck));
+        homeView.setOnExportDeckRequested(deck -> handleSingleDeckExportRequested(deck, homeView));
+        homeView.setOnExportSelectedDecksRequested(decks -> handleDecksExportRequested(decks, homeView));
+        homeView.setOnDeleteSelectedDecksRequested(decks -> handleDeleteSelectedDecksRequested(decks, homeView));
         homeView.renderDecks(model.getDecks());
 
         FlashcardsView flashcardsView = new FlashcardsView();
@@ -41,6 +44,7 @@ public class MainPresenter {
         flashcardsView.setOnImportRequested(() -> handleImportRequested(flashcardsView));
         flashcardsView.setOnExportCardRequested(card -> handleCardExportRequested(card, flashcardsView));
         flashcardsView.setOnExportSelectedCardsRequested(cards -> handleCardsExportRequested(cards, flashcardsView));
+        flashcardsView.setOnDeleteSelectedCardsRequested(cards -> handleDeleteSelectedCardsRequested(cards, flashcardsView));
 
         views.put("Home", homeView);
         views.put("Flashcards", flashcardsView);
@@ -94,6 +98,40 @@ public class MainPresenter {
             deck.setIconId(deckResult.iconId());
             model.updateDeck(deck);
             homeView.renderDecks(model.getDecks());
+        });
+    }
+
+    private void handleSingleDeckExportRequested(Deck deck, HomeView homeView) {
+        File file = saveDialog(homeView, deck.getName().replaceAll("\\s+", "_") + ".json");
+        if (file == null) return;
+        try {
+            model.getPersistence().exportToJSON(deck, file);
+        } catch (IOException e) {
+            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
+        }
+    }
+
+    private void handleDecksExportRequested(List<Deck> decks, HomeView homeView) {
+        File file = saveDialog(homeView, "decks_export.json");
+        if (file == null) return;
+        try {
+            model.getPersistence().exportDecksToJSON(decks, file);
+            alert(Alert.AlertType.INFORMATION, decks.size() + " deck(s) exported successfully.");
+        } catch (IOException e) {
+            alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
+        }
+    }
+
+    private void handleDeleteSelectedDecksRequested(List<Deck> decks, HomeView homeView) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete Decks");
+        confirm.setHeaderText("Delete " + decks.size() + " deck(s)?");
+        confirm.setContentText("This action cannot be undone.");
+        confirm.showAndWait().ifPresent(bt -> {
+            if (bt == javafx.scene.control.ButtonType.OK) {
+                decks.forEach(model::removeDeck);
+                homeView.renderDecks(model.getDecks());
+            }
         });
     }
 
@@ -237,6 +275,25 @@ public class MainPresenter {
         deck.removeCard(cardToDelete);
         model.updateDeck(deck);
         refreshFlashcardsView();
+    }
+
+    private void handleDeleteSelectedCardsRequested(List<Card> cards, FlashcardsView flashcardsView) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete Cards");
+        confirm.setHeaderText("Delete " + cards.size() + " card(s)?");
+        confirm.setContentText("This action cannot be undone.");
+        confirm.showAndWait().ifPresent(bt -> {
+            if (bt == javafx.scene.control.ButtonType.OK) {
+                for (Card card : cards) {
+                    Deck deck = currentDeck != null ? currentDeck : findDeckForCard(card);
+                    if (deck != null) {
+                        deck.removeCard(card);
+                        model.updateDeck(deck);
+                    }
+                }
+                refreshFlashcardsView();
+            }
+        });
     }
 
     // ── navigation ─────────────────────────────────────────────────────────
