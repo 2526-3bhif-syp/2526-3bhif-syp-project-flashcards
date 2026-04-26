@@ -45,6 +45,7 @@ public class MainPresenter {
         flashcardsView.setOnExportCardRequested(card -> handleCardExportRequested(card, flashcardsView));
         flashcardsView.setOnExportSelectedCardsRequested(cards -> handleCardsExportRequested(cards, flashcardsView));
         flashcardsView.setOnDeleteSelectedCardsRequested(cards -> handleDeleteSelectedCardsRequested(cards, flashcardsView));
+        flashcardsView.setDeckNameResolver(card -> { Deck d = findDeckForCard(card); return d != null ? d.getName() : null; });
 
         views.put("Home", homeView);
         views.put("Flashcards", flashcardsView);

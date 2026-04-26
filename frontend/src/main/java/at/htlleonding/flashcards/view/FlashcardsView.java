@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class FlashcardsView extends HBox {
 
@@ -42,6 +43,7 @@ public class FlashcardsView extends HBox {
     private Consumer<Card> onExportCardRequested;
     private Consumer<List<Card>> onExportSelectedCardsRequested;
     private Consumer<List<Card>> onDeleteSelectedCardsRequested;
+    private Function<Card, String> deckNameResolver;
 
     public FlashcardsView() {
         this.setPadding(new Insets(20));
@@ -186,6 +188,19 @@ public class FlashcardsView extends HBox {
         selectedDetailCard = card;
         contentArea.getChildren().clear();
         contentArea.setSpacing(10);
+
+        // Show deck badge only in "all cards" mode (deck info row is hidden)
+        if (!deckInfoRow.isVisible() && deckNameResolver != null) {
+            String deckName = deckNameResolver.apply(card);
+            if (deckName != null) {
+                Label badge = new Label("Deck: " + deckName);
+                badge.setPadding(new Insets(4, 10, 4, 10));
+                badge.setStyle("-fx-background-color: #EEEEEE; -fx-border-color: #BDBDBD; " +
+                               "-fx-border-radius: 12; -fx-background-radius: 12; " +
+                               "-fx-font-size: 11px; -fx-text-fill: #555555;");
+                contentArea.getChildren().add(badge);
+            }
+        }
 
         VBox questionBox = new VBox(6);
         questionBox.setPadding(new Insets(12));
@@ -385,4 +400,5 @@ public class FlashcardsView extends HBox {
     public void setOnExportCardRequested(Consumer<Card> cb) { this.onExportCardRequested = cb; }
     public void setOnExportSelectedCardsRequested(Consumer<List<Card>> cb) { this.onExportSelectedCardsRequested = cb; }
     public void setOnDeleteSelectedCardsRequested(Consumer<List<Card>> cb) { this.onDeleteSelectedCardsRequested = cb; }
+    public void setDeckNameResolver(Function<Card, String> resolver) { this.deckNameResolver = resolver; }
 }
