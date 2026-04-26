@@ -306,6 +306,18 @@ public class FlashcardsView extends HBox {
         cardsGrid.getChildren().add(plusCard);
     }
 
+    public void exitSelectMode() {
+        if (!selectMode) return;
+        selectMode = false;
+        selectedCards.clear();
+        selectToggleBtn.setText("Select");
+        deleteSelectedBtn.setVisible(false);
+        deleteSelectedBtn.setManaged(false);
+        exportSelectedBtn.setVisible(false);
+        exportSelectedBtn.setManaged(false);
+        showPlaceholder();
+    }
+
     public void renderCards(List<Card> cards) {
         currentCards = cards;
         cardsGrid.getChildren().clear();

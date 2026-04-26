@@ -96,6 +96,17 @@ public class HomeView extends VBox {
 
     // ── public API ─────────────────────────────────────────────────────────
 
+    public void exitSelectMode() {
+        if (!selectMode) return;
+        selectMode = false;
+        selectedDecks.clear();
+        selectToggleBtn.setText("Select");
+        exportSelectedBtn.setVisible(false);
+        exportSelectedBtn.setManaged(false);
+        deleteSelectedBtn.setVisible(false);
+        deleteSelectedBtn.setManaged(false);
+    }
+
     public void renderDecks(List<Deck> decks) {
         currentDecks = decks;
         deckGrid.getChildren().clear();

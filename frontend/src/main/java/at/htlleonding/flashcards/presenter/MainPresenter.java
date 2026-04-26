@@ -131,6 +131,7 @@ public class MainPresenter {
         confirm.showAndWait().ifPresent(bt -> {
             if (bt == javafx.scene.control.ButtonType.OK) {
                 decks.forEach(model::removeDeck);
+                homeView.exitSelectMode();
                 homeView.renderDecks(model.getDecks());
             }
         });
@@ -292,6 +293,7 @@ public class MainPresenter {
                         model.updateDeck(deck);
                     }
                 }
+                flashcardsView.exitSelectMode();
                 refreshFlashcardsView();
             }
         });
