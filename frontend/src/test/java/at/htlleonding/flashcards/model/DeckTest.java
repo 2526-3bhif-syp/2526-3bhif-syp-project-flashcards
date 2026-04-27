@@ -13,7 +13,7 @@ class DeckTest {
 
     @BeforeEach
     void setUp() {
-        deck = new Deck("Test Deck");
+        deck = new Deck("Test Deck", "Test Description");
         card1 = new Card("Q1", "A1");
         card2 = new Card("Q2", "A2");
     }
@@ -21,6 +21,7 @@ class DeckTest {
     @Test
     void testDeckCreation() {
         assertEquals("Test Deck", deck.getName());
+        assertEquals("Test Description", deck.getDescription());
         assertEquals(0, deck.getCardCount());
     }
 
@@ -58,7 +59,7 @@ class DeckTest {
 
     @Test
     void testInvalidDeckName() {
-        assertThrows(IllegalArgumentException.class, () -> new Deck(""));
-        assertThrows(IllegalArgumentException.class, () -> new Deck(null));
+        assertThrows(IllegalArgumentException.class, () -> new Deck("", "desc"));
+        assertThrows(IllegalArgumentException.class, () -> new Deck(null, "desc"));
     }
 }

@@ -85,7 +85,7 @@ public class MainPresenter {
         CreateDeckDialog dialog = new CreateDeckDialog(owner);
         dialog.showAndWait().ifPresent(deckResult -> {
             Deck newDeck = new Deck(deckResult.name(), deckResult.description(), deckResult.iconId());
-            model.addDeck(newDeck);
+            model.addOrMergeDeck(newDeck);
             homeView.renderDecks(model.getDecks());
         });
     }

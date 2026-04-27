@@ -23,7 +23,7 @@ class ModelTest {
     @BeforeEach
     void setUp() {
         initialDecks = new ArrayList<>();
-        initialDecks.add(new Deck("TestDeck"));
+        initialDecks.add(new Deck("TestDeck", "Desc"));
         // Standardverhalten für die meisten Tests: Persistenz liefert ein Deck
         lenient().when(persistence.loadDecks()).thenReturn(initialDecks);
     }
@@ -42,12 +42,15 @@ class ModelTest {
     @Test
     void testUpdateDeckSuccessfully() {
         Model model = new Model(persistence);
-        Deck updatedDeck = new Deck("TestDeck");
-        updatedDeck.addCard(new Card("Q", "A"));
+        // Get the existing deck to ensure we have the correct ID
+        Deck existingDeck = model.getDecks().get(0);
+        
+        // Create an updated version or modify the existing one
+        existingDeck.addCard(new Card("Q", "A"));
 
-        model.updateDeck(updatedDeck);
+        model.updateDeck(existingDeck);
 
-        // Prüfe ob saveDecks aufgerufen wurde
+        // Verify saveDecks was called
         verify(persistence).saveDecks(anyList());
         assertEquals(1, model.getDecks().size());
         assertEquals(1, model.getDecks().get(0).getCards().size());
@@ -56,7 +59,7 @@ class ModelTest {
     @Test
     void testUpdateDeckThrowsExceptionWhenNotFound() {
         Model model = new Model(persistence);
-        Deck nonExistentDeck = new Deck("Unknown");
+        Deck nonExistentDeck = new Deck("Unknown", "Desc");
 
         assertThrows(IllegalArgumentException.class, () -> {
             model.updateDeck(nonExistentDeck);
@@ -67,16 +70,13 @@ class ModelTest {
     }
 
     @Test
-    void testInitializationWithDummyData() {
+    void testInitializationWithEmptyPersistence() {
         // Separater Mock für den Fall dass die Persistenz leer ist
         Persistence emptyPersistence = mock(Persistence.class);
         when(emptyPersistence.loadDecks()).thenReturn(new ArrayList<>());
 
         Model model = new Model(emptyPersistence);
 
-        assertEquals(1, model.getDecks().size());
-        assertEquals("English", model.getDecks().get(0).getName());
-        // Dummy Daten sollten direkt gespeichert werden
-        verify(emptyPersistence).saveDecks(anyList());
+        assertTrue(model.getDecks().isEmpty(), "Model should be empty when persistence is empty");
     }
 }

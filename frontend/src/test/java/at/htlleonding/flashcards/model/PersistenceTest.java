@@ -22,7 +22,7 @@ class PersistenceTest {
     @BeforeEach
     void setUp() {
         persistence = new Persistence();
-        testDeck = new Deck("Test Deck");
+        testDeck = new Deck("Test Deck", "Test Description");
         
         Card normalCard = new Card("Frage", "Antwort");
         normalCard.setTags(List.of("Tag1", "Tag2"));
