@@ -173,3 +173,7 @@ dateien steht. Desweiteren sollst du unit tests schreiben für die Deck klasse u
 
 * *Frage:* Um die Tests auszuführen, muss ich die `pom.xml` auf eine verfügbare Java-Version (z.B. 21) umstellen. Ist das für dich in Ordnung?
   *Antwort:* Nein strikt Java 26
+
+== Session 4
+* *Prompt* Ich habe gemerged jetzt hat sich der constructor von Deck geändert sowie methoden namen . Fixe die unit tests.
+* *Prompt* Fixe die unit tests. Du darfst nur die unit tests verändern den haupt code nicht. Es sind constructor und methoden namen geändert worden
