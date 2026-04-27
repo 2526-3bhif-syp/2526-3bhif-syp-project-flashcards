@@ -120,8 +120,9 @@ frontend/src/main/java/at/htlleonding/flashcards/
 === Bei neuen Implementierungsschritten
 
 1. `specs/fsd.adoc` für Anforderungen prüfen
-2. `agents.adoc` für Architektur-Vorgaben prüfen
-3. Model-Klassen erstellen/erweitern
+2. User Stories via GitHub CLI prüfen (`gh issue list --label user-story`)
+3. `agents.adoc` für Architektur-Vorgaben prüfen
+4. Model-Klassen erstellen/erweitern
 4. Unit-Tests für Logik schreiben
 5. Presenter-Logik implementieren
 6. View-Elemente in JavaFX ergänzen (Code-only)
@@ -130,6 +131,7 @@ frontend/src/main/java/at/htlleonding/flashcards/
 === Regeln
 
 * **Kein FXML:** UI wird ausschließlich in Java-Code gebaut.
+* **GUI Design:** Ein GUI Plan existiert in "asciidocs/docs/images/gui.jpeg"
 * **Single Source of Truth:** Anforderungen kommen aus `fsd.adoc`.
 * **State Management:** Navigation über `MainPresenter` (Stack-basiert wie bereits vorhanden).
 * **Fehlerbehandlung:** Robuste Fehlerbehandlung beim Datei-I/O (JSON).

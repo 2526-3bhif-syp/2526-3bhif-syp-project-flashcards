@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#e1f5ff" stroke="#0091FF" stroke-width="6"/>
+  <!-- Code brackets -->
+  <text x="100" y="130" font-size="95" text-anchor="middle" fill="#0091FF" font-family="monospace" font-weight="bold">&lt;/&gt;</text>
+</svg>

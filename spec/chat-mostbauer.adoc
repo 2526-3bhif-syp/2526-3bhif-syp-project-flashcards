@@ -104,3 +104,44 @@ Wo und wie werden die Karten gespeichert?
     *   Laden: Beim Starten der App (new Model()) wird versucht, die decks.json einzulesen. Falls sie fehlt, wird der Dummy-Stapel "English" als Startpunkt erstellt.
     *   Speichern: Sobald du im Dialog eine neue Karte speicherst, ruft der MainPresenter die Methode model.updateDeck(deck) auf. Diese Methode ersetzt das Deck in der Liste und führt sofort save() aus, welches die gesamte Struktur in die Datei schreibt.
 
+== Session 4 (2026-04-22)
+
+* Viel zeit ist vergangen seit der letzten session; Lese dir die chat files in ./spec durch und siehe dir die neuen veränderten Dateien an um deinen Kontext zu erneuern.
+
+* Lese dir *alle* chat files durch
+
+* Schreibe diese info in das passende agenten files: Du kannst alle unsere user stories mit der gh cli sehen, nicht mehr durch locale markdown dateien in spec/stories
+
+* Plane die implementierung für Card Collections; Stelle mir Fragen wenn du dir unsicher bist und warte auf meine Bestätigung bevor du anfängst zu coden
+ 
+* 1: Beim erstellen eines Decks soll man Namen und Beschreibung angeben können; 2: Nein, Löschen und Editieren von Decks soll jetzt noch nicht implementiert werden; 3. Nein, wenn ein neues Deck erstellt wird, soll man nicht direkt in die FlashcardsView springen; 4. Wir bleiben derzeit noch bei den grauen Rechtecken, Deck icons kommen erst später;
+
+* Wenn man ein neues Deck erstellt, erscheint es neben alten und ist persistenz. Aber wenn man auf das Deck clickt, öffnet sich das Beispiel Deck: "English"
+
+=== Session 5 (2026-4-22)
+
+* Siehe dir die User story für das bearbeiten und löschen von card collections an mit der gh cli. Beginne dann mich zu fragen wenn umsätzungsdetails offen sind. Code noch nicht, warte auf meine Bestätigung
+
+* 1: Ja, das design der edit/delete buttons soll konsistent mit den design der Karten sein. Und sie sollen immer sichtbar sein, nicht nur beim hovern; 2: Ja, verwende eine UUID für die Decks, um Probleme beim Umbennen zu vermeiden; 3: Ja, die Anzahl der Karten im Deck soll in der Warnung vor dem Löschen inkludiert sein; 4: Ja, erweitere den existerienden Dialog, statt einen neuen zu machen
+
+* Ja, passt. Fang mit der impl. an
+
+* Ändere nicht die Java version!!! Lese dir noch einmal alle agent relevanten files durch bevor du weiter machst: fsd.adoc, agents.adoc, alles im /spec
+
+* Das design der neuen buttons stimmt nicht mit dem Plan überein. Schaue dir noch einmal den design plan an (asciidocs/docs/images/gui.jpeg). Die buttons sollen gleich gestyled sein wie die edit und delete buttons der cards
+
+* Ändere das design buttons für die collections damit es mit den design buttons der cards zusammen passt
+
+== Session 6 (2026-04-22) 
+
+* Als nächstes machen wir Deck icons, issue nr 26; Stehle mir Fragen zu impl. Entscheidungen bevor du mit den coden anfängst; 
+
+* 1: The icons should be selected from a range of predefined set of icons, so storing the icon id for each deck will be enough & the Aspect ratio should be 1x1; 2: When editing/creation a deck, the form should a predefined set of built-in glyphs/icons to choose from. No custom uploads for the icons; 3: There should be a fixed default-deck icon, if nothing is choosen", 4: A Simple square display for the icon is sufficient 
+
+* DO NOT COMMIT YOURSELF UNLESS EXPLICITY TOLD SO!!! But the icons finally do work. However they look strange, maybe increasing the stroke width will improve how they look
+
+* you are currently executing the command to convert the svg to pngs yourself everytime, instead generate a shell script that can be more reliably reused. Also place the svgs and pngs in seperate directories;
+
+* The icons still look a bit strange: Can you increase the size that are displayed with on the collections, as well as making the stroke width a bit more thicker and using more contrasting colors for the icons
+
+* Now they look great! But somewhere in the process there must have been a style change that has effected the Flashcard view. The Dock on the right that informs you about the deck you are currently viewing is no longer clearly visualy seperated from the card grid. Fix this, as well centering the Title of the deck under its icon
