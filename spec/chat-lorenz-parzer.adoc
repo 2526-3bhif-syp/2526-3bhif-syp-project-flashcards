@@ -82,3 +82,10 @@ Antwort auf seine Fragen:  1. Nein die Dummy Daten werden mit Abschluss des Proj
                            3 es soll nur gemocked werden
                            4 ja
 45 min (gab Probleme mit Java Version und maven)
+
+
+== Session 6 (2026 04-27)
+
+Frage: Überprüfe model.java und persistence.java auf coverage und decke fehlende coverage mit zusätzlichen tests ab
+Frage: decke wirklich alle tests ab
+Frage: bei der Persistence wird die importjson methode nicht vollständig abgedeckt.
