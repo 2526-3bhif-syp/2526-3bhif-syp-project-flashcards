@@ -154,3 +154,22 @@ There should be one button for import and one for export. After clicking you can
 
 * *Anfrage:* mach die form wo wir beschreiben ob wir duplicates wollen auch schöner
   *Antwort:* Ich habe den Standard-JavaFX-Alert für Duplikate durch einen maßgeschneiderten `DuplicateActionDialog` ersetzt, der sich nahtlos in das moderne Design der App einfügt und klare Handlungsoptionen bietet.
+
+== Session 3
+
+* *Prompt* So du schreibst mir nun fragen und ich beantworte sie. Zudem schreibst du dann die Fragen und antwort in die chat-jan-brunner.adoc rein im format Frage: und dann Antwort: . Du sollst nichts löschen was in den chat
+dateien steht. Desweiteren sollst du unit tests schreiben für die Deck klasse und für die Card klasse.
+
+*Prompt* Du sollst mir nur Fragen stellen zu den Tests wenn du welche hast.
+
+* *Frage:* Die `Card`-Klasse wirft aktuell eine `IllegalArgumentException`, wenn Frage oder Antwort leer sind. Ist dieses strikte Verhalten für alle zukünftigen Kartentypen (wie Lückentext) so gewünscht?
+  *Antwort:* Ja
+
+* *Frage:* Soll das `Deck` verhindern, dass zwei Karten mit identischer Frage hinzugefügt werden, oder ist das auf Modell-Ebene erlaubt?
+  *Antwort:* Nein
+
+* *Frage:* In den Specs werden 500 Karten pro Deck erwähnt. Soll ich einen Test schreiben, der sicherstellt, dass dieses Limit eingehalten wird?
+  *Antwort:* Nein
+
+* *Frage:* Um die Tests auszuführen, muss ich die `pom.xml` auf eine verfügbare Java-Version (z.B. 21) umstellen. Ist das für dich in Ordnung?
+  *Antwort:* Nein strikt Java 26
