@@ -79,4 +79,53 @@ class ModelTest {
 
         assertTrue(model.getDecks().isEmpty(), "Model should be empty when persistence is empty");
     }
+
+    @Test
+    void testRemoveDeck() {
+        Model model = new Model(persistence);
+        Deck deckToRemove = initialDecks.get(0);
+
+        model.removeDeck(deckToRemove);
+
+        assertTrue(model.getDecks().isEmpty());
+        verify(persistence).saveDecks(anyList());
+    }
+
+    @Test
+    void testAddOrMergeDeck_New() {
+        Model model = new Model(persistence);
+        Deck newDeck = new Deck("New Deck", "Desc");
+
+        model.addOrMergeDeck(newDeck);
+
+        assertEquals(2, model.getDecks().size());
+        verify(persistence).saveDecks(anyList());
+    }
+
+    @Test
+    void testAddOrMergeDeck_Merge() {
+        Model model = new Model(persistence);
+        Deck incoming = new Deck("TestDeck", "Desc");
+        incoming.addCard(new Card("New Q", "New A"));
+
+        model.addOrMergeDeck(incoming);
+
+        assertEquals(1, model.getDecks().size());
+        assertEquals(1, model.getDecks().get(0).getCards().size());
+        verify(persistence).saveDecks(anyList());
+    }
+
+    @Test
+    void testGetPersistence() {
+        Model model = new Model(persistence);
+        assertEquals(persistence, model.getPersistence());
+    }
+
+    @Test
+    void testDefaultConstructor() {
+        // This will attempt to load from decks.json
+        Model model = new Model();
+        assertNotNull(model.getPersistence());
+        assertNotNull(model.getDecks());
+    }
 }
