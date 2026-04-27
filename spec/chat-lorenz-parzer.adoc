@@ -9,7 +9,7 @@ Erstelle mir ein schmale horizontale Navbar. Im Zentrum ist eine abgerundete Suc
 
 
 Ja kannst du durchführen. Entferne die Kommentare und ändere auch die main so dass sie ein Ganzbildschirm ist   
-
+~1.5h
 
 == Session 2
 
@@ -31,7 +31,7 @@ du kannst ruhig die buttons noch ein stück größer machen damit der Text in
 
 kannst du das mit dem abgerundeten wieder aus der mainview löschen und es so 
    machen wie vorher
-
+2h
 
 == Session 3 (2026 04-15)
 
@@ -56,7 +56,7 @@ Frage: Erstelle JUnit 5 Tests für die Persistence.java Klasse. Teste besonders,
 * Refactoring des Persistence-Layers (Persistence.java)
 * Erstellung von Unit-Tests für CSV-Sonderzeichen-Handling
 
-
+1 h 20 min
 
 == Session 4 (2026 04-16)
 
@@ -66,3 +66,19 @@ Frage: Beim Import taucht ein Fehler auf. analysiere ihn und fixe ihn
 
 === Besprochene Themen
 * Fehleranalyse, Robustheit im Import
+
+30 min
+
+== Session 5 (2026 04-26)
+
+Frage: Lies spec/fsd und mach dir einen überblick
+
+
+Frage: Lies dir frontend/src/main/java/at.htlleonding.flashcards/model/Model.java durch. Analysiere die Logik und stelle mir gezielte Fragen zu den Test Szenarien
+
+Antwort auf seine Fragen:  1. Nein die Dummy Daten werden mit Abschluss des Projektes entfernt. von dem her keinen Bedarf
+                           2  a: Ja das darf nicht so sein wir sollten das Verhalten definieren
+                              b: Das passt so wie es ist.
+                           3 es soll nur gemocked werden
+                           4 ja
+45 min (gab Probleme mit Java Version und maven)

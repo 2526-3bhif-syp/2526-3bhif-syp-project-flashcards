@@ -8,18 +8,17 @@ public class Model {
     private final Persistence persistence;
 
     public Model() {
-        this.persistence = new Persistence();
+        this(new Persistence());
+    }
+
+    public Model(Persistence persistence) {
+        this.persistence = persistence;
         this.decks = persistence.loadDecks();
 
     }
 
     public List<Deck> getDecks() {
         return new ArrayList<>(decks);
-    }
-
-    public void addDeck(Deck deck) {
-        this.decks.add(deck);
-        persistence.saveDecks(decks);
     }
 
     public void updateDeck(Deck updatedDeck) {
@@ -30,6 +29,7 @@ public class Model {
                 return;
             }
         }
+        throw new IllegalArgumentException("Deck with name " + updatedDeck.getName() + " not found");
     }
 
     public void removeDeck(Deck deck) {
