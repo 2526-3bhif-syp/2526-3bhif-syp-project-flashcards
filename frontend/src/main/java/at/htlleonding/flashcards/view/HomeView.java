@@ -187,6 +187,7 @@ public class HomeView extends VBox {
         iconView.setFitWidth(selectMode ? 55 : 75);
         iconView.setFitHeight(selectMode ? 55 : 75);
         iconView.setPreserveRatio(true);
+        iconView.setSmooth(true);
 
         Label nameLabel = new Label(deck.getName() != null ? deck.getName() : "");
         nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #333333;");

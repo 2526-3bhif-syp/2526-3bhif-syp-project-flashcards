@@ -71,6 +71,7 @@ public class CreateDeckDialog {
             iconView.setFitWidth(40);
             iconView.setFitHeight(40);
             iconView.setPreserveRatio(true);
+            iconView.setSmooth(true);
             
             Button iconBtn = new Button();
             iconBtn.setGraphic(iconView);

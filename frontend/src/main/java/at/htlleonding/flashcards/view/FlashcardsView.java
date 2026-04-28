@@ -128,6 +128,7 @@ public class FlashcardsView extends HBox {
         iconView.setFitWidth(28);
         iconView.setFitHeight(28);
         iconView.setPreserveRatio(true);
+        iconView.setSmooth(true);
 
         deckInfoRow = new HBox(8, iconView, deckTitleLabel);
         deckInfoRow.setAlignment(Pos.CENTER_LEFT);
