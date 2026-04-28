@@ -156,3 +156,5 @@ Wo und wie werden die Karten gespeichert?
 * Das Ziel dieser Session ist es das Styling der UI für das importieren und exportieren von Karten und decks zu verbessern. Derzeit stechen die import/export buttons sehr heraus, da sie sicht nicht an das styling der restlichen ui haltet. Passe sie so an dass das Farbschema und struktur wie an anderen stellen des Projektes aussieht.
 
 * Das Farbschema der App ist schwarz und weiß, darum will ich dass die buttons sich auch daran halten. Ich hätte aber gerne das Du probierst suptil Farbe einzubringen, zb Highlights in den derzeitigen Farben damit ich bewerten kann ob es gut aussieht
+
+* Der Import Deck button hat einen Pfeil nach oben statt einen Pfeil nach unten

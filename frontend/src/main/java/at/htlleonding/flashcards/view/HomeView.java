@@ -49,13 +49,13 @@ public class HomeView extends VBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button importBtn = createSubtleBtn("⬆ Import Deck", "#2196F3");
+        Button importBtn = createSubtleBtn("⬇ Import Deck", "#2196F3");
         importBtn.setOnAction(e -> { if (onImportDeckRequested != null) onImportDeckRequested.run(); });
 
         selectToggleBtn = createBtn("Select", "#607D8B", "#455A64");
         selectToggleBtn.setOnAction(e -> toggleSelectMode());
 
-        exportSelectedBtn = createSubtleBtn("⬇ Export (0)", "#4CAF50");
+        exportSelectedBtn = createSubtleBtn("⬆ Export (0)", "#4CAF50");
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         exportSelectedBtn.setDisable(true);

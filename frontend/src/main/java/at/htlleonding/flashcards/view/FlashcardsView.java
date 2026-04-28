@@ -61,7 +61,7 @@ public class FlashcardsView extends HBox {
 
     private VBox buildLeftSide() {
         // ── action bar ────────────────────────────────────────────────────
-        Button importBtn = createSubtleBtn("⬆ Import", "#2196F3");
+        Button importBtn = createSubtleBtn("⬇ Import", "#2196F3");
         importBtn.setOnAction(e -> { if (onImportRequested != null) onImportRequested.run(); });
 
         Region spacer = new Region();
@@ -80,7 +80,7 @@ public class FlashcardsView extends HBox {
                 onDeleteSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        exportSelectedBtn = createSubtleBtn("⬇ Export (0)", "#4CAF50");
+        exportSelectedBtn = createSubtleBtn("⬆ Export (0)", "#4CAF50");
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         exportSelectedBtn.setDisable(true);
@@ -244,7 +244,7 @@ public class FlashcardsView extends HBox {
         editBtn.setMaxWidth(Double.MAX_VALUE);
         editBtn.setOnAction(e -> { if (onEditCardRequested != null) onEditCardRequested.accept(card); });
 
-        Button exportCardBtn = createSubtleBtn("⬇ Export Card", "#4CAF50");
+        Button exportCardBtn = createSubtleBtn("⬆ Export Card", "#4CAF50");
         exportCardBtn.setMaxWidth(Double.MAX_VALUE);
         exportCardBtn.setOnAction(e -> { if (onExportCardRequested != null) onExportCardRequested.accept(card); });
 
