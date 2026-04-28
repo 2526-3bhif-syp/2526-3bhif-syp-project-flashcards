@@ -62,3 +62,118 @@ Fragen an dich:
   * Jetzt implementiere das mit den Pfeilen. Das ich wieder zurück gehen kann oder nach vorne. Die Pfeile sollen nur auswählbar sein, wenn es möglich ist.
 
   * Die Tooltips bei den arrow icons sind ein wenig komisch. Sie bleiben bestehen, auch wenn ich mit der Maus weggehe.
+
+== Session 2
+
+* *Frage:* Werden Bilder/Audio als Dateien lokal gespeichert oder über eine URL referenziert?
+  *Antwort:* Relative Pfade für Bilder.
+
+* *Frage:* Soll es verschiedene Lern-Algorithmen geben?
+  *Antwort:* Derzeit noch keine Angaben, kommt erst später.
+
+* *Frage:* Welche Metriken sollen in den Statistiken erfasst werden?
+  *Antwort:* Derzeit noch unwichtig für uns.
+
+* *Frage:* Welche Dateiformate werden für Import/Export benötigt?
+  *Antwort:* JSON und CSV werden priorisiert.
+
+* *Frage:* Ist die Zielplattform definitiv Desktop?
+  *Antwort:* Ja, es ist eine Desktop-App.
+
+* *Frage:* Ist die Persistenzschicht definiert?
+  *Antwort:* Speicherung mit JSON-Files.
+
+* *Frage:* Gibt es ein spezifisches Design-System?
+  *Antwort:* Halte dich an das Styling im Frontend (existierende Struktur).
+
+* *Anfrage:* Nein, Dort schreibst du rein == Session 2 und dann halt meine Antworten auf deine Fragen falls du welche hast
+  *Antwort:* Ich habe den Abschnitt "Session 2" erstellt und werde dort nun alle weiteren Interaktionen und Antworten strukturieren.
+
+* *Anfrage:* Nein alles lassen und einfach mit der neuen überschrift Session 2 beginnen
+  *Antwort:* Verstanden, ich bewahre den bisherigen Inhalt vollständig und füge die neue Sektion an.
+
+* *Anfrage:* Nur überschrift und dann darunter deine Fragen mit meinen Antworten die ich dir im chat hier beantworte
+  *Antwort:* Ich werde die Fragen und deine Antworten in der neuen Sektion unter der Überschrift "Session 2" übersichtlich auflisten.
+
+* *Anfrage:* Nein nicht löschen einfach Überschrift Session 2 adden
+  *Antwort:* Ich habe die Überschrift hinzugefügt, ohne bestehende Inhalte zu verändern.
+
+* *Anfrage:* Relative Pfade für Bilder. ... (Antworten auf fachliche/technische Fragen)
+  *Antwort:* Danke für die Klärung. Ich werde diese Vorgaben bei der Implementierung konsequent berücksichtigen.
+
+* *Anfrage:* Nein wir machen jetzt die Import funktion. Hier kann ich Flashcards importen (JSON oder CSV). Sie werden dann dem Deck wo ich drinnen bin hinzugefügt
+  *Antwort:* Ich habe die Import-Funktion für JSON und CSV implementiert und in den Presenter integriert.
+
+* *Anfrage:* gib mir mal eine Beispiel JSON zum Testen.
+  *Antwort:* Hier ist das gewünschte Beispiel-JSON:
+[
+  {
+    "question": "Was ist das Java-Framework für die GUI?",
+    "answer": "JavaFX"
+  },
+  {
+    "question": "Was ist das Build-Tool für das Projekt?",
+    "answer": "Maven"
+  }
+]
+
+* *Anfrage:* jetzt nimm einfach alle die ich dir diese Session lang geschickt habe
+  *Antwort:* Ich habe alle Anfragen dieser Session mit den entsprechenden Antworten für den Kontext in das Dokument aufgenommen.
+
+* *Anfrage:* while exporting and importing, no data should get lost
+when importing the user should have the choice to allow duplicates or not
+There should be one button for import and one for export. After clicking you can choose the format
+  *Antwort:* Ich habe die Import- und Export-Buttons in der UI getrennt, Dialoge zur Formatwahl (JSON/CSV) hinzugefügt und eine Duplikatsprüfung bei der Import-Logik integriert, um Datenverlust zu vermeiden.
+
+* *Anfrage:* error im code fixe es
+  *Antwort:* Ich habe den  bereinigt und die fehlerhafte, doppelte Implementierung entfernt, um den stabilen Betrieb zu gewährleisten.
+
+* *Anfrage:* while exporting and importing, no data should get lost when importing the user should have the choice to allow duplicates or not. There should be one button for import and one for export. After clicking you can choose the format.
+  *Antwort:* Ich habe die Import- und Export-Buttons in der UI getrennt, Dialoge zur Formatwahl (JSON/CSV) hinzugefügt und eine Duplikatsprüfung bei der Import-Logik integriert.
+
+* *Anfrage:* error im code fixe es
+  *Antwort:* Ich habe den MainPresenter bereinigt und die fehlerhafte, doppelte Implementierung entfernt.
+
+* *Anfrage:* Style den Import/Export-Button modern mit Hover-Effekt, orientiere dich am bestehenden Stil, und verschönere auch die Pop-up-Formulare (orientiere dich an existierenden Forms).
+  *Antwort:* Ich habe das Button-Styling modernisiert (abgerundete Ecken, Padding, sanfter Hover). Für die Formulare werde ich die Struktur von 'CreateCardDialog' als Vorlage für eine konsistente Ästhetik übernehmen.
+
+* *Anfrage:* Für die buttons machst du jetzt auch noch einen coolen modernen hover effekt nicht so einen langweiligen. Nutze einfach die gleichen Farben wie bei der Navbar hover. Keine Wiederrede
+  *Antwort:* Ich habe das Styling der Buttons in  mit einem modernen Hover-Effekt (Farbe #2196F3, Schatten-Effekt) aktualisiert, passend zum Stil der Sidebar-Navigation.
+
+* *Anfrage:* Für die buttons machst du jetzt auch noch einen coolen modernen hover effekt. Nutze einfach die gleichen Farben wie bei der Navbar hover.
+  *Antwort:* Ich habe das Styling der Buttons in FlashcardsView mit einem modernen Hover-Effekt aktualisiert, passend zum Stil der Sidebar-Navigation.
+
+* *Anfrage:* Bitte eine schöne transition dazu auch einen scale effekt. Das ganze muss flüssig sein.
+  *Antwort:* Ich habe  zu den Sidebar-Buttons hinzugefügt, sodass sie beim Hovern um 5% skalieren und die Transition flüssig abläuft.
+
+* *Anfrage:* Erstens die transitions sollen immer funktionierne nicht nur einmalig. Macht das jetzt mal gescheidt. Zudem möchte ich das die schrift weiß bleiblt und der background sich ändert. Der scale effekt soll auch rückwerts sein nicht nur vorwärts.
+  *Antwort:* Ich habe die Transitions mit einer reversiblen `ScaleTransition` neu implementiert, sodass sie bei jeder Interaktion flüssig funktionieren. Zudem wurde das Design auf weiße Schrift auf blauem Hintergrund (#2196F3) umgestellt, der sich beim Hovern verdunkelt.
+
+* *Anfrage:* Zudem soll ich den Import bedingung auch abbrechen können.
+  *Antwort:* Ich habe eine Abbrech-Option zum Import-Vorgang hinzugefügt. Sowohl im Format-Auswahl-Dialog als auch beim Duplikats-Check gibt es nun eine "Cancel"-Option, um den gesamten Vorgang abzubrechen.
+
+* *Anfrage:* mach die form wo wir beschreiben ob wir duplicates wollen auch schöner
+  *Antwort:* Ich habe den Standard-JavaFX-Alert für Duplikate durch einen maßgeschneiderten `DuplicateActionDialog` ersetzt, der sich nahtlos in das moderne Design der App einfügt und klare Handlungsoptionen bietet.
+
+== Session 3
+
+* *Prompt* So du schreibst mir nun fragen und ich beantworte sie. Zudem schreibst du dann die Fragen und antwort in die chat-jan-brunner.adoc rein im format Frage: und dann Antwort: . Du sollst nichts löschen was in den chat
+dateien steht. Desweiteren sollst du unit tests schreiben für die Deck klasse und für die Card klasse.
+
+*Prompt* Du sollst mir nur Fragen stellen zu den Tests wenn du welche hast.
+
+* *Frage:* Die `Card`-Klasse wirft aktuell eine `IllegalArgumentException`, wenn Frage oder Antwort leer sind. Ist dieses strikte Verhalten für alle zukünftigen Kartentypen (wie Lückentext) so gewünscht?
+  *Antwort:* Ja
+
+* *Frage:* Soll das `Deck` verhindern, dass zwei Karten mit identischer Frage hinzugefügt werden, oder ist das auf Modell-Ebene erlaubt?
+  *Antwort:* Nein
+
+* *Frage:* In den Specs werden 500 Karten pro Deck erwähnt. Soll ich einen Test schreiben, der sicherstellt, dass dieses Limit eingehalten wird?
+  *Antwort:* Nein
+
+* *Frage:* Um die Tests auszuführen, muss ich die `pom.xml` auf eine verfügbare Java-Version (z.B. 21) umstellen. Ist das für dich in Ordnung?
+  *Antwort:* Nein strikt Java 26
+
+== Session 4
+* *Prompt* Ich habe gemerged jetzt hat sich der constructor von Deck geändert sowie methoden namen . Fixe die unit tests.
+* *Prompt* Fixe die unit tests. Du darfst nur die unit tests verändern den haupt code nicht. Es sind constructor und methoden namen geändert worden

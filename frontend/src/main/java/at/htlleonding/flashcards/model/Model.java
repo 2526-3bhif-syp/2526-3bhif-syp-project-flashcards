@@ -1,69 +1,62 @@
 package at.htlleonding.flashcards.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Model {
     private List<Deck> decks = new ArrayList<>();
-    private static final String FILE_PATH = "decks.json";
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final Persistence persistence;
 
     public Model() {
-        load();
-        if (decks.isEmpty()) {
-            // Initial Dummy Data if no file exists
-            Deck dummyDeck = new Deck("English", "Basic English vocabulary");
-            dummyDeck.addCard(new Card("Was ist Apfel auf Englisch?", "Apple"));
-            dummyDeck.addCard(new Card("Was ist Hund auf Englisch?", "Dog"));
-            decks.add(dummyDeck);
-            save();
-        }
+        this(new Persistence());
+    }
+
+    public Model(Persistence persistence) {
+        this.persistence = persistence;
+        this.decks = persistence.loadDecks();
+
     }
 
     public List<Deck> getDecks() {
         return new ArrayList<>(decks);
     }
-    
-    public void addDeck(Deck deck) {
-        this.decks.add(deck);
-        save();
-    }
-    
+
     public void updateDeck(Deck updatedDeck) {
         for (int i = 0; i < decks.size(); i++) {
             if (decks.get(i).getId().equals(updatedDeck.getId())) {
                 decks.set(i, updatedDeck);
-                save(); // Hier speichern
+                persistence.saveDecks(decks);
                 return;
             }
         }
+        throw new IllegalArgumentException("Deck with name " + updatedDeck.getName() + " not found");
     }
 
     public void removeDeck(Deck deck) {
         decks.removeIf(d -> d.getId().equals(deck.getId()));
-        save();
+        persistence.saveDecks(decks);
     }
 
-    private void save() {
-        try {
-            mapper.writeValue(new File(FILE_PATH), decks);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void load() {
-        File file = new File(FILE_PATH);
-        if (file.exists()) {
-            try {
-                decks = mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, Deck.class));
-            } catch (IOException e) {
-                e.printStackTrace();
-                decks = new ArrayList<>();
+    /**
+     * Adds a new deck, or merges its cards into the existing deck if the name already exists.
+     */
+    public void addOrMergeDeck(Deck incoming) {
+        for (int i = 0; i < decks.size(); i++) {
+            if (decks.get(i).getName().equals(incoming.getName())) {
+                Deck existing = decks.get(i);
+                for (Card card : incoming.getCards()) {
+                    existing.addCard(card);
+                }
+                decks.set(i, existing);
+                persistence.saveDecks(decks);
+                return;
             }
         }
+        decks.add(incoming);
+        persistence.saveDecks(decks);
+    }
+
+    public Persistence getPersistence() {
+        return persistence;
     }
 }
