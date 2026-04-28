@@ -60,3 +60,22 @@ User: "The edit and delete buttons are still not in place. Place them in the top
 Agent: "I have updated the 'Edit' and 'Delete' buttons in the `FlashcardsView`. They now have a highly visible background color (blue for edit and red for delete) and white text. They are clearly positioned in the top corners of the flashcard element."
 
 * *UI Update:* The `FlashcardsView` card tiles were modified to set visible background colors for the action buttons instead of transparent backgrounds (blue `#007bff` for edit, red `#dc3545` for delete). They are pushed to the top-left and top-right respectively via the `HBox` spacer.
+
+== Session 5 (2026-04-28)
+
+=== Bugfix: Unscharfes und fehlerhaftes Deck-Icon auf der FlashcardsView
+[quote]
+User: "Bekomme einen Kontext vom Projekt. Lies CLAUDE.md alles wichtige in spec/ und dann analysiere den code worum es geht. Nachdem du verstehst worum es geht versuche einen Plan für diesen Bug zu erstellen. Wenn man auf der HomeView ein Deck anklickt und danach eine Flashcard anklickt, sieht man oben rechts im Panel den Deck Namen. Links vom Deck namen ist das Deck Icon. Leider ist da das Deck Icon etwas verbuggt. Es sieht sehr unscharf aus und hat einen klar sichtbaren weißen Hintergrund anstatt durchsichtig und scharf zu sein. Bitte behebe das, bei fragen kannst du mich fragen."
+
+Agent: "Ich habe den Kontext des Projekts analysiert und den Fehler behoben.
+
+Was war das Problem?
+1. Sichtbarer weißer Hintergrund: Die Deck-Icons (PNG-Dateien im Ordner icons/png/) wurden so generiert, dass ihre abgerundeten Ecken nicht transparent, sondern durchgehend weiß waren.
+2. Unscharfes (blurry) Aussehen: Die JavaFX ImageView hat die 200x200 Pixel großen Original-PNGs auf 28x28 bzw. 75x75 herunterskaliert. Ohne explizit den Smoothing-Filter zu setzen, wirkt dies oft sehr pixelig und unscharf.
+
+Meine durchgeführten Schritte zur Behebung:
+1. Ein kleines Java-Skript ausgeführt, welches alle fehlerhaften .png-Dateien überarbeitet hat. Sämtliche nicht zum runden SVG-Kreis gehörenden weißen Ecken wurden mit transparenten Pixeln überschrieben. Das Deck-Icon ist jetzt zu 100 % transparent.
+2. Im Code (in der FlashcardsView.java, HomeView.java und CreateDeckDialog.java) jeweils iconView.setSmooth(true); beim Laden des ImageViews hinzugefügt, sodass JavaFX die verkleinerten Icons scharf rendert."
+
+* *Fehlerbehebung:* Die PNG-Icons in `icons/png` wurden repariert, sodass sie nun über einen echten Alpha-Kanal an den Rändern verfügen.
+* *UI Verbesserungen:* In den Views (`HomeView`, `FlashcardsView`, `CreateDeckDialog`) wurde für die `ImageView`s `setSmooth(true)` gesetzt, um die skalierten Icons gestochen scharf darzustellen.
