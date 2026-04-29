@@ -49,13 +49,13 @@ public class HomeView extends VBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button importBtn = createBtn("Import Deck", "#2196F3", "#1565C0");
+        Button importBtn = createSubtleBtn("⬇ Import Deck", "#2196F3");
         importBtn.setOnAction(e -> { if (onImportDeckRequested != null) onImportDeckRequested.run(); });
 
         selectToggleBtn = createBtn("Select", "#607D8B", "#455A64");
         selectToggleBtn.setOnAction(e -> toggleSelectMode());
 
-        exportSelectedBtn = createBtn("Export (0)", "#FF9800", "#E65100");
+        exportSelectedBtn = createSubtleBtn("⬆ Export (0)", "#4CAF50");
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         exportSelectedBtn.setDisable(true);
@@ -187,6 +187,7 @@ public class HomeView extends VBox {
         iconView.setFitWidth(selectMode ? 55 : 75);
         iconView.setFitHeight(selectMode ? 55 : 75);
         iconView.setPreserveRatio(true);
+        iconView.setSmooth(true);
 
         Label nameLabel = new Label(deck.getName() != null ? deck.getName() : "");
         nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #333333;");
@@ -253,6 +254,26 @@ public class HomeView extends VBox {
         Button btn = new Button(text);
         String s1 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", color, hoverColor);
         String s2 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", hoverColor, hoverColor);
+        btn.setStyle(s1);
+        btn.setOnMouseEntered(e -> btn.setStyle(s2));
+        btn.setOnMouseExited(e -> btn.setStyle(s1));
+        return btn;
+    }
+
+    private Button createSubtleBtn(String text, String accentColor) {
+        Button btn = new Button(text);
+        String s1 = String.format(
+            "-fx-background-color: white; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+            "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
+            "-fx-text-fill: #000000; -fx-font-weight: bold;",
+            accentColor
+        );
+        String s2 = String.format(
+            "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+            "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
+            "-fx-text-fill: white; -fx-font-weight: bold;",
+            accentColor, accentColor
+        );
         btn.setStyle(s1);
         btn.setOnMouseEntered(e -> btn.setStyle(s2));
         btn.setOnMouseExited(e -> btn.setStyle(s1));

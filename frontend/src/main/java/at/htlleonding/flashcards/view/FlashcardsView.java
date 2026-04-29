@@ -61,7 +61,7 @@ public class FlashcardsView extends HBox {
 
     private VBox buildLeftSide() {
         // ── action bar ────────────────────────────────────────────────────
-        Button importBtn = createBtn("Import", "#2196F3", "#1565C0");
+        Button importBtn = createSubtleBtn("⬇ Import", "#2196F3");
         importBtn.setOnAction(e -> { if (onImportRequested != null) onImportRequested.run(); });
 
         Region spacer = new Region();
@@ -80,7 +80,7 @@ public class FlashcardsView extends HBox {
                 onDeleteSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        exportSelectedBtn = createBtn("Export (0)", "#FF9800", "#E65100");
+        exportSelectedBtn = createSubtleBtn("⬆ Export (0)", "#4CAF50");
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         exportSelectedBtn.setDisable(true);
@@ -128,6 +128,7 @@ public class FlashcardsView extends HBox {
         iconView.setFitWidth(28);
         iconView.setFitHeight(28);
         iconView.setPreserveRatio(true);
+        iconView.setSmooth(true);
 
         deckInfoRow = new HBox(8, iconView, deckTitleLabel);
         deckInfoRow.setAlignment(Pos.CENTER_LEFT);
@@ -244,7 +245,7 @@ public class FlashcardsView extends HBox {
         editBtn.setMaxWidth(Double.MAX_VALUE);
         editBtn.setOnAction(e -> { if (onEditCardRequested != null) onEditCardRequested.accept(card); });
 
-        Button exportCardBtn = createBtn("Export Card", "#FF9800", "#E65100");
+        Button exportCardBtn = createSubtleBtn("⬆ Export Card", "#4CAF50");
         exportCardBtn.setMaxWidth(Double.MAX_VALUE);
         exportCardBtn.setOnAction(e -> { if (onExportCardRequested != null) onExportCardRequested.accept(card); });
 
@@ -393,15 +394,35 @@ public class FlashcardsView extends HBox {
 
     // ── helpers ────────────────────────────────────────────────────────────
 
-    private Button createBtn(String text, String color, String hoverColor) {
-        Button btn = new Button(text);
-        String s1 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", color, hoverColor);
-        String s2 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", hoverColor, hoverColor);
-        btn.setStyle(s1);
-        btn.setOnMouseEntered(e -> btn.setStyle(s2));
-        btn.setOnMouseExited(e -> btn.setStyle(s1));
-        return btn;
-    }
+     private Button createBtn(String text, String color, String hoverColor) {
+         Button btn = new Button(text);
+         String s1 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", color, hoverColor);
+         String s2 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", hoverColor, hoverColor);
+         btn.setStyle(s1);
+         btn.setOnMouseEntered(e -> btn.setStyle(s2));
+         btn.setOnMouseExited(e -> btn.setStyle(s1));
+         return btn;
+     }
+
+     private Button createSubtleBtn(String text, String accentColor) {
+         Button btn = new Button(text);
+         String s1 = String.format(
+             "-fx-background-color: white; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+             "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
+             "-fx-text-fill: #000000; -fx-font-weight: bold;",
+             accentColor
+         );
+         String s2 = String.format(
+             "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+             "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
+             "-fx-text-fill: white; -fx-font-weight: bold;",
+             accentColor, accentColor
+         );
+         btn.setStyle(s1);
+         btn.setOnMouseEntered(e -> btn.setStyle(s2));
+         btn.setOnMouseExited(e -> btn.setStyle(s1));
+         return btn;
+     }
 
     // ── callback setters ───────────────────────────────────────────────────
 
