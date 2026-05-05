@@ -28,7 +28,7 @@ public class FlashcardsView extends HBox {
     private FlowPane cardsGrid;
     private VBox detailPanel;
     private VBox contentArea;
-    private HBox deckInfoRow;
+    private VBox deckInfoRow;
     private Button selectToggleBtn;
     private Button exportSelectedBtn;
     private Button deleteSelectedBtn;
@@ -120,18 +120,21 @@ public class FlashcardsView extends HBox {
 
         // ── deck info row ─────────────────────────────────────────────────
         deckTitleLabel = new Label("");
-        deckTitleLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+        deckTitleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;");
         deckTitleLabel.setWrapText(true);
+        deckTitleLabel.setAlignment(Pos.CENTER);
+        deckTitleLabel.setTextAlignment(TextAlignment.CENTER);
+        deckTitleLabel.setMaxWidth(Double.MAX_VALUE);
 
         Image defaultIcon = IconManager.getIcon("default");
         iconView = new ImageView(defaultIcon);
-        iconView.setFitWidth(28);
-        iconView.setFitHeight(28);
+        iconView.setFitWidth(100);
+        iconView.setFitHeight(100);
         iconView.setPreserveRatio(true);
         iconView.setSmooth(true);
 
-        deckInfoRow = new HBox(8, iconView, deckTitleLabel);
-        deckInfoRow.setAlignment(Pos.CENTER_LEFT);
+        deckInfoRow = new VBox(8, iconView, deckTitleLabel);
+        deckInfoRow.setAlignment(Pos.CENTER);
         deckInfoRow.setVisible(false);
         deckInfoRow.setManaged(false);
 

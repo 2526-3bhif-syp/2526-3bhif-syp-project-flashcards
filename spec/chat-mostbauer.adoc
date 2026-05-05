@@ -164,3 +164,7 @@ Wo und wie werden die Karten gespeichert?
 * Lese agents.adoc und alle dateien in spec/ um Kontext für das Projekt zu gewinnen. Lese auch die chat files in spec und siehe dir vergange commits an um mehr über vergangene Sessions herauszufinden.
 
 * Füge den Stift button zum editieren der sich auf den Decks finden lässt auch zu Karten hinzu um das Design mehr einheitlich zu halten.
+
+* Gut! Als nächstes vergrößere das Deck icon in der Flashcard View. Derzeit wird es im Seiten Panel oben klein neben den Namen des derzeit offenen decks gezeigt, jedoch hätte ich es gern größer und zentriert über den Namen des Decks.
+
+* Richtiger Ansatz, aber noch größer.
