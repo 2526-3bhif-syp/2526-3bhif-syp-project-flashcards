@@ -348,8 +348,18 @@ public class FlashcardsView extends HBox {
                 HBox.setHgrow(sp, Priority.ALWAYS);
                 topBox.getChildren().addAll(checkmark, sp);
             } else {
+                Button editBtn = new Button("✎");
+                editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
+                editBtn.setOnMouseEntered(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+                editBtn.setOnMouseExited(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+                editBtn.setOnAction(e -> {
+                    e.consume();
+                    if (onEditCardRequested != null) onEditCardRequested.accept(card);
+                });
+
                 Region sp = new Region();
                 HBox.setHgrow(sp, Priority.ALWAYS);
+
                 Button deleteBtn = new Button("✖");
                 deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
                 deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #dc3545; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
@@ -364,7 +374,7 @@ public class FlashcardsView extends HBox {
                         if (r == ButtonType.OK && onDeleteCardRequested != null) onDeleteCardRequested.accept(card);
                     });
                 });
-                topBox.getChildren().addAll(sp, deleteBtn);
+                topBox.getChildren().addAll(editBtn, sp, deleteBtn);
             }
 
             Label qLabel = new Label(card.getQuestion());
