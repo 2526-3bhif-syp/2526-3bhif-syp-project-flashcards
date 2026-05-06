@@ -293,6 +293,7 @@ public class MainPresenter {
         if (deck == null) return;
         deck.removeCard(cardToDelete);
         model.updateDeck(deck);
+        flashcardsView.clearSelectedCard();
         refreshFlashcardsView();
     }
 
@@ -310,6 +311,7 @@ public class MainPresenter {
                         model.updateDeck(deck);
                     }
                 }
+                flashcardsView.clearSelectedCard();
                 flashcardsView.exitSelectMode();
                 refreshFlashcardsView();
             }
