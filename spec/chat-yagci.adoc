@@ -31,7 +31,7 @@ Frage NICHT nach Code oder Implementierungsdetails.
 === User Story: EditDelete (Karten bearbeiten und löschen)
 [quote]
 User: "Please never use cat >> to write in files... And please use the already create card dialog to edit a card. Make the flashcard clickable and continue with your previous rules."
-Agent: "I understand. I will reuse `CreateCardDialog.java` by giving it an overloaded constructor to support 'Edit' mode rather than creating a separate `EditCardDialog`. I will also introduce a small delete button (X) on the top right corner of the flashcard UI, and make clicking the overall card trigger the edit mode."
+Agent: "Verstanden. Ich werde `CreateCardDialog.java` wiederverwenden, indem ich ihm einen überladenen Konstruktor gebe, der den 'Edit'-Modus unterstützt, anstatt einen separaten `EditCardDialog` zu erstellen. Ich werde außerdem einen kleinen Lösch-Button (X) in der oberen rechten Ecke der Karteikarten-UI einführen und dafür sorgen, dass ein Klick auf die gesamte Karte den Editier-Modus auslöst."
 
 * *Entscheidung Reuse Dialog:* Anstatt eines neuen Dialog-Fensters (`EditCardDialog`) wurde `CreateCardDialog.java` so erweitert, dass er den Editier-Zustand erkennt und die UI des Dialogs (Titel, Button-Text) entsprechend anpasst.
 * *Klick-Gesten:* Ein direkter Klick auf ein "Card Tile" (`cardTile.setOnMouseClicked`) öffnet den Dialog mit den vorbefüllten Daten der zu editierenden Karte.
@@ -45,7 +45,7 @@ Agent: "I understand. I will reuse `CreateCardDialog.java` by giving it an overl
 User: "When starting the app and clicking on the flashcards view, the app does not show any flashcards. Is this normal? If I create a new flashcards, the others pop up and if I go to home and then click on the deck 'English', then it brings me to the flashcards view and shows the cards. If I then go back to home and click on flashcards, it shows me cards.
 If it is not normal please fix it. Also the there should be a delete button and edit button. Right now they is no edit button (you can only change when flashcards is pressed), and an ugly displaced delete button. Please create a button named delete on the right top left of an flashcard and and edit on the left top corner"
 
-Agent: "I understand the issue. I have modified the `MainPresenter` so that navigating to the Flashcards view directly loads the default deck correctly, ensuring cards are visible immediately without needing to create a new one first. Additionally, I have improved the card UI inside `FlashcardsView`. There is now an 'Edit' button in the top-left corner and a 'Delete' button in the top-right corner. The entire flashcard remains clickable to also trigger the edit dialog to stick to previous conventions."
+Agent: "Ich habe das Problem verstanden. Ich habe den `MainPresenter` so angepasst, dass die Navigation zur Flashcards-Ansicht das Standard-Deck direkt korrekt lädt, sodass die Karten sofort sichtbar sind, ohne erst eine neue erstellen zu müssen. Außerdem habe ich die Karten-UI in der `FlashcardsView` verbessert. Es gibt nun einen 'Edit'-Button in der oberen linken Ecke und einen 'Delete'-Button in der oberen rechten Ecke. Die gesamte Karteikarte bleibt weiterhin anklickbar, um den Editier-Dialog auszulösen und die bestehenden Konventionen beizubehalten."
 
 * *Bugfix (Leere Flashcards-Ansicht):* Die Methode `navigateTo` in `MainPresenter` wurde so angepasst, dass sie bei der Navigation zu `Flashcards` proaktiv die Daten aus dem Standard-Deck lädt, damit die Ansicht nicht initial leer ist.
 * *Karten-UI Verbesserungen:* Die Karteikarten in `FlashcardsView` haben im oberen Bereich nun eine dedizierte HBox. Dort befinden sich ein blauer "Edit"-Button (oben links) und ein roter "Delete"-Button (oben rechts).
@@ -57,9 +57,9 @@ Agent: "I understand the issue. I have modified the `MainPresenter` so that navi
 [quote]
 User: "The edit and delete buttons are still not in place. Place them in the top corners! The should have a visible button color"
 
-Agent: "I have updated the 'Edit' and 'Delete' buttons in the `FlashcardsView`. They now have a highly visible background color (blue for edit and red for delete) and white text. They are clearly positioned in the top corners of the flashcard element."
+Agent: "Ich habe die 'Edit'- und 'Delete'-Buttons in der `FlashcardsView` aktualisiert. Sie haben nun eine gut sichtbare Hintergrundfarbe (Blau für Bearbeiten, Rot für Löschen) und weißen Text. Sie sind klar in den oberen Ecken des Karteikarten-Elements positioniert."
 
-* *UI Update:* The `FlashcardsView` card tiles were modified to set visible background colors for the action buttons instead of transparent backgrounds (blue `#007bff` for edit, red `#dc3545` for delete). They are pushed to the top-left and top-right respectively via the `HBox` spacer.
+* *UI-Update:* Die Karten-Tiles in der `FlashcardsView` wurden so angepasst, dass die Aktions-Buttons statt transparenter Hintergründe sichtbare Hintergrundfarben erhalten (Blau `#007bff` für Bearbeiten, Rot `#dc3545` für Löschen). Sie werden über den `HBox`-Spacer jeweils nach oben-links bzw. oben-rechts verschoben.
 
 == Session 5 (2026-04-28)
 
@@ -79,3 +79,20 @@ Meine durchgeführten Schritte zur Behebung:
 
 * *Fehlerbehebung:* Die PNG-Icons in `icons/png` wurden repariert, sodass sie nun über einen echten Alpha-Kanal an den Rändern verfügen.
 * *UI Verbesserungen:* In den Views (`HomeView`, `FlashcardsView`, `CreateDeckDialog`) wurde für die `ImageView`s `setSmooth(true)` gesetzt, um die skalierten Icons gestochen scharf darzustellen.
+
+== Session 6 (2026-05-06)
+
+User: Schaue dir in spec/ alles an. Bekomme einen Context und fetche das issue #45, den bug. Wenn eine Flashcard gelöscht wird, wird zwar das Deck aktualisert und die Karte aus dem Deck entfernt, aber man sieht rechts am Sidepanel immernoch die Informationen der gelöschten Karte. Bitte behebe das, sodass die Informationen im Sidepanel auch IMNMER verschwinden, wenn eine Karte gelöscht wird. Schau dir ebenso spec/chat-yagci.adoc an. Mache eine Zusammenfassung und schreibe sie als Antwort für Session 6. Frage mich gerne fragen davor um sicherzustellen, dass alles richtig ablaufen wird.
+
+Agent: "Ich habe den Kontext des Projekts analysiert, die Spec-Dateien gelesen und GitHub Issue #45 abgerufen. Das Problem wurde identifiziert und behoben.
+
+Was war das Problem?
+Wenn eine Karteikarte gelöscht wurde, rief `handleDeleteCardRequested` im `MainPresenter` zwar `refreshFlashcardsView()` auf, welches die Karten-Grid neu rendert. Allerdings blieb `selectedDetailCard` in der `FlashcardsView` auf die gelöschte Karte gesetzt — das Detail-Panel auf der rechten Seite zeigte die Informationen der gelöschten Karte weiterhin an.
+
+Durchgeführte Schritte zur Behebung:
+1. In `FlashcardsView.java` wurde eine neue öffentliche Methode `clearSelectedCard()` hinzugefügt, die `selectedDetailCard` auf `null` setzt und den Platzhalter-Text ('Select a card to see details') anzeigt.
+2. In `MainPresenter.java` wurde `flashcardsView.clearSelectedCard()` in `handleDeleteCardRequested` aufgerufen, sodass das Detail-Panel bei jedem Einzel-Löschvorgang sofort geleert wird.
+3. Ebenfalls in `handleDeleteSelectedCardsRequested` wurde `clearSelectedCard()` vor `exitSelectMode()` aufgerufen, damit auch beim Löschen mehrerer Karten im Auswahl-Modus das Panel korrekt zurückgesetzt wird."
+
+* *Fehlerbehebung:* `FlashcardsView` hat nun die öffentliche Methode `clearSelectedCard()`, die `selectedDetailCard` zurücksetzt und den Platzhalter anzeigt — ohne die Deck-Info-Zeile zu entfernen.
+* *Präsenter-Anpassung:* `handleDeleteCardRequested` und `handleDeleteSelectedCardsRequested` in `MainPresenter` rufen nun vor dem Neu-Rendern `clearSelectedCard()` auf, sodass das Detail-Panel bei jedem Löschvorgang zuverlässig geleert wird.
