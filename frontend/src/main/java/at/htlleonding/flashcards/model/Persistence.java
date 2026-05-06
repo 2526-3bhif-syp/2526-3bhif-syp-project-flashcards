@@ -86,12 +86,12 @@ public class Persistence {
                     deck.addCard(card);
                     return deck;
                 }
-                throw new IOException("Unrecognised JSON format");
+                throw new IOException("Unrecognised JSON structure. Expected a Deck object, an array of Cards, or a single Card object.");
             }
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
-            throw new IOException("Could not parse JSON: " + e.getMessage());
+            throw new IOException("Could not parse JSON – the file may be corrupt or contain invalid JSON. Details: " + e.getMessage());
         }
     }
 
@@ -106,17 +106,17 @@ public class Persistence {
                 if (node.size() > 0 && node.get(0).has("name")) {
                     return mapper.convertValue(node, new TypeReference<List<Deck>>() {});
                 }
-                throw new IOException("JSON array does not contain deck objects");
+                throw new IOException("The JSON array does not contain valid Deck objects. Each deck must have at least a \"name\" field.");
             } else {
                 if (node.has("name")) {
                     return List.of(mapper.treeToValue(node, Deck.class));
                 }
-                throw new IOException("JSON object is not a deck");
+                throw new IOException("The JSON object is not a valid Deck. A deck must have a \"name\" field.");
             }
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
-            throw new IOException("Could not parse JSON: " + e.getMessage());
+            throw new IOException("Could not parse JSON – the file may be corrupt or contain invalid JSON. Details: " + e.getMessage());
         }
     }
 }

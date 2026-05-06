@@ -74,7 +74,7 @@ public class MainPresenter {
             refreshHomeView();
             alert(Alert.AlertType.INFORMATION, imported.size() + " deck(s) imported successfully.");
         } catch (Exception e) {
-            alert(Alert.AlertType.ERROR, "Import failed: " + e.getMessage());
+            alert(Alert.AlertType.ERROR, "Deck could not be loaded. Please check the JSON format.\n\nDetails: " + e.getMessage());
         }
     }
 
@@ -236,7 +236,7 @@ public class MainPresenter {
 
         } catch (Exception e) {
             e.printStackTrace();
-            alert(Alert.AlertType.ERROR, "Import failed: " + e.getMessage());
+            alert(Alert.AlertType.ERROR, "Cards could not be imported. Please check the JSON format.\n\nDetails: " + e.getMessage());
         }
     }
 
