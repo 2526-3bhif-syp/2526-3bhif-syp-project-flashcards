@@ -68,11 +68,47 @@ public class MainPresenter {
 
         try {
             List<Deck> imported = model.getPersistence().importDecksFromJSON(file);
-            for (Deck deck : imported) {
-                model.addOrMergeDeck(deck);
+
+            if (imported == null || imported.isEmpty()) {
+                alert(Alert.AlertType.INFORMATION, "No decks found in the imported file.");
+                return;
             }
+
+            List<Deck> existingDecks = model.getDecks();
+            boolean hasDuplicates = imported.stream().anyMatch(imp ->
+                existingDecks.stream().anyMatch(ex ->
+                    ex.getName() != null &&
+                    ex.getName().trim().equalsIgnoreCase(imp.getName() != null ? imp.getName().trim() : "")
+                )
+            );
+
+            DuplicateDeckActionDialog.Action action = DuplicateDeckActionDialog.Action.ALLOW_ALL;
+            if (hasDuplicates) {
+                DuplicateDeckActionDialog dialog = new DuplicateDeckActionDialog((Stage) homeView.getScene().getWindow());
+                action = dialog.showAndWait().orElse(DuplicateDeckActionDialog.Action.CANCEL);
+            }
+
+            if (action == DuplicateDeckActionDialog.Action.CANCEL) return;
+
+            int count = 0;
+            for (Deck deck : imported) {
+                Deck existing = existingDecks.stream()
+                    .filter(ex -> ex.getName() != null &&
+                                  ex.getName().trim().equalsIgnoreCase(deck.getName() != null ? deck.getName().trim() : ""))
+                    .findFirst().orElse(null);
+                boolean isDuplicate = existing != null;
+
+                if (isDuplicate) {
+                    if (action == DuplicateDeckActionDialog.Action.SKIP) continue;
+                    if (action == DuplicateDeckActionDialog.Action.REPLACE) model.removeDeck(existing);
+                    // ALLOW_ALL: fall through and add anyway
+                }
+                model.addDeck(deck);
+                count++;
+            }
+
             refreshHomeView();
-            alert(Alert.AlertType.INFORMATION, imported.size() + " deck(s) imported successfully.");
+            alert(Alert.AlertType.INFORMATION, count + " deck(s) imported successfully.");
         } catch (Exception e) {
             alert(Alert.AlertType.ERROR, "Deck could not be loaded. Please check the JSON format.\n\nDetails: " + e.getMessage());
         }

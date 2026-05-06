@@ -37,6 +37,11 @@ public class Model {
         persistence.saveDecks(decks);
     }
 
+    public void addDeck(Deck deck) {
+        decks.add(deck);
+        persistence.saveDecks(decks);
+    }
+
     /**
      * Adds a new deck, or merges its cards into the existing deck if the name already exists.
      */
