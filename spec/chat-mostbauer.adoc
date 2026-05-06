@@ -168,3 +168,10 @@ Wo und wie werden die Karten gespeichert?
 * Gut! Als nächstes vergrößere das Deck icon in der Flashcard View. Derzeit wird es im Seiten Panel oben klein neben den Namen des derzeit offenen decks gezeigt, jedoch hätte ich es gern größer und zentriert über den Namen des Decks.
 
 * Richtiger Ansatz, aber noch größer.
+
+
+== Session 9 (2026-05-06)
+
+* Erhöhe die größe der Deck icons in der Deck-Erstellen Form
+
+* Gute Größe, aber das ganze Popup Fenster sollte etwas breiter und nicht so hoch sein wenn es erscheint

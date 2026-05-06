@@ -44,7 +44,7 @@ public class CreateDeckDialog {
 
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
-        root.setPrefWidth(350);
+        root.setPrefWidth(550);
 
         Label nameLabel = new Label("Deck Name:");
         nameLabel.setStyle("-fx-font-weight: bold;");
@@ -68,14 +68,14 @@ public class CreateDeckDialog {
         for (String iconId : IconManager.getAvailableIconIds()) {
             Image iconImage = IconManager.getIcon(iconId);
             ImageView iconView = new ImageView(iconImage);
-            iconView.setFitWidth(40);
-            iconView.setFitHeight(40);
+            iconView.setFitWidth(64);
+            iconView.setFitHeight(64);
             iconView.setPreserveRatio(true);
             iconView.setSmooth(true);
             
             Button iconBtn = new Button();
             iconBtn.setGraphic(iconView);
-            iconBtn.setPrefSize(50, 50);
+            iconBtn.setPrefSize(74, 74);
             iconBtn.setUserData(iconId); // Store the icon ID as user data
             
             boolean isSelected = iconId.equals(selectedIconId);
