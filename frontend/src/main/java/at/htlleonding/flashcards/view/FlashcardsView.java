@@ -174,6 +174,11 @@ public class FlashcardsView extends HBox {
         showPlaceholder();
     }
 
+    public void clearSelectedCard() {
+        selectedDetailCard = null;
+        showPlaceholder();
+    }
+
     // ── detail panel content ───────────────────────────────────────────────
 
     private void showPlaceholder() {
