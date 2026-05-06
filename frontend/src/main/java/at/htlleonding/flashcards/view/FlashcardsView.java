@@ -61,7 +61,7 @@ public class FlashcardsView extends HBox {
 
     private VBox buildLeftSide() {
         // ── action bar ────────────────────────────────────────────────────
-        Button importBtn = createSubtleBtn("⬇ Import", "#2196F3");
+        Button importBtn = createSubtleBtn("⬇ Import Cards", "#2196F3");
         importBtn.setOnAction(e -> { if (onImportRequested != null) onImportRequested.run(); });
 
         Region spacer = new Region();

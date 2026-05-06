@@ -59,6 +59,38 @@ public class Persistence {
     }
 
     /**
+     * Import cards only. Rejects deck-format JSON — use importDecksFromJSON for decks.
+     */
+    public Deck importCardsFromJSON(File file) throws IOException {
+        try {
+            JsonNode node = mapper.readTree(file);
+            if (node.isArray()) {
+                if (node.size() > 0 && node.get(0).has("name")) {
+                    throw new IOException("This file contains decks, not cards. Use \"Import Deck\" from the Home view.");
+                }
+                List<Card> cards = mapper.convertValue(node, new TypeReference<List<Card>>() {});
+                Deck deck = new Deck("Imported Deck", "");
+                if (cards != null) deck.setCards(cards);
+                return deck;
+            } else {
+                if (node.has("name")) {
+                    throw new IOException("This file contains a deck, not cards. Use \"Import Deck\" from the Home view.");
+                } else if (node.has("question")) {
+                    Card card = mapper.treeToValue(node, Card.class);
+                    Deck deck = new Deck("Imported", "");
+                    deck.addCard(card);
+                    return deck;
+                }
+                throw new IOException("Unrecognised JSON structure. Expected an array of Cards or a single Card object.");
+            }
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Could not parse JSON – the file may be corrupt or contain invalid JSON. Details: " + e.getMessage());
+        }
+    }
+
+    /**
      * Import cards from a JSON file into a deck.
      * Handles: single Deck object, array of Decks (first used), array of Cards, single Card object.
      */
@@ -103,11 +135,17 @@ public class Persistence {
         try {
             JsonNode node = mapper.readTree(file);
             if (node.isArray()) {
+                if (node.size() > 0 && node.get(0).has("question") && !node.get(0).has("name")) {
+                    throw new IOException("This file contains cards, not decks. Use \"Import Cards\" from the Flashcards view.");
+                }
                 if (node.size() > 0 && node.get(0).has("name")) {
                     return mapper.convertValue(node, new TypeReference<List<Deck>>() {});
                 }
                 throw new IOException("The JSON array does not contain valid Deck objects. Each deck must have at least a \"name\" field.");
             } else {
+                if (node.has("question") && !node.has("name")) {
+                    throw new IOException("This file contains a card, not a deck. Use \"Import Cards\" from the Flashcards view.");
+                }
                 if (node.has("name")) {
                     return List.of(mapper.treeToValue(node, Deck.class));
                 }

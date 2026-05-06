@@ -135,6 +135,29 @@ When ich diese Datei wieder importiere
 Then wird der Stapel mit allen Inhalten identisch wiederhergestellt
 ....
 
+==== US-004b: Duplikat-Behandlung beim Stapel-Import
+
+[horizontal]
+Story:: Als *Lernender* möchte ich *beim Import von Stapeln mit gleichem Namen eine Auswahl treffen*, damit *ich meine Daten nicht versehentlich überschreibe oder verliere*.
+Priorität:: Mittel
+Story Points:: 2
+
+===== Akzeptanzkriterien
+
+[source,gherkin]
+....
+Given ich importiere eine JSON-Datei mit Stapeln
+When ein oder mehrere importierte Stapel denselben Namen (case-insensitiv) wie ein bestehender Stapel haben
+Then erscheint ein Dialog mit folgenden Optionen:
+  | Option                  | Verhalten                                              |
+  | Import All (keep both)  | Importierter Stapel wird zusätzlich hinzugefügt        |
+  | Replace Existing Decks  | Bestehender Stapel wird gelöscht, neuer importiert     |
+  | Skip Duplicates         | Nur Stapel ohne Namenskollision werden importiert      |
+  | Cancel Import           | Import wird vollständig abgebrochen                    |
+When kein Duplikat vorhanden ist
+Then werden alle Stapel ohne Dialog direkt importiert
+....
+
 == Geschäftsregeln
 
 [[BR-001]]

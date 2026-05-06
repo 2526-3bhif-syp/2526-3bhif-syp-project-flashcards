@@ -210,7 +210,7 @@ public class MainPresenter {
 
     private void handleImportRequested(FlashcardsView flashcardsView) {
         FileChooser fc = new FileChooser();
-        fc.setTitle("Import JSON");
+        fc.setTitle("Import Cards");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));
         File file = fc.showOpenDialog(flashcardsView.getScene().getWindow());
         if (file != null) performImport(file, flashcardsView);
@@ -225,7 +225,7 @@ public class MainPresenter {
         final Deck deck = resolved;
 
         try {
-            Deck importedDeck = model.getPersistence().importFromJSON(file);
+            Deck importedDeck = model.getPersistence().importCardsFromJSON(file);
 
             if (importedDeck == null || importedDeck.getCards().isEmpty()) {
                 alert(Alert.AlertType.INFORMATION, "No cards found in the imported file.");
@@ -269,7 +269,16 @@ public class MainPresenter {
                 if (isDuplicate) {
                     if (action == DuplicateActionDialog.Action.SKIP) continue;
                     if (action == DuplicateActionDialog.Action.REPLACE) deck.removeCard(existing);
-                    // ALLOW_ALL: fall through and add anyway
+                    // ALLOW_ALL: regenerate UUID so both cards stay independent
+                    if (action == DuplicateActionDialog.Action.ALLOW_ALL) {
+                        c.setId(java.util.UUID.randomUUID().toString());
+                    }
+                }
+                // Guard against UUID collision with any card already in the deck
+                boolean uuidCollision = deck.getCards().stream()
+                    .anyMatch(ex -> ex.getId() != null && ex.getId().equals(c.getId()));
+                if (uuidCollision) {
+                    c.setId(java.util.UUID.randomUUID().toString());
                 }
                 deck.addCard(c);
                 count++;
