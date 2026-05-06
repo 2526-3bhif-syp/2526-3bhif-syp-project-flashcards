@@ -96,3 +96,28 @@ Durchgeführte Schritte zur Behebung:
 
 * *Fehlerbehebung:* `FlashcardsView` hat nun die öffentliche Methode `clearSelectedCard()`, die `selectedDetailCard` zurücksetzt und den Platzhalter anzeigt — ohne die Deck-Info-Zeile zu entfernen.
 * *Präsenter-Anpassung:* `handleDeleteCardRequested` und `handleDeleteSelectedCardsRequested` in `MainPresenter` rufen nun vor dem Neu-Rendern `clearSelectedCard()` auf, sodass das Detail-Panel bei jedem Löschvorgang zuverlässig geleert wird.
+
+== Session 7 (2026-05-06)
+
+User: Wenn das falsche JSON-Format relevant wird, erhalte ich eine Warnmeldung. Es funktioniert zwar, aber die Warnmeldung ist nicht sehr benutzerfreundlich. Bitte geben Sie aussagekräftigere Beispiele für die Warnmeldung an, z. B. „Deck konnte nicht geladen werden. Bitte überprüfen Sie das JSON-Format.". Frage fragen falls notwendig
+
+Agent: "Ich habe die Fehlermeldungen bei ungültigem JSON-Format in zwei Dateien verbessert.
+
+Was war das Problem?
+Die bisherigen Fehlermeldungen waren technische Rohtext-Ausgaben (z. B. `\"Import failed: Could not parse JSON: ...\"` oder `\"Unrecognised JSON format\"`), die für den Endbenutzer wenig aussagekräftig waren.
+
+Durchgeführte Schritte zur Behebung:
+
+1. In `Persistence.java` wurden alle IOException-Nachrichten durch beschreibende Texte ersetzt:
+   - `\"Unrecognised JSON format\"` → `\"Unrecognised JSON structure. Expected a Deck object, an array of Cards, or a single Card object.\"`
+   - `\"JSON array does not contain deck objects\"` → `\"The JSON array does not contain valid Deck objects. Each deck must have at least a \\\"name\\\" field.\"`
+   - `\"JSON object is not a deck\"` → `\"The JSON object is not a valid Deck. A deck must have a \\\"name\\\" field.\"`
+   - `\"Could not parse JSON: ...\"` → `\"Could not parse JSON – the file may be corrupt or contain invalid JSON. Details: ...\"` (Präfix bleibt für bestehende Tests erhalten)
+
+2. In `MainPresenter.java` wurden die Alert-Dialoge für Import-Fehler verbessert:
+   - Deck-Import: `\"Import failed: ...\"` → `\"Deck could not be loaded. Please check the JSON format.\\n\\nDetails: ...\"`
+   - Karten-Import: `\"Import failed: ...\"` → `\"Cards could not be imported. Please check the JSON format.\\n\\nDetails: ...\"`"
+
+* *Persistence-Verbesserungen:* Alle IOException-Nachrichten in `Persistence.java` wurden durch strukturierte, verständliche Beschreibungen ersetzt — mit klaren Hinweisen auf das erwartete Format.
+* *Presenter-Verbesserungen:* Die Alert-Dialoge in `MainPresenter.java` trennen nun die benutzerfreundliche Hauptmeldung (`\"Deck could not be loaded. Please check the JSON format.\"`) von den technischen Details, die im Abschnitt `\"Details:\"` weiterhin sichtbar sind.
+* *Rückwärtskompatibilität:* Der Präfix `\"Could not parse JSON\"` in der generischen Exception blieb erhalten, damit die bestehenden JUnit-Tests in `PersistenceTest.java` weiterhin bestehen.
