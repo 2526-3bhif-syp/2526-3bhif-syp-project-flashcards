@@ -289,7 +289,6 @@ public class MainPresenter {
             alert(Alert.AlertType.INFORMATION, count + " cards imported successfully.");
 
         } catch (Exception e) {
-            e.printStackTrace();
             alert(Alert.AlertType.ERROR, "Cards could not be imported. Please check the JSON format.\n\nDetails: " + e.getMessage());
         }
     }
