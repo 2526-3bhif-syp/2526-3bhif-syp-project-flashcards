@@ -101,7 +101,16 @@ public class MainPresenter {
                 if (isDuplicate) {
                     if (action == DuplicateDeckActionDialog.Action.SKIP) continue;
                     if (action == DuplicateDeckActionDialog.Action.REPLACE) model.removeDeck(existing);
-                    // ALLOW_ALL: fall through and add anyway
+                    // ALLOW_ALL: regenerate UUID so both decks stay independent
+                    if (action == DuplicateDeckActionDialog.Action.ALLOW_ALL) {
+                        deck.setId(java.util.UUID.randomUUID().toString());
+                    }
+                }
+                // Also guard against UUID collision with any existing deck (e.g. non-duplicate name but same UUID from export)
+                boolean uuidCollision = existingDecks.stream()
+                    .anyMatch(ex -> ex.getId() != null && ex.getId().equals(deck.getId()));
+                if (uuidCollision) {
+                    deck.setId(java.util.UUID.randomUUID().toString());
                 }
                 model.addDeck(deck);
                 count++;
