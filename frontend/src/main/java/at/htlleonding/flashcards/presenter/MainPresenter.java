@@ -217,13 +217,6 @@ public class MainPresenter {
     }
 
     private void performImport(File file, FlashcardsView flashcardsView) {
-        Deck resolved = currentDeck;
-        if (resolved == null) {
-            resolved = pickDeck((Stage) flashcardsView.getScene().getWindow());
-            if (resolved == null) return;
-        }
-        final Deck deck = resolved;
-
         try {
             Deck importedDeck = model.getPersistence().importCardsFromJSON(file);
 
@@ -231,6 +224,13 @@ public class MainPresenter {
                 alert(Alert.AlertType.INFORMATION, "No cards found in the imported file.");
                 return;
             }
+
+            Deck resolved = currentDeck;
+            if (resolved == null) {
+                resolved = pickDeck((Stage) flashcardsView.getScene().getWindow());
+                if (resolved == null) return;
+            }
+            final Deck deck = resolved;
 
             List<Card> validImportedCards = importedDeck.getCards().stream()
                 .filter(c -> c != null &&
