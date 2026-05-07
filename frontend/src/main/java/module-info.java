@@ -1,6 +1,7 @@
-module at.htlleonding.flashcards {
+    module at.htlleonding.flashcards {
     requires javafx.controls;
     requires com.fasterxml.jackson.databind;
+    requires javafx.media;
 
     // Export packages so JavaFX and Jackson can access them
     exports at.htlleonding.flashcards;
