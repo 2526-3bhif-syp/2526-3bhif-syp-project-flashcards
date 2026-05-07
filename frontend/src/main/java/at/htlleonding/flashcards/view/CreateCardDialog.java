@@ -9,9 +9,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.util.Base64;
 import java.util.Optional;
 
 public class CreateCardDialog {
@@ -61,6 +65,7 @@ public class CreateCardDialog {
         Region qSpacer = new Region();
         HBox.setHgrow(qSpacer, Priority.ALWAYS);
         Button qAddExtra = new Button("Add Extra");
+        qAddExtra.setOnAction(e -> showExtraMenu(qAddExtra, true));
         qHeader.getChildren().addAll(qLabel, qSpacer, qAddExtra);
 
         questionArea = new TextArea();
@@ -79,6 +84,7 @@ public class CreateCardDialog {
         Region aSpacer = new Region();
         HBox.setHgrow(aSpacer, Priority.ALWAYS);
         Button aAddExtra = new Button("Add Extra");
+        aAddExtra.setOnAction(e -> showExtraMenu(aAddExtra, false));
         aHeader.getChildren().addAll(aLabel, aSpacer, aAddExtra);
 
         answerArea = new TextArea();
@@ -118,6 +124,45 @@ public class CreateCardDialog {
         
         Scene scene = new Scene(root);
         stage.setScene(scene);
+    }
+
+    private void showExtraMenu(Button anchor, boolean isFront) {
+        ContextMenu menu = new ContextMenu();
+        MenuItem audioItem = new MenuItem("Add Audio File");
+        audioItem.setOnAction(e -> handleAddAudio(isFront));
+        MenuItem imageItem = new MenuItem("Add Image (Soon)");
+        imageItem.setDisable(true);
+        menu.getItems().addAll(audioItem, imageItem);
+        menu.show(anchor, javafx.geometry.Side.BOTTOM, 0, 0);
+    }
+
+    private void handleAddAudio(boolean isFront) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Select Audio File");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.mp3"));
+        File file = fc.showOpenDialog(stage);
+        if (file != null) {
+            try {
+                byte[] bytes = Files.readAllBytes(file.toPath());
+                String base64 = Base64.getEncoder().encodeToString(bytes);
+                String name = file.getName();
+                
+                AudioHelper.getDuration(file, duration -> {
+                    if (isFront) {
+                        fAudioData = base64;
+                        fAudioName = name;
+                        fAudioDuration = duration;
+                    } else {
+                        bAudioData = base64;
+                        bAudioName = name;
+                        bAudioDuration = duration;
+                    }
+                    // Visual update will be implemented in Step 3
+                });
+            } catch (Exception ex) {
+                new Alert(Alert.AlertType.ERROR, "Could not load audio file.").show();
+            }
+        }
     }
 
     private void validate() {
