@@ -94,6 +94,8 @@ public class CreateCardDialog {
         if (isEditMode) answerArea.setText(cardToEdit.getAnswer());
 
         bAudioInfoBox = new VBox(5);
+        updateAudioInfo(true);
+        updateAudioInfo(false);
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
@@ -115,7 +117,12 @@ public class CreateCardDialog {
             Card card = isEditMode ? cardToEdit : new Card();
             card.setQuestion(questionArea.getText().trim());
             card.setAnswer(answerArea.getText().trim());
-            // Audio data saving will be added in Step 3
+            card.setFrontAudioData(fAudioData);
+            card.setFrontAudioName(fAudioName);
+            card.setFrontAudioDuration(fAudioDuration);
+            card.setBackAudioData(bAudioData);
+            card.setBackAudioName(bAudioName);
+            card.setBackAudioDuration(bAudioDuration);
             result = card;
             stage.close();
         });
