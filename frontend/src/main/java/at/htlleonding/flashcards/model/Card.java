@@ -10,6 +10,16 @@ public class Card {
     private String answer;
     private List<String> tags;
 
+    // Audio fields for front side (Question)
+    private String frontAudioData; // Base64
+    private String frontAudioName;
+    private String frontAudioDuration;
+
+    // Audio fields for back side (Answer)
+    private String backAudioData; // Base64
+    private String backAudioName;
+    private String backAudioDuration;
+
     public Card() {
         this.id = UUID.randomUUID().toString();
         this.tags = new ArrayList<>();
@@ -40,4 +50,22 @@ public class Card {
 
     public List<String> getTags() { return tags; }
     public void setTags(List<String> tags) { this.tags = tags; }
+
+    public String getFrontAudioData() { return frontAudioData; }
+    public void setFrontAudioData(String frontAudioData) { this.frontAudioData = frontAudioData; }
+
+    public String getFrontAudioName() { return frontAudioName; }
+    public void setFrontAudioName(String frontAudioName) { this.frontAudioName = frontAudioName; }
+
+    public String getFrontAudioDuration() { return frontAudioDuration; }
+    public void setFrontAudioDuration(String frontAudioDuration) { this.frontAudioDuration = frontAudioDuration; }
+
+    public String getBackAudioData() { return backAudioData; }
+    public void setBackAudioData(String backAudioData) { this.backAudioData = backAudioData; }
+
+    public String getBackAudioName() { return backAudioName; }
+    public void setBackAudioName(String backAudioName) { this.backAudioName = backAudioName; }
+
+    public String getBackAudioDuration() { return backAudioDuration; }
+    public void setBackAudioDuration(String backAudioDuration) { this.backAudioDuration = backAudioDuration; }
 }
