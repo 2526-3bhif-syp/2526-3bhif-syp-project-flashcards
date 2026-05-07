@@ -164,11 +164,46 @@ public class CreateCardDialog {
                         bAudioName = name;
                         bAudioDuration = duration;
                     }
-                    // Visual update will be implemented in Step 3
+                    updateAudioInfo(isFront);
                 });
             } catch (Exception ex) {
                 new Alert(Alert.AlertType.ERROR, "Could not load audio file.").show();
             }
+        }
+    }
+
+    private void updateAudioInfo(boolean isFront) {
+        VBox box = isFront ? fAudioInfoBox : bAudioInfoBox;
+        String data = isFront ? fAudioData : bAudioData;
+        String name = isFront ? fAudioName : bAudioName;
+        String dur = isFront ? fAudioDuration : bAudioDuration;
+
+        box.getChildren().clear();
+        if (data != null) {
+            HBox info = new HBox(10);
+            info.setAlignment(Pos.CENTER_LEFT);
+            info.setPadding(new Insets(5));
+            info.setStyle("-fx-background-color: #f0f0f0; -fx-background-radius: 5;");
+            
+            Label label = new Label(String.format("🎵 %s (%s)", name, dur));
+            label.setStyle("-fx-font-size: 11px;");
+            
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            
+            Button delBtn = new Button("🗑");
+            delBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand;");
+            delBtn.setOnAction(e -> {
+                if (isFront) {
+                    fAudioData = fAudioName = fAudioDuration = null;
+                } else {
+                    bAudioData = bAudioName = bAudioDuration = null;
+                }
+                updateAudioInfo(isFront);
+            });
+            
+            info.getChildren().addAll(label, spacer, delBtn);
+            box.getChildren().add(info);
         }
     }
 
