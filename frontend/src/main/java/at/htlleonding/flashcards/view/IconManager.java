@@ -64,80 +64,29 @@ public class IconManager {
      */
     private static Image loadIconFromResources(String iconId) {
         try {
-            String resourcePath = ICON_DIRECTORY + iconId + ICON_EXTENSION;
-            
-            // Try to get the resource as a stream
-            InputStream resourceStream = IconManager.class.getClassLoader()
-                .getResourceAsStream(resourcePath);
-            
-            // If that fails, try with a leading slash
-            if (resourceStream == null) {
-                resourceStream = IconManager.class.getResourceAsStream("/" + resourcePath);
-            }
-            
-            // If still null, try the system classloader
-            if (resourceStream == null) {
-                resourceStream = ClassLoader.getSystemResourceAsStream(resourcePath);
-            }
+            String resourcePath = "/" + ICON_DIRECTORY + iconId + ICON_EXTENSION;
+            InputStream resourceStream = IconManager.class.getResourceAsStream(resourcePath);
             
             if (resourceStream == null) {
-                System.err.println("Icon resource not found: " + resourcePath);
+                System.err.println("Icon not found at: " + resourcePath);
                 return null;
             }
             
-            // Create Image directly from PNG stream
-            // JavaFX handles PNG natively with full quality
-            try {
-                Image image = new Image(resourceStream);
-                if (!image.isError()) {
-                    System.out.println("✓ Loaded icon: " + iconId);
-                    return image;
-                } else {
-                    System.err.println("Error loading SVG for icon: " + iconId);
-                    return null;
-                }
-            } catch (Exception e) {
-                System.err.println("Exception creating Image from SVG stream: " + iconId);
-                e.printStackTrace();
+            Image image = new Image(resourceStream);
+            if (image.isError()) {
+                System.err.println("Error decoding image: " + iconId);
                 return null;
             }
+            return image;
         } catch (Exception e) {
-            System.err.println("Error loading icon: " + iconId);
-            e.printStackTrace();
+            System.err.println("Exception loading icon " + iconId + ": " + e.getMessage());
             return null;
         }
     }
     
-    /**
-     * Creates a simple placeholder icon using a basic SVG.
-     * This is a fallback when no icons can be loaded.
-     *
-     * @return a placeholder JavaFX Image
-     */
     private static Image createPlaceholderIcon() {
-        try {
-            // Create a simple SVG as a string and wrap it in a stream
-            String placeholderSvg = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\" viewBox=\"0 0 200 200\">" +
-                    "  <rect width=\"200\" height=\"200\" fill=\"#cccccc\"/>" +
-                    "  <text x=\"100\" y=\"120\" font-size=\"80\" text-anchor=\"middle\" fill=\"white\" font-weight=\"bold\">?</text>" +
-                    "</svg>";
-            
-            InputStream svgStream = new java.io.ByteArrayInputStream(placeholderSvg.getBytes("UTF-8"));
-            Image image = new Image(svgStream);
-            
-            if (!image.isError()) {
-                System.out.println("✓ Created placeholder icon");
-                return image;
-            } else {
-                System.err.println("Failed to create placeholder icon");
-                return null;
-            }
-        } catch (Exception e) {
-            System.err.println("Error creating placeholder icon");
-            e.printStackTrace();
-            return null;
-        }
+        // Return a very small empty image instead of crashing with SVG
+        return new Image(new java.io.ByteArrayInputStream(new byte[0]));
     }
     
     /**
