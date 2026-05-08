@@ -1,17 +1,27 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
+import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -65,6 +75,7 @@ public class CreateCardDialog {
         Region qSpacer = new Region();
         HBox.setHgrow(qSpacer, Priority.ALWAYS);
         Button qAddExtra = new Button("Add Extra");
+        styleExtraButton(qAddExtra);
         qAddExtra.setOnAction(e -> showExtraMenu(qAddExtra, true));
         qHeader.getChildren().addAll(qLabel, qSpacer, qAddExtra);
 
@@ -84,6 +95,7 @@ public class CreateCardDialog {
         Region aSpacer = new Region();
         HBox.setHgrow(aSpacer, Priority.ALWAYS);
         Button aAddExtra = new Button("Add Extra");
+        styleExtraButton(aAddExtra);
         aAddExtra.setOnAction(e -> showExtraMenu(aAddExtra, false));
         aHeader.getChildren().addAll(aLabel, aSpacer, aAddExtra);
 
@@ -141,6 +153,59 @@ public class CreateCardDialog {
         imageItem.setDisable(true);
         menu.getItems().addAll(audioItem, imageItem);
         menu.show(anchor, javafx.geometry.Side.BOTTOM, 0, 0);
+    }
+
+    private void styleExtraButton(Button btn) {
+        SVGPath plusIcon = new SVGPath();
+        plusIcon.setContent("M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z");
+        plusIcon.setFill(Color.web("#2196F3"));
+        plusIcon.setScaleX(0.45);
+        plusIcon.setScaleY(0.45);
+        
+        btn.setGraphic(plusIcon);
+        btn.setContentDisplay(ContentDisplay.RIGHT);
+        btn.setGraphicTextGap(-2); // Adjusted for scaled icon
+
+        btn.setStyle("-fx-background-color: transparent; " +
+                     "-fx-border-color: #2196F3; " +
+                     "-fx-border-radius: 5; " +
+                     "-fx-text-fill: #2196F3; " +
+                     "-fx-cursor: hand; " +
+                     "-fx-font-weight: bold; " +
+                     "-fx-font-size: 11px; " +
+                     "-fx-padding: 3 4 3 8;"); // Adjusted right padding for icon
+
+        ScaleTransition st = new ScaleTransition(Duration.millis(150), btn);
+        
+        btn.setOnMouseEntered(e -> {
+            btn.setStyle("-fx-background-color: #2196F3; " +
+                         "-fx-border-color: #2196F3; " +
+                         "-fx-border-radius: 5; " +
+                         "-fx-text-fill: white; " +
+                         "-fx-cursor: hand; " +
+                         "-fx-font-weight: bold; " +
+                         "-fx-font-size: 11px; " +
+                         "-fx-padding: 3 4 3 8;");
+            plusIcon.setFill(Color.WHITE);
+            st.setToX(1.1);
+            st.setToY(1.1);
+            st.playFromStart();
+        });
+        
+        btn.setOnMouseExited(e -> {
+            btn.setStyle("-fx-background-color: transparent; " +
+                         "-fx-border-color: #2196F3; " +
+                         "-fx-border-radius: 5; " +
+                         "-fx-text-fill: #2196F3; " +
+                         "-fx-cursor: hand; " +
+                         "-fx-font-weight: bold; " +
+                         "-fx-font-size: 11px; " +
+                         "-fx-padding: 3 4 3 8;");
+            plusIcon.setFill(Color.web("#2196F3"));
+            st.setToX(1.0);
+            st.setToY(1.0);
+            st.playFromStart();
+        });
     }
 
     private void handleAddAudio(boolean isFront) {
