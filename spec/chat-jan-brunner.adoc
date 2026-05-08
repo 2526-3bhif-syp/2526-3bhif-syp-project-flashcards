@@ -205,3 +205,17 @@ dateien steht. Desweiteren sollst du unit tests schreiben für die Deck klasse u
 ** Das Unicode-Icon "➕" wurde durch ein natives `SVGPath`-Objekt ersetzt, um die plattformübergreifende Sichtbarkeit zu garantieren.
 ** Die `styleExtraButton`-Logik wurde erweitert, um das SVG-Icon dynamisch zu färben (Blau im Normalzustand, Weiß beim Hovern).
 ** `ContentDisplay.RIGHT` wurde gesetzt, um das Icon sauber neben dem Text zu positionieren.
+
+* *Prompt:* style nun auch das dropdown vom add extra button
+
+* *Frage:* Sollen die Einträge im Dropdown (Add Audio, Add Image) ebenfalls Icons erhalten (z. B. eine Note für Audio)?
+* *Antwort* Ja, soll es.
+* *Frage:* Soll das Dropdown das gleiche Farbschema wie die Buttons nutzen (blauer Hintergrund bei Hover)?
+* *Antwort* Nein, lass es weiß.
+* *Frage:* Möchtest du eine spezielle Abrundung oder Schatteneffekte für das Dropdown-Menü?
+* *Antwort* Es soll modern aussehen.
+
+* *Umsetzung:*
+** Das Dropdown-Menü (`ContextMenu`) wurde modernisiert: Abgerundete Ecken (8px), hellgrauer Rahmen und ein dezenter Schatteneffekt.
+** Die Menüeinträge haben SVG-Icons erhalten (Musiknote für Audio, Bildrahmen für Image).
+** Das Farbschema wurde wie gewünscht weiß gehalten, um ein sauberes, modernes Erscheinungsbild zu gewährleisten.
