@@ -15,18 +15,17 @@ public class AudioHelper {
         });
     }
 
-    public static void getDurationInSeconds(File file, Consumer<Double> callback) {
+    public static File saveTempAudio(String base64Data) {
         try {
-            Media media = new Media(file.toURI().toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnReady(() -> {
-                double seconds = media.getDuration().toSeconds();
-                callback.accept(seconds);
-                mediaPlayer.dispose();
-            });
-            mediaPlayer.setOnError(() -> callback.accept(0.0));
+            byte[] bytes = java.util.Base64.getDecoder().decode(base64Data);
+            File tempFile = File.createTempFile("flashcard_audio_", ".mp3");
+            tempFile.deleteOnExit();
+            try (java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile)) {
+                fos.write(bytes);
+            }
+            return tempFile;
         } catch (Exception e) {
-            callback.accept(0.0);
+            return null;
         }
     }
 }

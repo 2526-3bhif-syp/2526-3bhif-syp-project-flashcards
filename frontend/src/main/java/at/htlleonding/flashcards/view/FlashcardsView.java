@@ -220,6 +220,10 @@ public class FlashcardsView extends HBox {
         qText.setWrapText(true);
         qText.setStyle("-fx-font-size: 14px; -fx-text-fill: #0D47A1;");
         questionBox.getChildren().addAll(qHeader, qText);
+        
+        if (card.getFrontAudioData() != null) {
+            questionBox.getChildren().add(buildAudioPlayerUI(card.getFrontAudioData(), card.getFrontAudioName()));
+        }
 
         VBox answerBox = new VBox(6);
         answerBox.setPadding(new Insets(12));
@@ -231,7 +235,43 @@ public class FlashcardsView extends HBox {
         aText.setStyle("-fx-font-size: 14px; -fx-text-fill: #1B5E20;");
         answerBox.getChildren().addAll(aHeader, aText);
 
+        if (card.getBackAudioData() != null) {
+            answerBox.getChildren().add(buildAudioPlayerUI(card.getBackAudioData(), card.getBackAudioName()));
+        }
+
         contentArea.getChildren().addAll(questionBox, answerBox);
+...
+    private VBox buildAudioPlayerUI(String base64Data, String fileName) {
+        VBox player = new VBox(4);
+        player.setPadding(new Insets(8, 0, 0, 0));
+
+        Label nameLabel = new Label("🎵 " + fileName);
+        nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
+
+        HBox controls = new HBox(8);
+        controls.setAlignment(Pos.CENTER_LEFT);
+
+        Button playBtn = new Button("▶");
+        playBtn.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 50; -fx-min-width: 30; -fx-min-height: 30; -fx-cursor: hand;");
+
+        Slider progressSlider = new Slider(0, 100, 0);
+        HBox.setHgrow(progressSlider, Priority.ALWAYS);
+
+        Label timeLabel = new Label("00:00 / 00:00");
+        timeLabel.setStyle("-fx-font-size: 10px;");
+
+        controls.getChildren().addAll(playBtn, progressSlider, timeLabel);
+
+        HBox volumeBox = new HBox(5);
+        volumeBox.setAlignment(Pos.CENTER_LEFT);
+        Label volIcon = new Label("🔊");
+        Slider volumeSlider = new Slider(0, 100, 50);
+        volumeSlider.setPrefWidth(80);
+        volumeBox.getChildren().addAll(volIcon, volumeSlider);
+
+        player.getChildren().addAll(nameLabel, controls, volumeBox);
+        return player;
+    }
 
         if (card.getTags() != null && !card.getTags().isEmpty()) {
             FlowPane tagsPane = new FlowPane(6, 6);
