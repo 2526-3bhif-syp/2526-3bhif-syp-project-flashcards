@@ -8,19 +8,25 @@ import java.util.function.Consumer;
 
 public class AudioHelper {
     public static void getDuration(File file, Consumer<String> callback) {
+        getDurationInSeconds(file, seconds -> {
+            int mins = (int) (seconds / 60);
+            int secs = (int) (seconds % 60);
+            callback.accept(String.format("%02d:%02d", mins, secs));
+        });
+    }
+
+    public static void getDurationInSeconds(File file, Consumer<Double> callback) {
         try {
             Media media = new Media(file.toURI().toString());
             MediaPlayer mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setOnReady(() -> {
-                Duration duration = media.getDuration();
-                double seconds = duration.toSeconds();
-                int mins = (int) (seconds / 60);
-                int secs = (int) (seconds % 60);
-                callback.accept(String.format("%02d:%02d", mins, secs));
+                double seconds = media.getDuration().toSeconds();
+                callback.accept(seconds);
                 mediaPlayer.dispose();
             });
+            mediaPlayer.setOnError(() -> callback.accept(0.0));
         } catch (Exception e) {
-            callback.accept("00:00");
+            callback.accept(0.0);
         }
     }
 }

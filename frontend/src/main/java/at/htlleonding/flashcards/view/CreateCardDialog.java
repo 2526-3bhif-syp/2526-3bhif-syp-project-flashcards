@@ -240,29 +240,38 @@ public class CreateCardDialog {
     private void handleAddAudio(boolean isFront) {
         FileChooser fc = new FileChooser();
         fc.setTitle("Select Audio File");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.mp3"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 Files", "*.mp3"));
         File file = fc.showOpenDialog(stage);
         if (file != null) {
-            try {
-                byte[] bytes = Files.readAllBytes(file.toPath());
-                String base64 = Base64.getEncoder().encodeToString(bytes);
-                String name = file.getName();
-                
-                AudioHelper.getDuration(file, duration -> {
+            AudioHelper.getDurationInSeconds(file, seconds -> {
+                if (seconds > 60) {
+                    new Alert(Alert.AlertType.ERROR, "The audio file is too long. Please select a file under 1 minute.").show();
+                    return;
+                }
+
+                try {
+                    byte[] bytes = Files.readAllBytes(file.toPath());
+                    String base64 = Base64.getEncoder().encodeToString(bytes);
+                    String name = file.getName();
+                    
+                    int mins = (int) (seconds / 60);
+                    int secs = (int) (seconds % 60);
+                    String durationStr = String.format("%02d:%02d", mins, secs);
+
                     if (isFront) {
                         fAudioData = base64;
                         fAudioName = name;
-                        fAudioDuration = duration;
+                        fAudioDuration = durationStr;
                     } else {
                         bAudioData = base64;
                         bAudioName = name;
-                        bAudioDuration = duration;
+                        bAudioDuration = durationStr;
                     }
                     updateAudioInfo(isFront);
-                });
-            } catch (Exception ex) {
-                new Alert(Alert.AlertType.ERROR, "Could not load audio file.").show();
-            }
+                } catch (Exception ex) {
+                    new Alert(Alert.AlertType.ERROR, "Could not load audio file.").show();
+                }
+            });
         }
     }
 
