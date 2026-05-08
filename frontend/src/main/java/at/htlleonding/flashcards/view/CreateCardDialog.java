@@ -16,6 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
@@ -39,6 +41,7 @@ public class CreateCardDialog {
     private String fAudioData, fAudioName, fAudioDuration;
     private String bAudioData, bAudioName, bAudioDuration;
     private VBox fAudioInfoBox, bAudioInfoBox;
+    private MediaPlayer previewPlayer;
     
     // Default constructor for creating a new card
     public CreateCardDialog(Stage owner) {
@@ -50,6 +53,8 @@ public class CreateCardDialog {
         stage.initOwner(owner);
         stage.initModality(Modality.APPLICATION_MODAL);
         
+        stage.setOnCloseRequest(e -> stopPreview());
+
         boolean isEditMode = cardToEdit != null;
         stage.setTitle(isEditMode ? "Edit Flashcard" : "Create New Flashcard");
 
@@ -117,7 +122,10 @@ public class CreateCardDialog {
         saveButton.setDisable(!isEditMode);
         
         Button cancelButton = new Button("Cancel");
-        cancelButton.setOnAction(e -> stage.close());
+        cancelButton.setOnAction(e -> {
+            stopPreview();
+            stage.close();
+        });
 
         buttonBox.getChildren().addAll(cancelButton, saveButton);
 
@@ -126,6 +134,7 @@ public class CreateCardDialog {
         answerArea.textProperty().addListener((obs, oldVal, newVal) -> validate());
 
         saveButton.setOnAction(e -> {
+            stopPreview();
             Card card = isEditMode ? cardToEdit : new Card();
             card.setQuestion(questionArea.getText().trim());
             card.setAnswer(answerArea.getText().trim());
@@ -176,10 +185,6 @@ public class CreateCardDialog {
         imageItem.setDisable(true);
         
         menu.getItems().addAll(audioItem, imageItem);
-        
-        // CSS for custom menu item hover (subtle blue text/icon, white background)
-        // Since MenuItem styling via setStyle is limited for hover, we use the root style
-        // but keep it simple as per user request: "lass es weiß"
         
         menu.show(anchor, javafx.geometry.Side.BOTTOM, 0, 0);
     }
@@ -243,6 +248,12 @@ public class CreateCardDialog {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 Files", "*.mp3"));
         File file = fc.showOpenDialog(stage);
         if (file != null) {
+            // Check file size (5MB limit)
+            if (file.length() > 5 * 1024 * 1024) {
+                new Alert(Alert.AlertType.ERROR, "The file is too large. Maximum size is 5MB.").show();
+                return;
+            }
+
             AudioHelper.getDurationInSeconds(file, seconds -> {
                 if (seconds > 60) {
                     new Alert(Alert.AlertType.ERROR, "The audio file is too long. Please select a file under 1 minute.").show();
@@ -253,10 +264,15 @@ public class CreateCardDialog {
                     byte[] bytes = Files.readAllBytes(file.toPath());
                     String base64 = Base64.getEncoder().encodeToString(bytes);
                     String name = file.getName();
-                    
-                    int mins = (int) (seconds / 60);
-                    int secs = (int) (seconds % 60);
-                    String durationStr = String.format("%02d:%02d", mins, secs);
+
+                    String durationStr;
+                    if (seconds > 0) {
+                        int mins = (int) (seconds / 60);
+                        int secs = (int) (seconds % 60);
+                        durationStr = String.format("%02d:%02d", mins, secs);
+                    } else {
+                        durationStr = "Unknown";
+                    }
 
                     if (isFront) {
                         fAudioData = base64;
@@ -271,8 +287,7 @@ public class CreateCardDialog {
                 } catch (Exception ex) {
                     new Alert(Alert.AlertType.ERROR, "Could not load audio file.").show();
                 }
-            });
-        }
+            });        }
     }
 
     private void updateAudioInfo(boolean isFront) {
@@ -294,9 +309,14 @@ public class CreateCardDialog {
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
             
+            Button playBtn = new Button("▶");
+            playBtn.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+            playBtn.setOnAction(e -> togglePreview(data, playBtn));
+
             Button delBtn = new Button("🗑");
             delBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand;");
             delBtn.setOnAction(e -> {
+                stopPreview();
                 if (isFront) {
                     fAudioData = fAudioName = fAudioDuration = null;
                 } else {
@@ -305,8 +325,41 @@ public class CreateCardDialog {
                 updateAudioInfo(isFront);
             });
             
-            info.getChildren().addAll(label, spacer, delBtn);
+            info.getChildren().addAll(label, spacer, playBtn, delBtn);
             box.getChildren().add(info);
+        }
+    }
+
+    private void togglePreview(String base64Data, Button btn) {
+        if (previewPlayer != null && previewPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            stopPreview();
+            btn.setText("▶");
+        } else {
+            stopPreview();
+            File temp = AudioHelper.saveTempAudio(base64Data);
+            if (temp != null) {
+                try {
+                    Media media = new Media(temp.toURI().toString());
+                    previewPlayer = new MediaPlayer(media);
+                    previewPlayer.setOnEndOfMedia(() -> {
+                        stopPreview();
+                        btn.setText("▶");
+                    });
+                    previewPlayer.play();
+                    btn.setText("⏸");
+                } catch (Exception ex) {
+                    new Alert(Alert.AlertType.WARNING, "Playback failed: Your system might be missing MP3 codecs or JavaFX Media is not configured correctly.").show();
+                    btn.setText("▶");
+                }
+            }
+        }
+    }
+
+    private void stopPreview() {
+        if (previewPlayer != null) {
+            previewPlayer.stop();
+            previewPlayer.dispose();
+            previewPlayer = null;
         }
     }
 

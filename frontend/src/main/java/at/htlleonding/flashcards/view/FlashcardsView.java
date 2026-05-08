@@ -297,9 +297,14 @@ public class FlashcardsView extends HBox {
         File tempFile = AudioHelper.saveTempAudio(base64Data);
         if (tempFile == null) return new VBox(new Label("Error loading audio"));
 
-        Media media = new Media(tempFile.toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        activeMediaPlayers.add(mediaPlayer);
+        MediaPlayer mediaPlayer;
+        try {
+            Media media = new Media(tempFile.toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            activeMediaPlayers.add(mediaPlayer);
+        } catch (Exception e) {
+            return new VBox(new Label("Audio player error: Codecs missing?"));
+        }
 
         VBox player = new VBox(4);
         player.setPadding(new Insets(8, 0, 0, 0));
