@@ -103,3 +103,14 @@ Antwort 3: ja es soll als base 64 gespeichert werden. Ja mach die audio vorerst 
 Antwort 4: definiert sie als Felder.
 
 1h 30 min
+
+
+== Session 8 (2026 05-08)
+
+* Lese agents.adoc und alle dateien in spec/ um Kontext für das Projekt zu gewinnen. Lese auch die chat files in spec und siehe dir vergange commits an um mehr über vergangene Sessions herauszufinden.
+
+* beachte die audio file dateien, indem man einer Card ein Audio file hinzufügen kann. Ich möchte das man sie auch in der Vorschau abspielen kann und dementprechend hören kann. Bitte noch nicht implementieren. Stelle mir
+Fragen zur implementierung.
+
+Antwort: neben dem bereich wo der audio name ist
+Antwort: Ja bau ein limit ein. was du für anständig hältst. nicht über 1min
