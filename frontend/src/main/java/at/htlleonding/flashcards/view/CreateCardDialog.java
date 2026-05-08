@@ -147,11 +147,40 @@ public class CreateCardDialog {
 
     private void showExtraMenu(Button anchor, boolean isFront) {
         ContextMenu menu = new ContextMenu();
+        menu.setStyle("-fx-background-color: white; " +
+                     "-fx-background-radius: 8; " +
+                     "-fx-border-color: #eeeeee; " +
+                     "-fx-border-radius: 8; " +
+                     "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);");
+
+        // Audio Item
+        SVGPath musicIcon = new SVGPath();
+        musicIcon.setContent("M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z");
+        musicIcon.setFill(Color.web("#555555"));
+        musicIcon.setScaleX(0.7);
+        musicIcon.setScaleY(0.7);
+        
         MenuItem audioItem = new MenuItem("Add Audio File");
+        audioItem.setGraphic(musicIcon);
         audioItem.setOnAction(e -> handleAddAudio(isFront));
+
+        // Image Item
+        SVGPath imageIcon = new SVGPath();
+        imageIcon.setContent("M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z");
+        imageIcon.setFill(Color.web("#bbbbbb")); // Light gray for disabled
+        imageIcon.setScaleX(0.7);
+        imageIcon.setScaleY(0.7);
+
         MenuItem imageItem = new MenuItem("Add Image (Soon)");
+        imageItem.setGraphic(imageIcon);
         imageItem.setDisable(true);
+        
         menu.getItems().addAll(audioItem, imageItem);
+        
+        // CSS for custom menu item hover (subtle blue text/icon, white background)
+        // Since MenuItem styling via setStyle is limited for hover, we use the root style
+        // but keep it simple as per user request: "lass es weiß"
+        
         menu.show(anchor, javafx.geometry.Side.BOTTOM, 0, 0);
     }
 
