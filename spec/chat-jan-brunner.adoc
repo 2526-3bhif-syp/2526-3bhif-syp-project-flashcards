@@ -177,3 +177,31 @@ dateien steht. Desweiteren sollst du unit tests schreiben für die Deck klasse u
 == Session 4
 * *Prompt* Ich habe gemerged jetzt hat sich der constructor von Deck geändert sowie methoden namen . Fixe die unit tests.
 * *Prompt* Fixe die unit tests. Du darfst nur die unit tests verändern den haupt code nicht. Es sind constructor und methoden namen geändert worden
+
+
+== Session 5
+
+* *Prompt:* Jetzt machen wir die ui verbesserung für die add audio file button im modify window. Falls du Fragen hast stellt mir diese bitte in der chat-jan-brunner.adoc unter der Überschrift Session 5. Lösche nichts und zwar garnichts aus jener chat .adoc.
+
+* *Frage:* Soll der "Add Extra" Button durch ein Icon (z.B. eine Büroklammer oder ein Plus-Symbol) ersetzt werden, oder soll er weiterhin als Text-Button bestehen bleiben?
+* *Antwort* Mach beides der Text mit dem Icon.
+* *Frage:* Möchtest du, dass wir das ContextMenu (Add Audio, Add Image) beibehalten, oder sollen direkt dedizierte Buttons für Audio (z.B. ein Musik-Icon) neben dem Textfeld platziert werden?
+* *Antwort* Du machts einfach wieder den Text plus das Icon.
+* *Frage:* Gibt es ein spezifisches Farbschema oder einen Stil (z.B. passend zu den Sidebar-Buttons mit Scale-Effekt), den der Button haben soll?
+* *Antwort* Halte dich an das Farb und Stilschema der restlichen Applikation.
+* *Frage:* Wo genau im "Modify Window" (CreateCardDialog) soll der Button idealerweise platziert werden? (Aktuell ist er oben rechts über dem TextArea).
+* *Antwort* Dort, wo er jetzt gerade ist, passt es perfekt.
+
+* *Umsetzung:*
+** Der "Add Extra" Button wurde in "Add Extra ➕" umbenannt (Text + Icon).
+** Die Positionierung wurde beibehalten.
+** Das Styling wurde an das Farbschema der App angepasst (Blau #2196F3).
+** Ein Hover-Effekt mit Farbumschlag und ein Scale-Effekt (1.1x) wurden implementiert, um die Interaktion flüssiger zu gestalten.
+** Das ContextMenu für Audio-Files bleibt weiterhin bestehen.
+
+* *Prompt:* Ich sehe das icon nicht
+
+* *Umsetzung:*
+** Das Unicode-Icon "➕" wurde durch ein natives `SVGPath`-Objekt ersetzt, um die plattformübergreifende Sichtbarkeit zu garantieren.
+** Die `styleExtraButton`-Logik wurde erweitert, um das SVG-Icon dynamisch zu färben (Blau im Normalzustand, Weiß beim Hovern).
+** `ContentDisplay.RIGHT` wurde gesetzt, um das Icon sauber neben dem Text zu positionieren.
