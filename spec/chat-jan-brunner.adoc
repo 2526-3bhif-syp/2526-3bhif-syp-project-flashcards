@@ -219,3 +219,24 @@ dateien steht. Desweiteren sollst du unit tests schreiben für die Deck klasse u
 ** Das Dropdown-Menü (`ContextMenu`) wurde modernisiert: Abgerundete Ecken (8px), hellgrauer Rahmen und ein dezenter Schatteneffekt.
 ** Die Menüeinträge haben SVG-Icons erhalten (Musiknote für Audio, Bildrahmen für Image).
 ** Das Farbschema wurde wie gewünscht weiß gehalten, um ein sauberes, modernes Erscheinungsbild zu gewährleisten.
+
+
+== Session 6
+
+
+* *Prompt:* So schreib mir test für card sodass die Coverage besonders für die audio file bei 100 % ist. Schreibe deine Fragen in die chat-jan-brunner.adoc und außerdem füge meine prompts auch in dies file ein.
+
+* *Frage:* Sollen die Tests lediglich prüfen, ob die Strings (Base64-Daten, Name, Dauer) korrekt gespeichert und gelesen werden, oder ist eine inhaltliche Validierung (z.B. ob der String valides Base64 ist) in der `Card`-Klasse vorgesehen?
+* *Antwort:* Ja, prüfe 
+
+
+* *Frage:* Ist es gewollt, dass die ID manuell via `setId()` überschrieben werden kann (z.B. für Synchronisation oder Import), und soll dies im Test als valider Use-Case abgebildet werden?
+* *Antwort:* Ja
+
+* *Prompt:* So jetzt schreib mir den prompt und die Fragen in die chat-jan-brunner.adoc orentiere dich am style und layout von der bisherigen file. Zudem sollst du nichts löschen
+
+* *Prompt:* Nein ich möchte wirklich nur Fragen und antworten keinen initial prompt oder so
+
+* *Prompt:* Nein verändere nichts in der Card.java schreibe nur die Tests dafür
+
+
