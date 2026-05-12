@@ -16,6 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -25,6 +27,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Base64;
@@ -42,6 +45,11 @@ public class CreateCardDialog {
     private String bAudioData, bAudioName, bAudioDuration;
     private VBox fAudioInfoBox, bAudioInfoBox;
     private MediaPlayer previewPlayer;
+
+    // Image state fields
+    private String fImageData, fImageName;
+    private String bImageData, bImageName;
+    private VBox fImageInfoBox, bImageInfoBox;
     
     // Default constructor for creating a new card
     public CreateCardDialog(Stage owner) {
@@ -66,6 +74,10 @@ public class CreateCardDialog {
             bAudioData = cardToEdit.getBackAudioData();
             bAudioName = cardToEdit.getBackAudioName();
             bAudioDuration = cardToEdit.getBackAudioDuration();
+            fImageData = cardToEdit.getFrontImageData();
+            fImageName = cardToEdit.getFrontImageName();
+            bImageData = cardToEdit.getBackImageData();
+            bImageName = cardToEdit.getBackImageName();
         }
 
         VBox root = new VBox(15);
@@ -91,6 +103,7 @@ public class CreateCardDialog {
         if (isEditMode) questionArea.setText(cardToEdit.getQuestion());
 
         fAudioInfoBox = new VBox(5);
+        fImageInfoBox = new VBox(5);
 
         // --- Answer Section Header ---
         HBox aHeader = new HBox(10);
@@ -111,8 +124,11 @@ public class CreateCardDialog {
         if (isEditMode) answerArea.setText(cardToEdit.getAnswer());
 
         bAudioInfoBox = new VBox(5);
+        bImageInfoBox = new VBox(5);
         updateAudioInfo(true);
         updateAudioInfo(false);
+        updateImageInfo(true);
+        updateImageInfo(false);
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
@@ -144,11 +160,15 @@ public class CreateCardDialog {
             card.setBackAudioData(bAudioData);
             card.setBackAudioName(bAudioName);
             card.setBackAudioDuration(bAudioDuration);
+            card.setFrontImageData(fImageData);
+            card.setFrontImageName(fImageName);
+            card.setBackImageData(bImageData);
+            card.setBackImageName(bImageName);
             result = card;
             stage.close();
         });
 
-        root.getChildren().addAll(qHeader, questionArea, fAudioInfoBox, aHeader, answerArea, bAudioInfoBox, buttonBox);
+        root.getChildren().addAll(qHeader, questionArea, fAudioInfoBox, fImageInfoBox, aHeader, answerArea, bAudioInfoBox, bImageInfoBox, buttonBox);
         
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -176,13 +196,13 @@ public class CreateCardDialog {
         // Image Item
         SVGPath imageIcon = new SVGPath();
         imageIcon.setContent("M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z");
-        imageIcon.setFill(Color.web("#bbbbbb")); // Light gray for disabled
+        imageIcon.setFill(Color.web("#555555"));
         imageIcon.setScaleX(0.7);
         imageIcon.setScaleY(0.7);
 
-        MenuItem imageItem = new MenuItem("Add Image (Soon)");
+        MenuItem imageItem = new MenuItem("Add Image");
         imageItem.setGraphic(imageIcon);
-        imageItem.setDisable(true);
+        imageItem.setOnAction(e -> handleAddImage(isFront));
         
         menu.getItems().addAll(audioItem, imageItem);
         
@@ -288,6 +308,70 @@ public class CreateCardDialog {
                     new Alert(Alert.AlertType.ERROR, "Could not load audio file.").show();
                 }
             });        }
+    }
+
+    private void handleAddImage(boolean isFront) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Select Image");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"));
+        File file = fc.showOpenDialog(stage);
+        if (file == null) return;
+
+        if (file.length() > 5 * 1024 * 1024) {
+            new Alert(Alert.AlertType.ERROR, "The file is too large. Maximum size is 5MB.").show();
+            return;
+        }
+        try {
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            String base64 = Base64.getEncoder().encodeToString(bytes);
+            if (isFront) {
+                fImageData = base64;
+                fImageName = file.getName();
+            } else {
+                bImageData = base64;
+                bImageName = file.getName();
+            }
+            updateImageInfo(isFront);
+        } catch (Exception ex) {
+            new Alert(Alert.AlertType.ERROR, "Could not load image file.").show();
+        }
+    }
+
+    private void updateImageInfo(boolean isFront) {
+        VBox box = isFront ? fImageInfoBox : bImageInfoBox;
+        String data = isFront ? fImageData : bImageData;
+        String name = isFront ? fImageName : bImageName;
+
+        box.getChildren().clear();
+        if (data != null) {
+            byte[] bytes = Base64.getDecoder().decode(data);
+            ImageView thumb = new ImageView(new Image(new ByteArrayInputStream(bytes)));
+            thumb.setFitWidth(60);
+            thumb.setFitHeight(60);
+            thumb.setPreserveRatio(true);
+            thumb.setSmooth(true);
+
+            Label label = new Label("🖼 " + name);
+            label.setStyle("-fx-font-size: 11px;");
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            Button delBtn = new Button("🗑");
+            delBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand;");
+            delBtn.setOnAction(e -> {
+                if (isFront) { fImageData = null; fImageName = null; }
+                else { bImageData = null; bImageName = null; }
+                updateImageInfo(isFront);
+            });
+
+            HBox info = new HBox(10);
+            info.setAlignment(Pos.CENTER_LEFT);
+            info.setPadding(new Insets(5));
+            info.setStyle("-fx-background-color: #f0f0f0; -fx-background-radius: 5;");
+            info.getChildren().addAll(thumb, label, spacer, delBtn);
+            box.getChildren().add(info);
+        }
     }
 
     private void updateAudioInfo(boolean isFront) {

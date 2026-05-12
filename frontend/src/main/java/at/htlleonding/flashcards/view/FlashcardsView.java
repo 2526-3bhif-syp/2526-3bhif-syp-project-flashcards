@@ -12,8 +12,10 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -233,6 +235,9 @@ public class FlashcardsView extends HBox {
         if (card.getFrontAudioData() != null) {
             questionBox.getChildren().add(buildAudioPlayerUI(card.getFrontAudioData(), card.getFrontAudioName()));
         }
+        if (card.getFrontImageData() != null) {
+            questionBox.getChildren().add(buildImageUI(card.getFrontImageData(), card.getFrontImageName()));
+        }
 
         VBox answerBox = new VBox(6);
         answerBox.setPadding(new Insets(12));
@@ -246,6 +251,9 @@ public class FlashcardsView extends HBox {
 
         if (card.getBackAudioData() != null) {
             answerBox.getChildren().add(buildAudioPlayerUI(card.getBackAudioData(), card.getBackAudioName()));
+        }
+        if (card.getBackImageData() != null) {
+            answerBox.getChildren().add(buildImageUI(card.getBackImageData(), card.getBackImageName()));
         }
 
         contentArea.getChildren().addAll(questionBox, answerBox);
@@ -369,6 +377,22 @@ public class FlashcardsView extends HBox {
 
         player.getChildren().addAll(nameLabel, controls, volumeBox);
         return player;
+    }
+
+    private VBox buildImageUI(String base64Data, String fileName) {
+        byte[] bytes = Base64.getDecoder().decode(base64Data);
+        ImageView imageView = new ImageView(new Image(new ByteArrayInputStream(bytes)));
+        imageView.setFitWidth(190);
+        imageView.setFitHeight(150);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+
+        Label nameLabel = new Label("🖼 " + (fileName != null ? fileName : ""));
+        nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
+
+        VBox container = new VBox(4, imageView, nameLabel);
+        container.setPadding(new Insets(8, 0, 0, 0));
+        return container;
     }
 
     // ── select mode ────────────────────────────────────────────────────────
