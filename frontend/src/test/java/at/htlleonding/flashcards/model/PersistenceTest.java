@@ -7,6 +7,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -224,5 +225,59 @@ class PersistenceTest {
     void testImportDecksFromJSON_GeneralException() throws IOException {
         IOException ex = assertThrows(IOException.class, () -> persistence.importDecksFromJSON(null));
         assertTrue(ex.getMessage().contains("Could not parse JSON"));
+    }
+
+    @Test
+    void testImageDataRoundtrip_exportToJSON() throws IOException {
+        String fakeBase64 = Base64.getEncoder().encodeToString("fake-image-bytes".getBytes());
+        Card card = new Card("Image Q", "Image A");
+        card.setFrontImageData(fakeBase64);
+        card.setFrontImageName("front.png");
+        card.setBackImageData(fakeBase64);
+        card.setBackImageName("back.jpg");
+        Deck deck = new Deck("Image Deck", "");
+        deck.addCard(card);
+
+        File jsonFile = tempDir.resolve("image_deck.json").toFile();
+        persistence.exportToJSON(deck, jsonFile);
+        Deck imported = persistence.importFromJSON(jsonFile);
+        Card importedCard = imported.getCards().get(0);
+
+        assertEquals(fakeBase64, importedCard.getFrontImageData());
+        assertEquals("front.png", importedCard.getFrontImageName());
+        assertEquals(fakeBase64, importedCard.getBackImageData());
+        assertEquals("back.jpg", importedCard.getBackImageName());
+    }
+
+    @Test
+    void testImageDataRoundtrip_exportCardsToJSON() throws IOException {
+        String fakeBase64 = Base64.getEncoder().encodeToString("another-image".getBytes());
+        Card card = new Card("Q", "A");
+        card.setFrontImageData(fakeBase64);
+        card.setFrontImageName("img.png");
+        Deck deck = new Deck("Tmp", "");
+        deck.addCard(card);
+
+        File jsonFile = tempDir.resolve("image_cards.json").toFile();
+        persistence.exportCardsToJSON(deck.getCards(), jsonFile);
+        Deck imported = persistence.importCardsFromJSON(jsonFile);
+        Card importedCard = imported.getCards().get(0);
+
+        assertEquals(fakeBase64, importedCard.getFrontImageData());
+        assertEquals("img.png", importedCard.getFrontImageName());
+        assertNull(importedCard.getBackImageData());
+    }
+
+    @Test
+    void testOldJsonWithoutImageFields_doesNotCrash() throws IOException {
+        File jsonFile = tempDir.resolve("old_format.json").toFile();
+        java.nio.file.Files.writeString(jsonFile.toPath(),
+            "{\"name\":\"Old Deck\",\"cards\":[{\"question\":\"Q\",\"answer\":\"A\"}]}");
+
+        Deck imported = persistence.importFromJSON(jsonFile);
+        assertNotNull(imported);
+        assertEquals(1, imported.getCards().size());
+        assertNull(imported.getCards().get(0).getFrontImageData());
+        assertNull(imported.getCards().get(0).getBackImageData());
     }
 }
