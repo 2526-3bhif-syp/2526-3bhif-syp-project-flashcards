@@ -20,6 +20,14 @@ public class Card {
     private String backAudioName;
     private String backAudioDuration;
 
+    // Image fields for front side (Question)
+    private String frontImageData; // Base64
+    private String frontImageName;
+
+    // Image fields for back side (Answer)
+    private String backImageData; // Base64
+    private String backImageName;
+
     public Card() {
         this.id = UUID.randomUUID().toString();
         this.tags = new ArrayList<>();
@@ -68,4 +76,16 @@ public class Card {
 
     public String getBackAudioDuration() { return backAudioDuration; }
     public void setBackAudioDuration(String backAudioDuration) { this.backAudioDuration = backAudioDuration; }
+
+    public String getFrontImageData() { return frontImageData; }
+    public void setFrontImageData(String frontImageData) { this.frontImageData = frontImageData; }
+
+    public String getFrontImageName() { return frontImageName; }
+    public void setFrontImageName(String frontImageName) { this.frontImageName = frontImageName; }
+
+    public String getBackImageData() { return backImageData; }
+    public void setBackImageData(String backImageData) { this.backImageData = backImageData; }
+
+    public String getBackImageName() { return backImageName; }
+    public void setBackImageName(String backImageName) { this.backImageName = backImageName; }
 }
