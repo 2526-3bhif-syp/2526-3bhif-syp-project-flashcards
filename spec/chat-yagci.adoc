@@ -97,6 +97,37 @@ Durchgeführte Schritte zur Behebung:
 * *Fehlerbehebung:* `FlashcardsView` hat nun die öffentliche Methode `clearSelectedCard()`, die `selectedDetailCard` zurücksetzt und den Platzhalter anzeigt — ohne die Deck-Info-Zeile zu entfernen.
 * *Präsenter-Anpassung:* `handleDeleteCardRequested` und `handleDeleteSelectedCardsRequested` in `MainPresenter` rufen nun vor dem Neu-Rendern `clearSelectedCard()` auf, sodass das Detail-Panel bei jedem Löschvorgang zuverlässig geleert wird.
 
+== Session 8 (2026-05-12)
+
+=== Feature: Bilder zu Karteikarten hinzufügen (#6, #35, #36, #37) + Import-Fixes
+
+[quote]
+User: "Schau dir user story #6 über die gh cli an. Danach implementiere #35, #36, #37. Versichere dich dass es geht und mach es nicht nebenbei sondern Task für Task."
+
+Agent: "Ich habe alle drei Tasks sequenziell implementiert und nach jedem Schritt den Compiler-Output und die Tests geprüft."
+
+*#36 — Logik (Card-Klasse erweitern):*
+* `Card.java` wurde um vier neue Felder erweitert: `frontImageData` (Base64), `frontImageName`, `backImageData` (Base64), `backImageName` — analog zu den bestehenden Audio-Feldern.
+
+*#37 — Speichern (Base64 in JSON):*
+* Da Jackson alle Felder mit Getter/Setter automatisch serialisiert, war kein zusätzlicher Persistence-Code nötig.
+* Drei neue Tests in `PersistenceTest.java` verifizieren den vollständigen Roundtrip: Deck-Export/Import, Karten-Export/Import via `importCardsFromJSON`, und Backward-Kompatibilität mit altem JSON ohne Image-Felder.
+
+*#35 — UI (Bild hinzufügen & anzeigen):*
+* In `CreateCardDialog.java` wurde das Menü-Item "Add Image (Soon)" aktiviert und durch `handleAddImage(boolean isFront)` verdrahtet.
+** FileChooser akzeptiert PNG, JPG, JPEG, GIF, BMP (max. 5 MB).
+** `updateImageInfo(boolean isFront)` zeigt ein Thumbnail (60×60), den Dateinamen und einen Löschen-Button.
+** Edit-Modus lädt vorhandene Image-Daten korrekt vor.
+** Beim Speichern werden alle vier Image-Felder auf die Karte geschrieben.
+* In `FlashcardsView.java` wurde `buildImageUI(String, String)` ergänzt, das das Bild (190×150, preserve ratio) und den Dateinamen im Detail-Panel darstellt — sowohl für Front- als auch Back-Side.
+
+*Import-Fixes (frühere Unterpunkte dieser Session):*
+* `DuplicateDeckActionDialog.java` (neu): Duplikat-Erkennung beim Deck-Import im HomeView (Allow All / Replace / Skip / Cancel).
+* `Model.addDeck(Deck)` (neu): Fügt Deck direkt hinzu ohne Name-Merge-Logik.
+* `handleDeckImportRequested` nutzt UUID-Collision-Guard: Bei ALLOW_ALL wird dem importierten Deck eine neue UUID zugewiesen, damit beide Decks unabhängig bleiben und das Löschen eines Duplikats nicht beide entfernt.
+* `Persistence.importCardsFromJSON(File)` (neu): Karten-Import lehnt Deck-Format mit klarer Fehlermeldung ab; `performImport` nutzt diese Methode statt `importFromJSON`.
+* Analoger UUID-Collision-Guard für Karten im Karten-Import (`performImport`).
+
 == Session 7 (2026-05-06)
 
 User: Wenn das falsche JSON-Format relevant wird, erhalte ich eine Warnmeldung. Es funktioniert zwar, aber die Warnmeldung ist nicht sehr benutzerfreundlich. Bitte geben Sie aussagekräftigere Beispiele für die Warnmeldung an, z. B. „Deck konnte nicht geladen werden. Bitte überprüfen Sie das JSON-Format.". Frage fragen falls notwendig
