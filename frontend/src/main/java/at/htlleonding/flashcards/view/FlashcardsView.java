@@ -7,8 +7,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,6 +27,7 @@ public class FlashcardsView extends HBox {
     private boolean selectMode = false;
     private final Set<Card> selectedCards = new LinkedHashSet<>();
     private Card selectedDetailCard = null;
+    private final List<MediaPlayer> activeMediaPlayers = new ArrayList<>();
 
     // ── ui references ──────────────────────────────────────────────────────
     private FlowPane cardsGrid;
@@ -167,6 +172,7 @@ public class FlashcardsView extends HBox {
     }
 
     public void clearDeckInfo() {
+        stopAllAudio();
         deckInfoRow.setVisible(false);
         deckInfoRow.setManaged(false);
         deckTitleLabel.setText("");
@@ -175,6 +181,7 @@ public class FlashcardsView extends HBox {
     }
 
     public void clearSelectedCard() {
+        stopAllAudio();
         selectedDetailCard = null;
         showPlaceholder();
     }
@@ -182,6 +189,7 @@ public class FlashcardsView extends HBox {
     // ── detail panel content ───────────────────────────────────────────────
 
     private void showPlaceholder() {
+        stopAllAudio();
         contentArea.getChildren().clear();
         Label placeholder = new Label("Select a card\nto see details");
         placeholder.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 14px;");
@@ -194,6 +202,7 @@ public class FlashcardsView extends HBox {
     }
 
     private void showCardDetail(Card card) {
+        stopAllAudio();
         selectedDetailCard = card;
         contentArea.getChildren().clear();
         contentArea.setSpacing(10);
@@ -220,6 +229,10 @@ public class FlashcardsView extends HBox {
         qText.setWrapText(true);
         qText.setStyle("-fx-font-size: 14px; -fx-text-fill: #0D47A1;");
         questionBox.getChildren().addAll(qHeader, qText);
+        
+        if (card.getFrontAudioData() != null) {
+            questionBox.getChildren().add(buildAudioPlayerUI(card.getFrontAudioData(), card.getFrontAudioName()));
+        }
 
         VBox answerBox = new VBox(6);
         answerBox.setPadding(new Insets(12));
@@ -230,6 +243,10 @@ public class FlashcardsView extends HBox {
         aText.setWrapText(true);
         aText.setStyle("-fx-font-size: 14px; -fx-text-fill: #1B5E20;");
         answerBox.getChildren().addAll(aHeader, aText);
+
+        if (card.getBackAudioData() != null) {
+            answerBox.getChildren().add(buildAudioPlayerUI(card.getBackAudioData(), card.getBackAudioName()));
+        }
 
         contentArea.getChildren().addAll(questionBox, answerBox);
 
@@ -258,6 +275,100 @@ public class FlashcardsView extends HBox {
         exportCardBtn.setOnAction(e -> { if (onExportCardRequested != null) onExportCardRequested.accept(card); });
 
         contentArea.getChildren().add(new VBox(8, editBtn, exportCardBtn));
+    }
+
+    private void stopAllAudio() {
+        for (MediaPlayer mp : activeMediaPlayers) {
+            mp.stop();
+            mp.dispose();
+        }
+        activeMediaPlayers.clear();
+    }
+
+    private String formatTime(Duration duration) {
+        if (duration == null) return "00:00";
+        int seconds = (int) duration.toSeconds();
+        int mins = seconds / 60;
+        int secs = seconds % 60;
+        return String.format("%02d:%02d", mins, secs);
+    }
+
+    private VBox buildAudioPlayerUI(String base64Data, String fileName) {
+        File tempFile = AudioHelper.saveTempAudio(base64Data);
+        if (tempFile == null) return new VBox(new Label("Error loading audio"));
+
+        MediaPlayer mediaPlayer;
+        try {
+            Media media = new Media(tempFile.toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            activeMediaPlayers.add(mediaPlayer);
+        } catch (Exception e) {
+            return new VBox(new Label("Audio player error: Codecs missing?"));
+        }
+
+        VBox player = new VBox(4);
+        player.setPadding(new Insets(8, 0, 0, 0));
+
+        Label nameLabel = new Label("🎵 " + fileName);
+        nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
+
+        HBox controls = new HBox(8);
+        controls.setAlignment(Pos.CENTER_LEFT);
+
+        Button playBtn = new Button("▶");
+        playBtn.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 50; -fx-min-width: 30; -fx-min-height: 30; -fx-cursor: hand;");
+
+        Slider progressSlider = new Slider(0, 100, 0);
+        HBox.setHgrow(progressSlider, Priority.ALWAYS);
+
+        Label timeLabel = new Label("00:00 / 00:00");
+        timeLabel.setStyle("-fx-font-size: 10px;");
+
+        playBtn.setOnAction(e -> {
+            if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                mediaPlayer.pause();
+                playBtn.setText("▶");
+            } else {
+                mediaPlayer.play();
+                playBtn.setText("⏸");
+            }
+        });
+
+        mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+            if (!progressSlider.isValueChanging()) {
+                double total = mediaPlayer.getTotalDuration().toSeconds();
+                if (total > 0) {
+                    progressSlider.setValue(newTime.toSeconds() / total * 100);
+                }
+            }
+            timeLabel.setText(formatTime(newTime) + " / " + formatTime(mediaPlayer.getTotalDuration()));
+        });
+
+        progressSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (progressSlider.isValueChanging()) {
+                mediaPlayer.seek(mediaPlayer.getTotalDuration().multiply(newVal.doubleValue() / 100.0));
+            }
+        });
+
+        mediaPlayer.setOnEndOfMedia(() -> {
+            mediaPlayer.stop();
+            mediaPlayer.seek(Duration.ZERO);
+            playBtn.setText("▶");
+            progressSlider.setValue(0);
+        });
+
+        controls.getChildren().addAll(playBtn, progressSlider, timeLabel);
+
+        HBox volumeBox = new HBox(5);
+        volumeBox.setAlignment(Pos.CENTER_LEFT);
+        Label volIcon = new Label("🔊");
+        Slider volumeSlider = new Slider(0, 1, 0.5);
+        volumeSlider.setPrefWidth(80);
+        mediaPlayer.volumeProperty().bind(volumeSlider.valueProperty());
+        volumeBox.getChildren().addAll(volIcon, volumeSlider);
+
+        player.getChildren().addAll(nameLabel, controls, volumeBox);
+        return player;
     }
 
     // ── select mode ────────────────────────────────────────────────────────

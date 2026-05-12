@@ -125,7 +125,9 @@ public class CreateDeckDialog {
         nameField.textProperty().addListener((obs, oldVal, newVal) -> validate());
 
         saveButton.setOnAction(e -> {
-            result = new DeckResult(nameField.getText().trim(), descriptionArea.getText().trim(), selectedIconId);
+            String name = nameField.getText() == null ? "" : nameField.getText().trim();
+            String desc = descriptionArea.getText() == null ? "" : descriptionArea.getText().trim();
+            result = new DeckResult(name, desc, selectedIconId);
             stage.close();
         });
 
@@ -144,7 +146,8 @@ public class CreateDeckDialog {
     }
 
     private void validate() {
-        saveButton.setDisable(nameField.getText().trim().isEmpty());
+        String name = nameField.getText();
+        saveButton.setDisable(name == null || name.trim().isEmpty());
     }
 
     public Optional<DeckResult> showAndWait() {

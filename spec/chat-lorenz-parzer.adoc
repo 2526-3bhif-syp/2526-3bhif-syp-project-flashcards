@@ -89,3 +89,28 @@ Antwort auf seine Fragen:  1. Nein die Dummy Daten werden mit Abschluss des Proj
 Frage: Überprüfe model.java und persistence.java auf coverage und decke fehlende coverage mit zusätzlichen tests ab
 Frage: decke wirklich alle tests ab
 Frage: bei der Persistence wird die importjson methode nicht vollständig abgedeckt.
+
+
+== Session 7 (2026 05-07)
+
+* Lese agents.adoc und alle dateien in spec/ um Kontext für das Projekt zu gewinnen. Lese auch die chat files in spec und siehe dir vergange commits an um mehr über vergangene Sessions herauszufinden.
+
+*  Bevor du zum implementieren beginnst stellst du mir genauere Fragen zur User story und zur dementsprechenden Umsetzung
+
+Antwort 1: Unterstütze MP3 und es handelt sich hierbei nur um Audio Medien.
+Antwort 2: Hochladen eigener Datein. Keine Aufnahmen direkt innerhalb. Zudem soll es über einen Play Button abgespielt werden nicht automatisch
+Antwort 3: ja es soll als base 64 gespeichert werden. Ja mach die audio vorerst in der vorschau.
+Antwort 4: definiert sie als Felder.
+
+1h 30 min
+
+
+== Session 8 (2026 05-08)
+
+* Lese agents.adoc und alle dateien in spec/ um Kontext für das Projekt zu gewinnen. Lese auch die chat files in spec und siehe dir vergange commits an um mehr über vergangene Sessions herauszufinden.
+
+* beachte die audio file dateien, indem man einer Card ein Audio file hinzufügen kann. Ich möchte das man sie auch in der Vorschau abspielen kann und dementprechend hören kann. Bitte noch nicht implementieren. Stelle mir
+Fragen zur implementierung.
+
+Antwort: neben dem bereich wo der audio name ist
+Antwort: Ja bau ein limit ein. was du für anständig hältst. nicht über 1min
