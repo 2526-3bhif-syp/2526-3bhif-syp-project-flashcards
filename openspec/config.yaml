@@ -1,0 +1,25 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Java 26, JavaFX, Maven, JUnit 5
+  Architecture: MVP (Model-View-Presenter), single-module Maven project under frontend/
+  Persistence: JSON-based local storage via Persistence.java (no database)
+  Domain: Digital flashcard learning app (German school project "Syp")
+  Key domain terms: Stapel (Deck), Karte (Card), Seite (Face/Side), Lernfortschritt (LearningProgress)
+  Commit convention: conventional commits (feat:, fix:, docs:, style:, refactor:, test:)
+  Language: UI in English, code/comments in English, specs/docs in German
+  Non-goals: No mobile app, no cloud sync, no multi-language GUI
+
+rules:
+  proposal:
+    - Write proposals in German
+    - Reference the relevant US-xxx story ID from the FSD
+    - Keep proposals under 400 words
+  design:
+    - Write design docs in German
+    - Reference concrete Java class names (e.g. MainPresenter.java, FlashcardsView.java)
+    - Stick to the MVP pattern
+  tasks:
+    - Write tasks in German
+    - Each task should be implementable in under 2 hours
+    - Reference concrete file names where relevant
