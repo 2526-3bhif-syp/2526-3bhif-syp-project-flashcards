@@ -59,7 +59,17 @@ class CardTest {
         card.setTags(tags);
         assertEquals(2, card.getTags().size());
         assertTrue(card.getTags().contains("Tag1"));
+        assertTrue(card.getTags().contains("Tag2"));
         assertEquals(tags, card.getTags());
+
+        // Test modification
+        card.getTags().add("Tag3");
+        assertEquals(3, card.getTags().size());
+        assertTrue(card.getTags().contains("Tag3"));
+
+        // Test clearing
+        card.setTags(new ArrayList<>());
+        assertTrue(card.getTags().isEmpty());
     }
 
     @Test

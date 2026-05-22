@@ -12,12 +12,19 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -30,13 +37,17 @@ import javafx.util.Duration;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 public class CreateCardDialog {
     private final Stage stage;
     private final TextArea questionArea;
     private final TextArea answerArea;
+    private final TextField tagField;
+    private final FlowPane tagsPane;
     private final Button saveButton;
     private Card result;
 
@@ -50,6 +61,9 @@ public class CreateCardDialog {
     private String fImageData, fImageName;
     private String bImageData, bImageName;
     private VBox fImageInfoBox, bImageInfoBox;
+
+    // Tags state
+    private final List<String> tags;
     
     // Default constructor for creating a new card
     public CreateCardDialog(Stage owner) {
@@ -78,6 +92,9 @@ public class CreateCardDialog {
             fImageName = cardToEdit.getFrontImageName();
             bImageData = cardToEdit.getBackImageData();
             bImageName = cardToEdit.getBackImageName();
+            tags = new ArrayList<>(cardToEdit.getTags());
+        } else {
+            tags = new ArrayList<>();
         }
 
         VBox root = new VBox(15);
@@ -125,10 +142,35 @@ public class CreateCardDialog {
 
         bAudioInfoBox = new VBox(5);
         bImageInfoBox = new VBox(5);
+
+        // --- Tags Section ---
+        Label tagsLabel = new Label("Labels (Tags):");
+        tagsLabel.setStyle("-fx-font-weight: bold;");
+        
+        tagField = new TextField();
+        tagField.setPromptText("Type a tag and press Enter...");
+        
+        Button addTagBtn = new Button("Add");
+        styleAddTagButton(addTagBtn);
+        addTagBtn.setOnAction(e -> addTagFromField());
+        
+        tagField.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                addTagFromField();
+            }
+        });
+
+        HBox tagInputBox = new HBox(10, tagField, addTagBtn);
+        HBox.setHgrow(tagField, Priority.ALWAYS);
+
+        tagsPane = new FlowPane(6, 6);
+        tagsPane.setPadding(new Insets(5, 0, 5, 0));
+
         updateAudioInfo(true);
         updateAudioInfo(false);
         updateImageInfo(true);
         updateImageInfo(false);
+        updateTagsUI();
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
@@ -164,14 +206,50 @@ public class CreateCardDialog {
             card.setFrontImageName(fImageName);
             card.setBackImageData(bImageData);
             card.setBackImageName(bImageName);
+            card.setTags(new ArrayList<>(tags));
             result = card;
             stage.close();
         });
 
-        root.getChildren().addAll(qHeader, questionArea, fAudioInfoBox, fImageInfoBox, aHeader, answerArea, bAudioInfoBox, bImageInfoBox, buttonBox);
+        root.getChildren().addAll(qHeader, questionArea, fAudioInfoBox, fImageInfoBox, aHeader, answerArea, bAudioInfoBox, bImageInfoBox, tagsLabel, tagInputBox, tagsPane, buttonBox);
         
         Scene scene = new Scene(root);
         stage.setScene(scene);
+    }
+
+    private void addTagFromField() {
+        String text = tagField.getText().trim();
+        if (!text.isEmpty() && !tags.contains(text)) {
+            tags.add(text);
+            tagField.clear();
+            updateTagsUI();
+        }
+    }
+
+    private void updateTagsUI() {
+        tagsPane.getChildren().clear();
+        for (String tag : tags) {
+            HBox chip = new HBox(5);
+            chip.setAlignment(Pos.CENTER_LEFT);
+            chip.setPadding(new Insets(3, 8, 3, 8));
+            chip.setStyle("-fx-background-color: #E3F2FD; -fx-border-color: #2196F3; " +
+                           "-fx-border-radius: 15; -fx-background-radius: 15; -fx-border-width: 0.5;");
+            
+            Label label = new Label(tag);
+            label.setStyle("-fx-font-size: 11px; -fx-text-fill: #1976D2; -fx-font-weight: bold;");
+            
+            Button removeBtn = new Button("×");
+            removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: #1976D2; -fx-cursor: hand; -fx-font-weight: bold;");
+            removeBtn.setOnMouseEntered(e -> removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: #D32F2F; -fx-cursor: hand; -fx-font-weight: bold;"));
+            removeBtn.setOnMouseExited(e -> removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: #1976D2; -fx-cursor: hand; -fx-font-weight: bold;"));
+            removeBtn.setOnAction(e -> {
+                tags.remove(tag);
+                updateTagsUI();
+            });
+            
+            chip.getChildren().addAll(label, removeBtn);
+            tagsPane.getChildren().add(chip);
+        }
     }
 
     private void showExtraMenu(Button anchor, boolean isFront) {
@@ -256,6 +334,46 @@ public class CreateCardDialog {
                          "-fx-font-size: 11px; " +
                          "-fx-padding: 3 4 3 8;");
             plusIcon.setFill(Color.web("#2196F3"));
+            st.setToX(1.0);
+            st.setToY(1.0);
+            st.playFromStart();
+        });
+    }
+
+    private void styleAddTagButton(Button btn) {
+        String baseStyle = "-fx-background-color: white; " +
+                           "-fx-border-color: #2196F3; " +
+                           "-fx-border-width: 1.5; " +
+                           "-fx-border-radius: 8; " +
+                           "-fx-background-radius: 8; " +
+                           "-fx-text-fill: #2196F3; " +
+                           "-fx-cursor: hand; " +
+                           "-fx-font-weight: bold; " +
+                           "-fx-padding: 4 16;";
+        
+        String hoverStyle = "-fx-background-color: #2196F3; " +
+                            "-fx-border-color: #2196F3; " +
+                            "-fx-border-width: 1.5; " +
+                            "-fx-border-radius: 8; " +
+                            "-fx-background-radius: 8; " +
+                            "-fx-text-fill: white; " +
+                            "-fx-cursor: hand; " +
+                            "-fx-font-weight: bold; " +
+                            "-fx-padding: 4 16;";
+
+        btn.setStyle(baseStyle);
+
+        ScaleTransition st = new ScaleTransition(Duration.millis(150), btn);
+        
+        btn.setOnMouseEntered(e -> {
+            btn.setStyle(hoverStyle);
+            st.setToX(1.05);
+            st.setToY(1.05);
+            st.playFromStart();
+        });
+        
+        btn.setOnMouseExited(e -> {
+            btn.setStyle(baseStyle);
             st.setToX(1.0);
             st.setToY(1.0);
             st.playFromStart();

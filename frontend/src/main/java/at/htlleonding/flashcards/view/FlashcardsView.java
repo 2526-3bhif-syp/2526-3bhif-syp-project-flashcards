@@ -530,6 +530,29 @@ public class FlashcardsView extends HBox {
 
             cardTile.getChildren().addAll(topBox, qLabel);
 
+            if (card.getTags() != null && !card.getTags().isEmpty()) {
+                FlowPane tagsPane = new FlowPane(4, 4);
+                tagsPane.setAlignment(Pos.CENTER);
+                tagsPane.setPadding(new Insets(0, 0, 5, 0));
+                int count = 0;
+                for (String tag : card.getTags()) {
+                    if (count >= 3) {
+                        Label more = new Label("...");
+                        more.setStyle("-fx-font-size: 9px; -fx-text-fill: #888888;");
+                        tagsPane.getChildren().add(more);
+                        break;
+                    }
+                    Label tagLabel = new Label(tag);
+                    tagLabel.setPadding(new Insets(1, 6, 1, 6));
+                    tagLabel.setStyle("-fx-background-color: #E3F2FD; -fx-border-color: #2196F3; " +
+                                       "-fx-border-radius: 10; -fx-background-radius: 10; " +
+                                       "-fx-font-size: 9px; -fx-text-fill: #1976D2; -fx-border-width: 0.5; -fx-font-weight: bold;");
+                    tagsPane.getChildren().add(tagLabel);
+                    count++;
+                }
+                cardTile.getChildren().add(tagsPane);
+            }
+
             cardTile.setOnMouseClicked(e -> {
                 if (selectMode) {
                     if (selectedCards.contains(card)) selectedCards.remove(card);
