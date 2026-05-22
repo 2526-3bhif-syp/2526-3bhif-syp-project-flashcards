@@ -21,6 +21,7 @@ public class MainPresenter {
     private final Stack<String> forwardStack = new Stack<>();
     private String currentViewName;
     private Deck currentDeck; // null = "all cards" mode
+    private String viewBeforeSearch = null;
 
     public MainPresenter(MainView view) {
         this.view = view;
@@ -53,8 +54,55 @@ public class MainPresenter {
         views.put("Settings", new SettingsView());
 
         view.getSidebar().setOnNavigationAction(this::handleNavigation);
+        view.getNavbar().setOnSearchTextChanged(this::handleSearch);
 
         navigateTo("Home", false);
+    }
+
+    // ── Search ─────────────────────────────────────────────────────────────
+
+    private void handleSearch(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            if (viewBeforeSearch != null) {
+                String targetView = viewBeforeSearch;
+                viewBeforeSearch = null;
+                navigateTo(targetView, false);
+            } else {
+                if ("Flashcards".equals(currentViewName)) {
+                    refreshFlashcardsView();
+                } else if ("Home".equals(currentViewName)) {
+                    refreshHomeView();
+                }
+            }
+            return;
+        }
+
+        if (viewBeforeSearch == null) {
+            viewBeforeSearch = currentViewName;
+        }
+
+        String lowerQuery = query.toLowerCase();
+        List<Card> filteredCards = model.getDecks().stream()
+                .flatMap(d -> {
+                    boolean inDeckName = d.getName() != null && d.getName().toLowerCase().contains(lowerQuery);
+                    boolean inDeckDesc = d.getDescription() != null && d.getDescription().toLowerCase().contains(lowerQuery);
+                    
+                    return d.getCards().stream().filter(c -> {
+                        boolean inQuestion = c.getQuestion() != null && c.getQuestion().toLowerCase().contains(lowerQuery);
+                        boolean inAnswer = c.getAnswer() != null && c.getAnswer().toLowerCase().contains(lowerQuery);
+                        boolean inTags = c.getTags() != null && c.getTags().stream().anyMatch(t -> t.toLowerCase().contains(lowerQuery));
+                        return inDeckName || inDeckDesc || inQuestion || inAnswer || inTags;
+                    });
+                })
+                .collect(Collectors.toList());
+
+        FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
+        fView.setDeckInfo("Search Results", "Found " + filteredCards.size() + " card(s) for '" + query + "'", null);
+        fView.renderCards(filteredCards);
+
+        if (!"Flashcards".equals(currentViewName)) {
+            navigateTo("Flashcards", true);
+        }
     }
 
     // ── Home: deck import ──────────────────────────────────────────────────

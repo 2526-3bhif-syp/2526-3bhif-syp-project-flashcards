@@ -44,4 +44,8 @@ public class MainView extends BorderPane {
     public SidebarView getSidebar() {
         return sidebar;
     }
+
+    public NavbarView getNavbar() {
+        return navbar;
+    }
 }
