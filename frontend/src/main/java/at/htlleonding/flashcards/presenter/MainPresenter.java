@@ -81,20 +81,7 @@ public class MainPresenter {
             viewBeforeSearch = currentViewName;
         }
 
-        String lowerQuery = query.toLowerCase();
-        List<Card> filteredCards = model.getDecks().stream()
-                .flatMap(d -> {
-                    boolean inDeckName = d.getName() != null && d.getName().toLowerCase().contains(lowerQuery);
-                    boolean inDeckDesc = d.getDescription() != null && d.getDescription().toLowerCase().contains(lowerQuery);
-                    
-                    return d.getCards().stream().filter(c -> {
-                        boolean inQuestion = c.getQuestion() != null && c.getQuestion().toLowerCase().contains(lowerQuery);
-                        boolean inAnswer = c.getAnswer() != null && c.getAnswer().toLowerCase().contains(lowerQuery);
-                        boolean inTags = c.getTags() != null && c.getTags().stream().anyMatch(t -> t.toLowerCase().contains(lowerQuery));
-                        return inDeckName || inDeckDesc || inQuestion || inAnswer || inTags;
-                    });
-                })
-                .collect(Collectors.toList());
+        List<Card> filteredCards = model.searchCards(query);
 
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
         fView.setDeckInfo("Search Results", "Found " + filteredCards.size() + " card(s) for '" + query + "'", null);
