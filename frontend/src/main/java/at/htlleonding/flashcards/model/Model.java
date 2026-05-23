@@ -28,18 +28,13 @@ public class Model {
                 .flatMap(d -> {
                     boolean nameMatches = d.getName() != null && d.getName().toLowerCase().contains(lowerQuery);
                     boolean descMatches = d.getDescription() != null && d.getDescription().toLowerCase().contains(lowerQuery);
-
-                    // To avoid flooding results with every card in a deck for short queries (like "k"),
-                    // we only include all cards of a deck if the query is at least 3 chars long
-                    // or if it's an exact match for the deck name.
-                    boolean includeAllDueToDeck = (nameMatches || descMatches) && (lowerQuery.length() >= 3 ||
-                            (d.getName() != null && d.getName().equalsIgnoreCase(query)));
+                    boolean deckLevelMatch = nameMatches || descMatches;
 
                     return d.getCards().stream().filter(c -> {
                         boolean inQuestion = c.getQuestion() != null && c.getQuestion().toLowerCase().contains(lowerQuery);
                         boolean inAnswer = c.getAnswer() != null && c.getAnswer().toLowerCase().contains(lowerQuery);
                         boolean inTags = c.getTags() != null && c.getTags().stream().anyMatch(t -> t.toLowerCase().contains(lowerQuery));
-                        return inQuestion || inAnswer || inTags || includeAllDueToDeck;
+                        return inQuestion || inAnswer || inTags || deckLevelMatch;
                     });
                 })
                 .collect(Collectors.toList());
