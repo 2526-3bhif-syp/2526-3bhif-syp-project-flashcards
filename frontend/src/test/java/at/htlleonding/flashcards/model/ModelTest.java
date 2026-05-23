@@ -144,9 +144,21 @@ class ModelTest {
     // ── Search Tests ───────────────────────────────────────────────────────
 
     @Test
-    void testSearchShortQueryOnlyMatchesCardContent() {
+    void testSearchOneCharMatchesDeck() {
+        initialDecks.add(new Deck("Mathe", "Mathematics"));
+        initialDecks.get(1).addCard(new Card("1+1", "2"));
         Model model = new Model(persistence);
-        // "Q1" is in card1
+
+        // "M" should match "Mathe" deck and return its cards
+        List<Card> results = model.searchCards("M");
+        assertEquals(1, results.size());
+        assertEquals("1+1", results.get(0).getQuestion());
+    }
+
+    @Test
+    void testSearchShortQueryMatchesCardContent() {
+        Model model = new Model(persistence);
+        // "Q1" is length 2, matches card question "Q1"
         List<Card> results = model.searchCards("Q1");
         assertEquals(1, results.size());
     }
