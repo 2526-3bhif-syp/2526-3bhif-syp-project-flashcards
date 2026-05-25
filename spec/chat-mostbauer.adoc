@@ -175,3 +175,18 @@ Wo und wie werden die Karten gespeichert?
 * Erhöhe die größe der Deck icons in der Deck-Erstellen Form
 
 * Gute Größe, aber das ganze Popup Fenster sollte etwas breiter und nicht so hoch sein wenn es erscheint
+
+
+== Session 10 (2026-05-25)
+
+* This project uses openspec (https://openspec.pro/workflow/). We are begining work on "[Task] UI Study Mode", issue #29, which is a part of the bigger issue "Study mode" #23. The workflow looks like this: The OpenSpec workflow consists of four main phases:
+```
+    Proposal - Define what you're building and why
+    Planning - Generate specs, design, and tasks
+    Implementation - Build the feature following the specs
+    Archiving - Consolidate knowledge into permanent storage```
+Read up on previous work done in the openspecs/ folder. You can also use the gh cli to read up on issues, and the git cli to commit your work after logical steps (look through existing commits with git log to get a feel for how the commits need to look). Its important that you keep all commits local before i have reviewed your work.  Help me get startet with a Proposal for this task.
+
+* Ja, mach mit den planning weiter. ich bin mit den proposal zufrieden
+
+* Ich habe openspec/changes/ui-study-mode/design.md leicht angepasst. Lese die Datei und fahre dann mit der Impl. fort
