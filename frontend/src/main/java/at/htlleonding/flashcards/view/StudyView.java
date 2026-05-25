@@ -2,10 +2,13 @@ package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -21,9 +24,7 @@ public class StudyView {
     private int currentIndex;
     private Card currentCard;
 
-    private final VBox cardArea;
-    private final Label frontLabel;
-    private final Label backLabel;
+    private final BorderPane root;
     private final Button flipBtn;
     private final Button nextBtn;
     private final HBox assessmentBox;
@@ -45,14 +46,13 @@ public class StudyView {
         stage.setHeight(800);
         stage.setOnHidden(e -> stopAllAudio());
 
-        BorderPane root = new BorderPane();
+        root = new BorderPane();
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f8f9fa;");
 
         // ── TOP: Finish ────────────────────────────────────────────────────
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
-
         Button finishBtn = new Button("Finish");
         finishBtn.setStyle(
             "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
@@ -65,30 +65,10 @@ public class StudyView {
         topBar.getChildren().add(finishBtn);
         root.setTop(topBar);
 
-        // ── CENTER: Card ───────────────────────────────────────────────────
-        cardArea = new VBox(20);
-        cardArea.setAlignment(Pos.CENTER);
-
-        frontLabel = new Label();
-        frontLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;");
-        frontLabel.setWrapText(true);
-        frontLabel.setAlignment(Pos.CENTER);
-        frontLabel.setMaxWidth(600);
-
-        backLabel = new Label();
-        backLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #1B5E20; -fx-font-weight: bold;");
-        backLabel.setWrapText(true);
-        backLabel.setAlignment(Pos.CENTER);
-        backLabel.setMaxWidth(600);
-
-        cardArea.getChildren().add(frontLabel);
-        root.setCenter(cardArea);
-
         // ── BOTTOM: Buttons ────────────────────────────────────────────────
         VBox bottomArea = new VBox(12);
         bottomArea.setAlignment(Pos.CENTER);
 
-        // Assessment buttons (hidden until flipped)
         assessmentBox = new HBox(10);
         assessmentBox.setAlignment(Pos.CENTER);
         String[][] assessments = {
@@ -112,7 +92,6 @@ public class StudyView {
         assessmentBox.setVisible(false);
         assessmentBox.setManaged(false);
 
-        // Navigation: flip (left) + next (right)
         HBox navBox = new HBox(20);
         navBox.setAlignment(Pos.CENTER);
 
@@ -133,7 +112,6 @@ public class StudyView {
         nextBtn.setManaged(false);
 
         navBox.getChildren().addAll(flipBtn, nextBtn);
-
         bottomArea.getChildren().addAll(assessmentBox, navBox);
         root.setBottom(bottomArea);
 
@@ -143,10 +121,49 @@ public class StudyView {
         showCardFront();
     }
 
+    private Node buildSidePanel(String text, String textStyle,
+                                String imageData, String imageName,
+                                String audioData, String audioName) {
+        Label label = new Label(text);
+        label.setWrapText(true);
+        label.setStyle(textStyle);
+        label.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        label.setMaxWidth(Double.MAX_VALUE);
+
+        boolean hasMedia = (imageData != null && !imageData.isEmpty()) ||
+                           (audioData != null && !audioData.isEmpty());
+
+        if (!hasMedia) {
+            StackPane pane = new StackPane(label);
+            pane.setAlignment(Pos.CENTER);
+            return pane;
+        }
+
+        VBox mediaContainer = new VBox(8);
+        mediaContainer.setAlignment(Pos.CENTER);
+        if (imageData != null && !imageData.isEmpty()) {
+            mediaContainer.getChildren().add(
+                FlashcardsView.buildImageUI(imageData, imageName));
+        }
+        if (audioData != null && !audioData.isEmpty()) {
+            mediaContainer.getChildren().add(
+                FlashcardsView.buildAudioPlayerUI(audioData, audioName, activeMediaPlayers));
+        }
+
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        VBox panel = new VBox(12, spacer, mediaContainer, label);
+        panel.setAlignment(Pos.CENTER);
+        return panel;
+    }
+
     private void showCardFront() {
         stopAllAudio();
         if (currentCard == null) {
-            frontLabel.setText("No cards to study.");
+            Label empty = new Label("No cards to study.");
+            empty.setStyle("-fx-font-size: 18px; -fx-text-fill: #999999;");
+            root.setCenter(new StackPane(empty));
             flipBtn.setVisible(false);
             flipBtn.setManaged(false);
             nextBtn.setVisible(false);
@@ -155,9 +172,13 @@ public class StudyView {
             assessmentBox.setManaged(false);
             return;
         }
-        cardArea.getChildren().clear();
-        frontLabel.setText(currentCard.getQuestion());
-        cardArea.getChildren().add(frontLabel);
+
+        String style = "-fx-font-size: 24px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
+        root.setCenter(buildSidePanel(
+            currentCard.getQuestion(), style,
+            currentCard.getFrontImageData(), currentCard.getFrontImageName(),
+            currentCard.getFrontAudioData(), currentCard.getFrontAudioName()
+        ));
 
         flipBtn.setText("Aufdecken");
         flipBtn.setVisible(true);
@@ -170,33 +191,34 @@ public class StudyView {
 
     private void flipCard() {
         if (currentCard == null) return;
-        cardArea.getChildren().clear();
-        frontLabel.setText(currentCard.getQuestion());
-        backLabel.setText(currentCard.getAnswer());
 
-        VBox frontSection = new VBox(10);
-        frontSection.getChildren().add(frontLabel);
-        if (currentCard.getFrontImageData() != null) {
-            frontSection.getChildren().add(
-                FlashcardsView.buildImageUI(currentCard.getFrontImageData(), currentCard.getFrontImageName()));
-        }
-        if (currentCard.getFrontAudioData() != null) {
-            frontSection.getChildren().add(
-                FlashcardsView.buildAudioPlayerUI(currentCard.getFrontAudioData(), currentCard.getFrontAudioName(), activeMediaPlayers));
-        }
+        String frontStyle = "-fx-font-size: 20px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
+        String backStyle  = "-fx-font-size: 20px; -fx-text-fill: #1B5E20; -fx-font-weight: bold;";
 
-        VBox backSection = new VBox(10);
-        backSection.getChildren().add(backLabel);
-        if (currentCard.getBackImageData() != null) {
-            backSection.getChildren().add(
-                FlashcardsView.buildImageUI(currentCard.getBackImageData(), currentCard.getBackImageName()));
-        }
-        if (currentCard.getBackAudioData() != null) {
-            backSection.getChildren().add(
-                FlashcardsView.buildAudioPlayerUI(currentCard.getBackAudioData(), currentCard.getBackAudioName(), activeMediaPlayers));
-        }
+        Node left = buildSidePanel(
+            currentCard.getQuestion(), frontStyle,
+            currentCard.getFrontImageData(), currentCard.getFrontImageName(),
+            currentCard.getFrontAudioData(), currentCard.getFrontAudioName()
+        );
 
-        cardArea.getChildren().addAll(frontSection, backSection);
+        Node right = buildSidePanel(
+            currentCard.getAnswer(), backStyle,
+            currentCard.getBackImageData(), currentCard.getBackImageName(),
+            currentCard.getBackAudioData(), currentCard.getBackAudioName()
+        );
+
+        HBox.setHgrow(left, Priority.ALWAYS);
+        HBox.setHgrow(right, Priority.ALWAYS);
+        if (left instanceof Region lr) lr.setMaxWidth(Double.MAX_VALUE);
+        if (right instanceof Region rr) rr.setMaxWidth(Double.MAX_VALUE);
+
+        Separator divider = new Separator(Orientation.VERTICAL);
+
+        HBox split = new HBox(10, left, divider, right);
+        split.setAlignment(Pos.CENTER);
+        VBox.setVgrow(split, Priority.ALWAYS);
+
+        root.setCenter(split);
 
         flipBtn.setVisible(false);
         flipBtn.setManaged(false);
