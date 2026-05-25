@@ -237,7 +237,7 @@ public class FlashcardsView extends HBox {
         questionBox.getChildren().addAll(qHeader, qText);
         
         if (card.getFrontAudioData() != null) {
-            questionBox.getChildren().add(buildAudioPlayerUI(card.getFrontAudioData(), card.getFrontAudioName()));
+            questionBox.getChildren().add(buildAudioPlayerUI(card.getFrontAudioData(), card.getFrontAudioName(), activeMediaPlayers));
         }
         if (card.getFrontImageData() != null) {
             questionBox.getChildren().add(buildImageUI(card.getFrontImageData(), card.getFrontImageName()));
@@ -254,7 +254,7 @@ public class FlashcardsView extends HBox {
         answerBox.getChildren().addAll(aHeader, aText);
 
         if (card.getBackAudioData() != null) {
-            answerBox.getChildren().add(buildAudioPlayerUI(card.getBackAudioData(), card.getBackAudioName()));
+            answerBox.getChildren().add(buildAudioPlayerUI(card.getBackAudioData(), card.getBackAudioName(), activeMediaPlayers));
         }
         if (card.getBackImageData() != null) {
             answerBox.getChildren().add(buildImageUI(card.getBackImageData(), card.getBackImageName()));
@@ -297,7 +297,7 @@ public class FlashcardsView extends HBox {
         activeMediaPlayers.clear();
     }
 
-    private String formatTime(Duration duration) {
+    static String formatTime(Duration duration) {
         if (duration == null) return "00:00";
         int seconds = (int) duration.toSeconds();
         int mins = seconds / 60;
@@ -305,7 +305,7 @@ public class FlashcardsView extends HBox {
         return String.format("%02d:%02d", mins, secs);
     }
 
-    private VBox buildAudioPlayerUI(String base64Data, String fileName) {
+    static VBox buildAudioPlayerUI(String base64Data, String fileName, List<MediaPlayer> mediaPlayers) {
         File tempFile = AudioHelper.saveTempAudio(base64Data);
         if (tempFile == null) return new VBox(new Label("Error loading audio"));
 
@@ -313,7 +313,7 @@ public class FlashcardsView extends HBox {
         try {
             Media media = new Media(tempFile.toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            activeMediaPlayers.add(mediaPlayer);
+            mediaPlayers.add(mediaPlayer);
         } catch (Exception e) {
             return new VBox(new Label("Audio player error: Codecs missing?"));
         }
@@ -383,7 +383,7 @@ public class FlashcardsView extends HBox {
         return player;
     }
 
-    private VBox buildImageUI(String base64Data, String fileName) {
+    static VBox buildImageUI(String base64Data, String fileName) {
         byte[] bytes = Base64.getDecoder().decode(base64Data);
         ImageView imageView = new ImageView(new Image(new ByteArrayInputStream(bytes)));
         imageView.setFitWidth(190);
