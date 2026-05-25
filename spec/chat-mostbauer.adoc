@@ -190,3 +190,15 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
 * Ja, mach mit den planning weiter. ich bin mit den proposal zufrieden
 
 * Ich habe openspec/changes/ui-study-mode/design.md leicht angepasst. Lese die Datei und fahre dann mit der Impl. fort
+
+* Bis jetzt funktioniert alles was da ist. Jedoch fehlt etwas: Beim testen habe ich gemerked das Medien(Bilder/Audio) nicht im Study modus gezeigt werden, sondern nur der der Text der Seite. Bitte erweitere die docs und die impl. um dieses feature. Verwende etwas mehr aber je kleinere commits ab jetzt.
+
+* The current design does not work: Both front and backside can have media. Also the formating is very off, wasting a lot of space for nothing. On the frontsite, the text should be centered if no media is present, but otherwise it should be at the bottom of the container. The media if present should then be centered above it. The reveal content should then have a 50/50 vertical split that displays the front side on the left as descriped, and the backside on the right, formated the same way
+
+* Der inhalt sollte horizontal und vertikal zentriert sein. Außerdem soll der Text und die Bilder größer sein, der meiste Platz wird gar nicht genutzt.
+
+* Bevor die Rückseite der derzeitigen Karte aufgedeckt wird, soll die Vorderseite 100% vom content einnehmen, nicht nur die hälfte die sie später haben soll.
+
+* Der Text steht endlich wie er soll, aber Bilder sind noch immer links-bündig wie der Text früher
+
+* Alles funktioniert jetzt wie erwartet. Stelle sicher dass die openspec docs die wir dafür angelegt haben alle am neuesten Stand sind und fahre dann mit den letzen Schritt des worklfows fort: Archive
