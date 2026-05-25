@@ -139,23 +139,23 @@ public class StudyView {
             return pane;
         }
 
-        VBox mediaContainer = new VBox(8);
-        mediaContainer.setAlignment(Pos.CENTER);
+        VBox content = new VBox(12);
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(Double.MAX_VALUE);
+
         if (imageData != null && !imageData.isEmpty()) {
-            mediaContainer.getChildren().add(
-                FlashcardsView.buildImageUI(imageData, imageName));
+            content.getChildren().add(
+                FlashcardsView.buildImageUI(imageData, imageName, 300, 250));
         }
         if (audioData != null && !audioData.isEmpty()) {
-            mediaContainer.getChildren().add(
+            content.getChildren().add(
                 FlashcardsView.buildAudioPlayerUI(audioData, audioName, activeMediaPlayers));
         }
+        content.getChildren().add(label);
 
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        VBox panel = new VBox(12, spacer, mediaContainer, label);
-        panel.setAlignment(Pos.CENTER);
-        return panel;
+        StackPane pane = new StackPane(content);
+        pane.setAlignment(Pos.CENTER);
+        return pane;
     }
 
     private void showCardFront() {
@@ -173,7 +173,7 @@ public class StudyView {
             return;
         }
 
-        String style = "-fx-font-size: 24px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
+        String style = "-fx-font-size: 36px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
         root.setCenter(buildSidePanel(
             currentCard.getQuestion(), style,
             currentCard.getFrontImageData(), currentCard.getFrontImageName(),
@@ -192,8 +192,8 @@ public class StudyView {
     private void flipCard() {
         if (currentCard == null) return;
 
-        String frontStyle = "-fx-font-size: 20px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
-        String backStyle  = "-fx-font-size: 20px; -fx-text-fill: #1B5E20; -fx-font-weight: bold;";
+        String frontStyle = "-fx-font-size: 28px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
+        String backStyle  = "-fx-font-size: 28px; -fx-text-fill: #1B5E20; -fx-font-weight: bold;";
 
         Node left = buildSidePanel(
             currentCard.getQuestion(), frontStyle,
