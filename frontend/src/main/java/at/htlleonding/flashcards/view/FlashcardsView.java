@@ -319,6 +319,7 @@ public class FlashcardsView extends HBox {
         }
 
         VBox player = new VBox(4);
+        player.setAlignment(Pos.CENTER);
         player.setPadding(new Insets(8, 0, 0, 0));
 
         Label nameLabel = new Label("🎵 " + fileName);
@@ -399,6 +400,7 @@ public class FlashcardsView extends HBox {
         nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
 
         VBox container = new VBox(4, imageView, nameLabel);
+        container.setAlignment(Pos.CENTER);
         container.setPadding(new Insets(8, 0, 0, 0));
         return container;
     }
