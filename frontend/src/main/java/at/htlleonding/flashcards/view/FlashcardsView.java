@@ -384,10 +384,14 @@ public class FlashcardsView extends HBox {
     }
 
     static VBox buildImageUI(String base64Data, String fileName) {
+        return buildImageUI(base64Data, fileName, 190, 150);
+    }
+
+    static VBox buildImageUI(String base64Data, String fileName, double fitWidth, double fitHeight) {
         byte[] bytes = Base64.getDecoder().decode(base64Data);
         ImageView imageView = new ImageView(new Image(new ByteArrayInputStream(bytes)));
-        imageView.setFitWidth(190);
-        imageView.setFitHeight(150);
+        imageView.setFitWidth(fitWidth);
+        imageView.setFitHeight(fitHeight);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
 
