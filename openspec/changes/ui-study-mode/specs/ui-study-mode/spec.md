@@ -14,7 +14,7 @@ Das Study-Popup ist kleiner als das Hauptfenster.
 
 #### Scenario: Fenstergröße
 - **GIVEN** das Study-Popup wird geöffnet
-- **THEN** hat es eine Größe von 700×500 Pixeln
+- **THEN** hat es eine Größe von ~1200×800 Pixeln
 - **AND** das Hauptfenster bleibt unverändert (~1200×800)
 
 ### Requirement: Finish-Button
