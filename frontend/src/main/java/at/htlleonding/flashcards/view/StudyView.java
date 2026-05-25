@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public class StudyView {
     private final Button nextBtn;
     private final HBox assessmentBox;
 
+    private final List<MediaPlayer> activeMediaPlayers = new ArrayList<>();
+
     private Consumer<String> onAssessment;
     private Runnable onFinish;
 
@@ -40,6 +43,7 @@ public class StudyView {
         stage.setTitle("Study Mode");
         stage.setWidth(1200);
         stage.setHeight(800);
+        stage.setOnHidden(e -> stopAllAudio());
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(20));
@@ -140,6 +144,7 @@ public class StudyView {
     }
 
     private void showCardFront() {
+        stopAllAudio();
         if (currentCard == null) {
             frontLabel.setText("No cards to study.");
             flipBtn.setVisible(false);
@@ -168,7 +173,30 @@ public class StudyView {
         cardArea.getChildren().clear();
         frontLabel.setText(currentCard.getQuestion());
         backLabel.setText(currentCard.getAnswer());
-        cardArea.getChildren().addAll(frontLabel, backLabel);
+
+        VBox frontSection = new VBox(10);
+        frontSection.getChildren().add(frontLabel);
+        if (currentCard.getFrontImageData() != null) {
+            frontSection.getChildren().add(
+                FlashcardsView.buildImageUI(currentCard.getFrontImageData(), currentCard.getFrontImageName()));
+        }
+        if (currentCard.getFrontAudioData() != null) {
+            frontSection.getChildren().add(
+                FlashcardsView.buildAudioPlayerUI(currentCard.getFrontAudioData(), currentCard.getFrontAudioName(), activeMediaPlayers));
+        }
+
+        VBox backSection = new VBox(10);
+        backSection.getChildren().add(backLabel);
+        if (currentCard.getBackImageData() != null) {
+            backSection.getChildren().add(
+                FlashcardsView.buildImageUI(currentCard.getBackImageData(), currentCard.getBackImageName()));
+        }
+        if (currentCard.getBackAudioData() != null) {
+            backSection.getChildren().add(
+                FlashcardsView.buildAudioPlayerUI(currentCard.getBackAudioData(), currentCard.getBackAudioName(), activeMediaPlayers));
+        }
+
+        cardArea.getChildren().addAll(frontSection, backSection);
 
         flipBtn.setVisible(false);
         flipBtn.setManaged(false);
@@ -176,6 +204,14 @@ public class StudyView {
         nextBtn.setManaged(true);
         assessmentBox.setVisible(true);
         assessmentBox.setManaged(true);
+    }
+
+    private void stopAllAudio() {
+        for (MediaPlayer mp : activeMediaPlayers) {
+            mp.stop();
+            mp.dispose();
+        }
+        activeMediaPlayers.clear();
     }
 
     private void nextCard() {
