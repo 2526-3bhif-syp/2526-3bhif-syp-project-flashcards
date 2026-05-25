@@ -47,6 +47,7 @@ public class FlashcardsView extends HBox {
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
     private Runnable onImportRequested;
+    private Runnable onStudyRequested;
     private Consumer<Card> onExportCardRequested;
     private Consumer<List<Card>> onExportSelectedCardsRequested;
     private Consumer<List<Card>> onDeleteSelectedCardsRequested;
@@ -96,7 +97,10 @@ public class FlashcardsView extends HBox {
                 onExportSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        HBox actionBar = new HBox(8, importBtn, spacer, selectToggleBtn, deleteSelectedBtn, exportSelectedBtn);
+        Button studyBtn = createBtn("Study", "#FF9800", "#F57C00");
+        studyBtn.setOnAction(e -> { if (onStudyRequested != null) onStudyRequested.run(); });
+
+        HBox actionBar = new HBox(8, studyBtn, importBtn, spacer, selectToggleBtn, deleteSelectedBtn, exportSelectedBtn);
         actionBar.setAlignment(Pos.CENTER_LEFT);
 
         // ── cards grid ────────────────────────────────────────────────────
@@ -583,6 +587,7 @@ public class FlashcardsView extends HBox {
     public void setOnEditCardRequested(Consumer<Card> cb) { this.onEditCardRequested = cb; }
     public void setOnDeleteCardRequested(Consumer<Card> cb) { this.onDeleteCardRequested = cb; }
     public void setOnImportRequested(Runnable cb) { this.onImportRequested = cb; }
+    public void setOnStudyRequested(Runnable cb) { this.onStudyRequested = cb; }
     public void setOnExportCardRequested(Consumer<Card> cb) { this.onExportCardRequested = cb; }
     public void setOnExportSelectedCardsRequested(Consumer<List<Card>> cb) { this.onExportSelectedCardsRequested = cb; }
     public void setOnDeleteSelectedCardsRequested(Consumer<List<Card>> cb) { this.onDeleteSelectedCardsRequested = cb; }
