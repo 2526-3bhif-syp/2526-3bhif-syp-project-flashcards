@@ -28,8 +28,9 @@ Der übergeordnete Design des "lern-modus" definiert die Algorithmus- und Datenm
 - **Layout StudyView**:
   - `BorderPane` als Root
   - TOP: `HBox` mit "Finish"-Button (rechts ausgerichtet, grün `#4CAF50`)
-  - CENTER: Kartenanzeige (`VBox` mit Frage/Antwort-Labels, je nach State FRONT/BACK)
+  - CENTER: `buildSidePanel()` erzeugt zentrierten Inhalt (FRONT: 100% Vorderseite; BACK: 50/50-Horizontal-Split mit Separator)
   - BOTTOM: `HBox` mit "Aufdecken" (links), "Next Card" (rechts), und nach Aufdecken zusätzlich vier Einschätzungsbuttons
+  - Zentrierung: `VBox` mit `VBox.setVgrow(child, Priority.ALWAYS)` für zuverlässiges Füllen und Zentrieren des verfügbaren Platzes
 - **Größe**: Popup ~1200×800
 - **State**: Zwei Zustände analog zum Design in lern-modus: FRONT (nur Vorderseite + Aufdecken) und BACK (beide Seiten + Einschätzungsbuttons + Next Card)
 - **Medienanzeige**: Bilder und Audio werden erst nach dem Aufdecken (State BACK) eingeblendet, damit der Fokus auf dem Text bleibt. Die UI-Hilfsmethoden aus `FlashcardsView.java` (`buildImageUI`, `buildAudioPlayerUI`) werden als statische Methoden wiederverwendet.
