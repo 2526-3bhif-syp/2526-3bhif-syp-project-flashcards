@@ -11,6 +11,8 @@ Der übergeordnete Design des "lern-modus" definiert die Algorithmus- und Datenm
 - "Aufdecken"-Button unten Mitte zum Umdrehen der Karte
 - "Next Card"-Button rechts neben dem Aufdecken-Button
 - Nach Aufdecken: Vier Einschätzungsbuttons (Falsch, Schwierig, Ok, Leicht) unterhalb der Karte anzeigen
+- Bilder auf Vorder- und Rückseite der Karte im Study-Popup anzeigen
+- Audio-Dateien auf Vorder- und Rückseite mit Play/Pause-Steuerung im Study-Popup abspielen
 - Popup schließt sich bei Finish; bisherige Fortschritte bleiben gespeichert (siehe `learning-progress`)
 
 **Non-Goals:**
@@ -30,6 +32,7 @@ Der übergeordnete Design des "lern-modus" definiert die Algorithmus- und Datenm
   - BOTTOM: `HBox` mit "Aufdecken" (links), "Next Card" (rechts), und nach Aufdecken zusätzlich vier Einschätzungsbuttons
 - **Größe**: Popup ~1200×800
 - **State**: Zwei Zustände analog zum Design in lern-modus: FRONT (nur Vorderseite + Aufdecken) und BACK (beide Seiten + Einschätzungsbuttons + Next Card)
+- **Medienanzeige**: Bilder und Audio werden erst nach dem Aufdecken (State BACK) eingeblendet, damit der Fokus auf dem Text bleibt. Die UI-Hilfsmethoden aus `FlashcardsView.java` (`buildImageUI`, `buildAudioPlayerUI`) werden als statische Methoden wiederverwendet.
 
 ## Risks / Trade-offs
 

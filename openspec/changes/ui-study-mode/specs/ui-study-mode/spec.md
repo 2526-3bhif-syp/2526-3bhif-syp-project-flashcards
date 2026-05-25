@@ -46,6 +46,29 @@ Nach dem Aufdecken und Bewerten kann der Nutzer zur nächsten Karte wechseln.
 - **WHEN** der Nutzer auf "Next Card" klickt
 - **THEN** wird die nächste Karte (basierend auf Algorithmus, siehe learn-mode spec) mit ihrer Vorderseite angezeigt (State FRONT)
 
+### Requirement: Bildanzeige im Lern-Modus
+Bilder, die an Karten hinterlegt sind, werden im Study-Popup nach dem Aufdecken angezeigt.
+
+#### Scenario: Vorderseiten-Bild anzeigen
+- **GIVEN** die aktuelle Karte hat ein Bild auf der Vorderseite
+- **WHEN** der Nutzer die Karte aufdeckt (State BACK)
+- **THEN** wird das Vorderseiten-Bild unterhalb des Vorderseiten-Texts angezeigt
+
+#### Scenario: Rückseiten-Bild anzeigen
+- **GIVEN** die aktuelle Karte hat ein Bild auf der Rückseite
+- **WHEN** der Nutzer die Karte aufdeckt (State BACK)
+- **THEN** wird das Rückseiten-Bild unterhalb des Rückseiten-Texts angezeigt
+
+### Requirement: Audio-Wiedergabe im Lern-Modus
+Audio-Dateien, die an Karten hinterlegt sind, können im Study-Popup nach dem Aufdecken abgespielt werden.
+
+#### Scenario: Audio-Player anzeigen und abspielen
+- **GIVEN** die aktuelle Karte hat eine Audio-Datei auf der Vorder- oder Rückseite
+- **WHEN** der Nutzer die Karte aufdeckt (State BACK)
+- **THEN** wird ein Audio-Player (Play/Pause, Fortschritt, Lautstärke) unterhalb des zugehörigen Texts angezeigt
+- **WHEN** der Nutzer auf Play klickt
+- **THEN** wird die Audio-Datei abgespielt
+
 ### Requirement: Selbsteinschätzung protokollieren
 Nach dem Aufdecken kann der Nutzer seinen Wissensstand einschätzen.
 

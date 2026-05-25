@@ -29,7 +29,14 @@
 - [ ] 5.2 Klick auf Button ruft Presenter-Methode zur Protokollierung auf
 - [ ] 5.3 Einschätzungsbuttons bleiben nach Auswahl sichtbar
 
-## 6. Presenter-Verdrahtung
+## 6. Medienanzeige in StudyView
+
+- [ ] 6.1 `buildImageUI` und `buildAudioPlayerUI` in `FlashcardsView.java` als statische Methoden extrahieren
+- [ ] 6.2 Bilder auf Vorder- und Rückseite der Karte im Study-Popup anzeigen (State BACK)
+- [ ] 6.3 Audio-Player für Vorder- und Rückseite im Study-Popup einbauen (State BACK)
+- [ ] 6.4 Audio-Ressourcen beim Schließen des Popups und bei Kartennavigation freigeben (`stopAllAudio`)
+
+## 7. Presenter-Verdrahtung
 
 - [ ] 6.1 `MainPresenter.java`: Methode zum Starten des Study-Modus (aktuellen Deck übergeben)
 - [ ] 6.2 Algorithmus-Logik aus learn-mode in den Presenter integrieren (gewichtete Zufallsauswahl)
