@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -127,21 +128,25 @@ public class StudyView {
         Label label = new Label(text);
         label.setWrapText(true);
         label.setStyle(textStyle);
-        label.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        label.setTextAlignment(TextAlignment.CENTER);
+        label.setAlignment(Pos.CENTER);
         label.setMaxWidth(Double.MAX_VALUE);
+        label.setMaxHeight(Double.MAX_VALUE);
 
         boolean hasMedia = (imageData != null && !imageData.isEmpty()) ||
                            (audioData != null && !audioData.isEmpty());
 
         if (!hasMedia) {
-            StackPane pane = new StackPane(label);
-            pane.setAlignment(Pos.CENTER);
-            return pane;
+            VBox wrapper = new VBox(label);
+            wrapper.setAlignment(Pos.CENTER);
+            VBox.setVgrow(label, Priority.ALWAYS);
+            return wrapper;
         }
 
-        VBox content = new VBox(12);
+        VBox content = new VBox(16);
         content.setAlignment(Pos.CENTER);
         content.setMaxWidth(Double.MAX_VALUE);
+        content.setMaxHeight(Double.MAX_VALUE);
 
         if (imageData != null && !imageData.isEmpty()) {
             content.getChildren().add(
@@ -153,9 +158,10 @@ public class StudyView {
         }
         content.getChildren().add(label);
 
-        StackPane pane = new StackPane(content);
-        pane.setAlignment(Pos.CENTER);
-        return pane;
+        VBox wrapper = new VBox(content);
+        wrapper.setAlignment(Pos.CENTER);
+        VBox.setVgrow(content, Priority.ALWAYS);
+        return wrapper;
     }
 
     private void showCardFront() {
