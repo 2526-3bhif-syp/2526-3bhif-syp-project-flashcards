@@ -44,6 +44,7 @@ public class MainPresenter {
         flashcardsView.setOnEditCardRequested(card -> handleEditCardRequested(flashcardsView, card));
         flashcardsView.setOnDeleteCardRequested(card -> handleDeleteCardRequested(flashcardsView, card));
         flashcardsView.setOnImportRequested(() -> handleImportRequested(flashcardsView));
+        flashcardsView.setOnStudyRequested(() -> handleStudyRequested(flashcardsView));
         flashcardsView.setOnExportCardRequested(card -> handleCardExportRequested(card, flashcardsView));
         flashcardsView.setOnExportSelectedCardsRequested(cards -> handleCardsExportRequested(cards, flashcardsView));
         flashcardsView.setOnDeleteSelectedCardsRequested(cards -> handleDeleteSelectedCardsRequested(cards, flashcardsView));
@@ -377,6 +378,29 @@ public class MainPresenter {
                 refreshFlashcardsView();
             }
         });
+    }
+
+    // ── study mode ─────────────────────────────────────────────────────────
+
+    private void handleStudyRequested(FlashcardsView flashcardsView) {
+        if (currentDeck == null) {
+            alert(Alert.AlertType.WARNING, "Please select a deck first.");
+            return;
+        }
+        List<Card> cards = currentDeck.getCards();
+        if (cards.isEmpty()) {
+            alert(Alert.AlertType.WARNING, "This deck has no cards.");
+            return;
+        }
+
+        StudyView studyView = new StudyView(cards);
+        studyView.setOnAssessment(assessment -> {
+            System.out.println("Assessment: " + assessment + " for card in deck " + currentDeck.getName());
+        });
+        studyView.setOnFinish(() -> {
+            System.out.println("Study session finished for deck: " + currentDeck.getName());
+        });
+        studyView.show();
     }
 
     // ── navigation ─────────────────────────────────────────────────────────
