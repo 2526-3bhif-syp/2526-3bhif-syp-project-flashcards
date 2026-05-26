@@ -394,12 +394,6 @@ public class MainPresenter {
         }
 
         StudyView studyView = new StudyView(cards);
-        studyView.setOnAssessment(assessment -> {
-            System.out.println("Assessment: " + assessment + " for card in deck " + currentDeck.getName());
-        });
-        studyView.setOnFinish(() -> {
-            System.out.println("Study session finished for deck: " + currentDeck.getName());
-        });
         studyView.show();
     }
 

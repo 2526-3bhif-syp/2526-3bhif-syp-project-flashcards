@@ -1,6 +1,7 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
+import at.htlleonding.flashcards.model.CardSelector;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -15,15 +16,14 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class StudyView {
     private final Stage stage;
     private final List<Card> studyCards;
-    private int currentIndex;
     private Card currentCard;
+    private final CardSelector cardSelector = CardSelector.of(CardSelector.AlgorithmType.WEIGHTED);
 
     private final BorderPane root;
     private final Button flipBtn;
@@ -37,9 +37,7 @@ public class StudyView {
 
     public StudyView(List<Card> cards) {
         this.studyCards = new ArrayList<>(cards);
-        Collections.shuffle(this.studyCards);
-        this.currentIndex = 0;
-        this.currentCard = this.studyCards.isEmpty() ? null : this.studyCards.get(0);
+        this.currentCard = studyCards.isEmpty() ? null : cardSelector.selectNext(studyCards);
 
         stage = new Stage();
         stage.setTitle("Study Mode");
@@ -86,6 +84,7 @@ public class StudyView {
                 ass[1]
             ));
             btn.setOnAction(e -> {
+                cardSelector.recordRating(currentCard, ass[0].toUpperCase());
                 if (onAssessment != null) onAssessment.accept(ass[0]);
             });
             assessmentBox.getChildren().add(btn);
@@ -243,11 +242,7 @@ public class StudyView {
     }
 
     private void nextCard() {
-        currentIndex++;
-        if (currentIndex >= studyCards.size()) {
-            currentIndex = 0;
-        }
-        currentCard = studyCards.get(currentIndex);
+        currentCard = cardSelector.selectNext(studyCards);
         showCardFront();
     }
 
