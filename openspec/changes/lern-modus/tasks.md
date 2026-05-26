@@ -11,10 +11,10 @@
 
 ## 3. UI – Lern-Modus
 
-- [ ] 3.1 Lern-Modus-Ansicht in `FlashcardsView.java` oder als eigene View umsetzen
-- [ ] 3.2 Vorderseite anzeigen + "Aufdecken"-Button
-- [ ] 3.3 Nach Aufdecken: Rückseite einblenden + vier Einschätzungs-Buttons (Falsch, Schwierig, Ok, Leicht)
-- [ ] 3.4 Lern-Modus starten/beenden im `MainPresenter.java` verdrahten
+- [x] 3.1 Lern-Modus-Ansicht in `FlashcardsView.java` oder als eigene View umsetzen
+- [x] 3.2 Vorderseite anzeigen + "Aufdecken"-Button
+- [x] 3.3 Nach Aufdecken: Rückseite einblenden + vier Einschätzungs-Buttons (Falsch, Schwierig, Ok, Leicht)
+- [x] 3.4 Lern-Modus starten/beenden im `MainPresenter.java` verdrahten
 
 ## 4. Tests
 

@@ -39,6 +39,7 @@ public class FlashcardsView extends HBox {
     private Button selectToggleBtn;
     private Button exportSelectedBtn;
     private Button deleteSelectedBtn;
+    private Button learnModeBtn;
     private Label deckTitleLabel;
     private ImageView iconView;
 
@@ -52,6 +53,7 @@ public class FlashcardsView extends HBox {
     private Consumer<List<Card>> onExportSelectedCardsRequested;
     private Consumer<List<Card>> onDeleteSelectedCardsRequested;
     private Function<Card, String> deckNameResolver;
+    private Runnable onStartLearnModeRequested;
 
     public FlashcardsView() {
         this.setPadding(new Insets(20));
@@ -74,6 +76,11 @@ public class FlashcardsView extends HBox {
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        learnModeBtn = createBtn("Lern-Modus", "#4CAF50", "#2E7D32");
+        learnModeBtn.setVisible(false);
+        learnModeBtn.setManaged(false);
+        learnModeBtn.setOnAction(e -> { if (onStartLearnModeRequested != null) onStartLearnModeRequested.run(); });
 
         selectToggleBtn = createBtn("Select", "#607D8B", "#455A64");
         selectToggleBtn.setOnAction(e -> toggleSelectMode());
@@ -175,6 +182,8 @@ public class FlashcardsView extends HBox {
         if (iconImage != null) iconView.setImage(iconImage);
         deckInfoRow.setVisible(true);
         deckInfoRow.setManaged(true);
+        learnModeBtn.setVisible(true);
+        learnModeBtn.setManaged(true);
     }
 
     public void clearDeckInfo() {
@@ -183,6 +192,8 @@ public class FlashcardsView extends HBox {
         deckInfoRow.setManaged(false);
         deckTitleLabel.setText("");
         selectedDetailCard = null;
+        learnModeBtn.setVisible(false);
+        learnModeBtn.setManaged(false);
         showPlaceholder();
     }
 
@@ -598,4 +609,5 @@ public class FlashcardsView extends HBox {
     public void setOnExportSelectedCardsRequested(Consumer<List<Card>> cb) { this.onExportSelectedCardsRequested = cb; }
     public void setOnDeleteSelectedCardsRequested(Consumer<List<Card>> cb) { this.onDeleteSelectedCardsRequested = cb; }
     public void setDeckNameResolver(Function<Card, String> resolver) { this.deckNameResolver = resolver; }
+    public void setOnStartLearnModeRequested(Runnable cb) { this.onStartLearnModeRequested = cb; }
 }
