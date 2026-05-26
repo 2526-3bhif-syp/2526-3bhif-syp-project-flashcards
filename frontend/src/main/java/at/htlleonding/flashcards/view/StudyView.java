@@ -34,6 +34,7 @@ public class StudyView {
     private final Button flipBtn;
     private final Button nextBtn;
     private final HBox assessmentBox;
+    private final Button beendenBtn;
 
     private final List<MediaPlayer> activeMediaPlayers = new ArrayList<>();
 
@@ -58,20 +59,20 @@ public class StudyView {
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f8f9fa;");
 
-        // ── TOP: Finish ────────────────────────────────────────────────────
+        // ── TOP: Beenden ───────────────────────────────────────────────────
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
-        Button finishBtn = new Button("Finish");
-        finishBtn.setStyle(
+        beendenBtn = new Button("Beenden");
+        beendenBtn.setStyle(
             "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
         );
-        finishBtn.setOnAction(e -> {
+        beendenBtn.setOnAction(e -> {
             if (onFinish != null) onFinish.run();
             fireSessionEnd();
             stage.close();
         });
-        topBar.getChildren().add(finishBtn);
+        topBar.getChildren().add(beendenBtn);
         root.setTop(topBar);
 
         // ── BOTTOM: Buttons ────────────────────────────────────────────────
@@ -301,12 +302,8 @@ public class StudyView {
             ratedCardIds.clear();
             cardSelector.reset();
             currentCard = studyCards.isEmpty() ? null : cardSelector.selectNext(studyCards);
-            flipBtn.setVisible(true);
-            flipBtn.setManaged(true);
-            nextBtn.setVisible(false);
-            nextBtn.setManaged(false);
-            assessmentBox.setVisible(false);
-            assessmentBox.setManaged(false);
+            beendenBtn.setVisible(true);
+            beendenBtn.setManaged(true);
             showCardFront();
         });
 
@@ -327,6 +324,8 @@ public class StudyView {
         centerWrapper.setAlignment(Pos.CENTER);
         root.setCenter(centerWrapper);
 
+        beendenBtn.setVisible(false);
+        beendenBtn.setManaged(false);
         flipBtn.setVisible(false);
         flipBtn.setManaged(false);
         nextBtn.setVisible(false);
