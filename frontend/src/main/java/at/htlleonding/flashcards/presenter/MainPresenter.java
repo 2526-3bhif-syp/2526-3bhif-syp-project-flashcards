@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.random.RandomGenerator;
 
 public class MainPresenter {
     private final MainView view;
@@ -22,7 +21,8 @@ public class MainPresenter {
     private final Stack<String> forwardStack = new Stack<>();
     private String currentViewName;
     private Deck currentDeck; // null = "all cards" mode
-    private final RandomGenerator rng = RandomGenerator.getDefault();
+    private CardSelector cardSelector = CardSelector.of(CardSelector.AlgorithmType.WEIGHTED);
+    private Card lastStudyCard;
 
     public MainPresenter(MainView view) {
         this.view = view;
@@ -454,25 +454,27 @@ public class MainPresenter {
             alert(Alert.AlertType.WARNING, "Der Stapel enthält keine Karten.");
             return;
         }
+        cardSelector.reset();
+        lastStudyCard = null;
         StudyModeView studyView = (StudyModeView) views.get("StudyMode");
         studyView.setDeckName(currentDeck.getName());
-        studyView.showCard(pickRandomCard());
+        lastStudyCard = cardSelector.selectNext(currentDeck.getCards());
+        studyView.showCard(lastStudyCard);
         navigateTo("StudyMode", true);
     }
 
     private void handleLearnRating(String rating) {
         if (currentDeck == null || currentDeck.getCards().isEmpty()) return;
+        cardSelector.recordRating(lastStudyCard, rating);
         StudyModeView studyView = (StudyModeView) views.get("StudyMode");
-        studyView.showCard(pickRandomCard());
+        lastStudyCard = cardSelector.selectNext(currentDeck.getCards());
+        studyView.showCard(lastStudyCard);
     }
 
     private void handleStopLearnMode() {
+        cardSelector.reset();
+        lastStudyCard = null;
         navigateTo("Flashcards", true);
-    }
-
-    private Card pickRandomCard() {
-        List<Card> cards = currentDeck.getCards();
-        return cards.get(rng.nextInt(cards.size()));
     }
 
     // ── helpers ────────────────────────────────────────────────────────────
