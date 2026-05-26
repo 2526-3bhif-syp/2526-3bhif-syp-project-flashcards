@@ -47,6 +47,7 @@ public class FlashcardsView extends HBox {
     private Consumer<Card> onEditCardRequested;
     private Consumer<Card> onDeleteCardRequested;
     private Runnable onImportRequested;
+    private Runnable onStudyRequested;
     private Consumer<Card> onExportCardRequested;
     private Consumer<List<Card>> onExportSelectedCardsRequested;
     private Consumer<List<Card>> onDeleteSelectedCardsRequested;
@@ -96,7 +97,10 @@ public class FlashcardsView extends HBox {
                 onExportSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        HBox actionBar = new HBox(8, importBtn, spacer, selectToggleBtn, deleteSelectedBtn, exportSelectedBtn);
+        Button studyBtn = createBtn("Study", "#FF9800", "#F57C00");
+        studyBtn.setOnAction(e -> { if (onStudyRequested != null) onStudyRequested.run(); });
+
+        HBox actionBar = new HBox(8, studyBtn, importBtn, spacer, selectToggleBtn, deleteSelectedBtn, exportSelectedBtn);
         actionBar.setAlignment(Pos.CENTER_LEFT);
 
         // ── cards grid ────────────────────────────────────────────────────
@@ -233,7 +237,7 @@ public class FlashcardsView extends HBox {
         questionBox.getChildren().addAll(qHeader, qText);
         
         if (card.getFrontAudioData() != null) {
-            questionBox.getChildren().add(buildAudioPlayerUI(card.getFrontAudioData(), card.getFrontAudioName()));
+            questionBox.getChildren().add(buildAudioPlayerUI(card.getFrontAudioData(), card.getFrontAudioName(), activeMediaPlayers));
         }
         if (card.getFrontImageData() != null) {
             questionBox.getChildren().add(buildImageUI(card.getFrontImageData(), card.getFrontImageName()));
@@ -250,7 +254,7 @@ public class FlashcardsView extends HBox {
         answerBox.getChildren().addAll(aHeader, aText);
 
         if (card.getBackAudioData() != null) {
-            answerBox.getChildren().add(buildAudioPlayerUI(card.getBackAudioData(), card.getBackAudioName()));
+            answerBox.getChildren().add(buildAudioPlayerUI(card.getBackAudioData(), card.getBackAudioName(), activeMediaPlayers));
         }
         if (card.getBackImageData() != null) {
             answerBox.getChildren().add(buildImageUI(card.getBackImageData(), card.getBackImageName()));
@@ -293,7 +297,7 @@ public class FlashcardsView extends HBox {
         activeMediaPlayers.clear();
     }
 
-    private String formatTime(Duration duration) {
+    static String formatTime(Duration duration) {
         if (duration == null) return "00:00";
         int seconds = (int) duration.toSeconds();
         int mins = seconds / 60;
@@ -301,7 +305,7 @@ public class FlashcardsView extends HBox {
         return String.format("%02d:%02d", mins, secs);
     }
 
-    private VBox buildAudioPlayerUI(String base64Data, String fileName) {
+    static VBox buildAudioPlayerUI(String base64Data, String fileName, List<MediaPlayer> mediaPlayers) {
         File tempFile = AudioHelper.saveTempAudio(base64Data);
         if (tempFile == null) return new VBox(new Label("Error loading audio"));
 
@@ -309,12 +313,13 @@ public class FlashcardsView extends HBox {
         try {
             Media media = new Media(tempFile.toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            activeMediaPlayers.add(mediaPlayer);
+            mediaPlayers.add(mediaPlayer);
         } catch (Exception e) {
             return new VBox(new Label("Audio player error: Codecs missing?"));
         }
 
         VBox player = new VBox(4);
+        player.setAlignment(Pos.CENTER);
         player.setPadding(new Insets(8, 0, 0, 0));
 
         Label nameLabel = new Label("🎵 " + fileName);
@@ -379,11 +384,15 @@ public class FlashcardsView extends HBox {
         return player;
     }
 
-    private VBox buildImageUI(String base64Data, String fileName) {
+    static VBox buildImageUI(String base64Data, String fileName) {
+        return buildImageUI(base64Data, fileName, 190, 150);
+    }
+
+    static VBox buildImageUI(String base64Data, String fileName, double fitWidth, double fitHeight) {
         byte[] bytes = Base64.getDecoder().decode(base64Data);
         ImageView imageView = new ImageView(new Image(new ByteArrayInputStream(bytes)));
-        imageView.setFitWidth(190);
-        imageView.setFitHeight(150);
+        imageView.setFitWidth(fitWidth);
+        imageView.setFitHeight(fitHeight);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
 
@@ -391,6 +400,7 @@ public class FlashcardsView extends HBox {
         nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
 
         VBox container = new VBox(4, imageView, nameLabel);
+        container.setAlignment(Pos.CENTER);
         container.setPadding(new Insets(8, 0, 0, 0));
         return container;
     }
@@ -583,6 +593,7 @@ public class FlashcardsView extends HBox {
     public void setOnEditCardRequested(Consumer<Card> cb) { this.onEditCardRequested = cb; }
     public void setOnDeleteCardRequested(Consumer<Card> cb) { this.onDeleteCardRequested = cb; }
     public void setOnImportRequested(Runnable cb) { this.onImportRequested = cb; }
+    public void setOnStudyRequested(Runnable cb) { this.onStudyRequested = cb; }
     public void setOnExportCardRequested(Consumer<Card> cb) { this.onExportCardRequested = cb; }
     public void setOnExportSelectedCardsRequested(Consumer<List<Card>> cb) { this.onExportSelectedCardsRequested = cb; }
     public void setOnDeleteSelectedCardsRequested(Consumer<List<Card>> cb) { this.onDeleteSelectedCardsRequested = cb; }
