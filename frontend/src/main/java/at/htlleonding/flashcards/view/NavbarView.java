@@ -8,8 +8,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import java.util.function.Consumer;
 
 public class NavbarView extends HBox {
+
+    private final TextField searchField;
 
     public NavbarView() {
         this.setAlignment(Pos.CENTER);
@@ -24,7 +27,7 @@ public class NavbarView extends HBox {
         searchContainer.setMaxWidth(400);
         HBox.setHgrow(searchContainer, Priority.ALWAYS);
 
-        TextField searchField = new TextField();
+        searchField = new TextField();
         searchField.setPromptText("Search");
         searchField.setStyle(
             "-fx-background-radius: 20; " +
@@ -52,5 +55,17 @@ public class NavbarView extends HBox {
         HBox.setHgrow(rightSection, Priority.ALWAYS);
 
         this.getChildren().addAll(leftSection, searchContainer, rightSection);
+    }
+
+    public void setOnSearchTextChanged(Consumer<String> listener) {
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (listener != null) {
+                listener.accept(newVal);
+            }
+        });
+    }
+
+    public void clearSearch() {
+        searchField.clear();
     }
 }

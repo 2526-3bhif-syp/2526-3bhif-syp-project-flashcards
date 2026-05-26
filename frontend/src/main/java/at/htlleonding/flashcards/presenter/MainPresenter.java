@@ -21,6 +21,7 @@ public class MainPresenter {
     private final Stack<String> forwardStack = new Stack<>();
     private String currentViewName;
     private Deck currentDeck; // null = "all cards" mode
+    private String viewBeforeSearch = null;
 
     public MainPresenter(MainView view) {
         this.view = view;
@@ -53,8 +54,50 @@ public class MainPresenter {
         views.put("Settings", new SettingsView());
 
         view.getSidebar().setOnNavigationAction(this::handleNavigation);
+        view.getNavbar().setOnSearchTextChanged(this::handleSearch);
 
         navigateTo("Home", false);
+    }
+
+    // ── Search ─────────────────────────────────────────────────────────────
+
+    private void handleSearch(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            if (viewBeforeSearch != null) {
+                String targetView = viewBeforeSearch;
+                viewBeforeSearch = null;
+                if (targetView.equals(currentViewName)) {
+                    if ("Flashcards".equals(currentViewName)) {
+                        refreshFlashcardsView();
+                    } else if ("Home".equals(currentViewName)) {
+                        refreshHomeView();
+                    }
+                } else {
+                    navigateTo(targetView, false);
+                }
+            } else {
+                if ("Flashcards".equals(currentViewName)) {
+                    refreshFlashcardsView();
+                } else if ("Home".equals(currentViewName)) {
+                    refreshHomeView();
+                }
+            }
+            return;
+        }
+
+        if (viewBeforeSearch == null) {
+            viewBeforeSearch = currentViewName;
+        }
+
+        List<Card> filteredCards = model.searchCards(query);
+
+        FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
+        fView.setDeckInfo("Search Results", "Found " + filteredCards.size() + " card(s) for '" + query + "'", null);
+        fView.renderCards(filteredCards);
+
+        if (!"Flashcards".equals(currentViewName)) {
+            navigateTo("Flashcards", true);
+        }
     }
 
     // ── Home: deck import ──────────────────────────────────────────────────
@@ -484,8 +527,10 @@ public class MainPresenter {
     private void refreshFlashcardsView() {
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
         if (currentDeck != null) {
+            fView.setDeckInfo(currentDeck.getName(), currentDeck.getDescription() != null ? currentDeck.getDescription() : "", currentDeck.getIconId());
             fView.renderCards(currentDeck.getCards());
         } else {
+            fView.clearDeckInfo();
             List<Card> allCards = model.getDecks().stream()
                     .flatMap(d -> d.getCards().stream())
                     .collect(Collectors.toList());
