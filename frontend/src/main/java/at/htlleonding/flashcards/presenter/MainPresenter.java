@@ -394,6 +394,7 @@ public class MainPresenter {
         }
 
         StudyView studyView = new StudyView(cards);
+        studyView.setOnSessionEnd(() -> model.updateDeck(currentDeck));
         studyView.show();
     }
 

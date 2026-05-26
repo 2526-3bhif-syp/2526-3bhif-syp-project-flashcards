@@ -2,6 +2,7 @@ package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
 import at.htlleonding.flashcards.model.CardSelector;
+import at.htlleonding.flashcards.model.StudyRecord;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -16,7 +17,11 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class StudyView {
@@ -32,8 +37,12 @@ public class StudyView {
 
     private final List<MediaPlayer> activeMediaPlayers = new ArrayList<>();
 
+    private final Map<String, Integer> sessionRatings = new HashMap<>();
+    private final Set<String> ratedCardIds = new HashSet<>();
+
     private Consumer<String> onAssessment;
     private Runnable onFinish;
+    private Runnable onSessionEnd;
 
     public StudyView(List<Card> cards) {
         this.studyCards = new ArrayList<>(cards);
@@ -41,8 +50,8 @@ public class StudyView {
 
         stage = new Stage();
         stage.setTitle("Study Mode");
-        stage.setWidth(1200);
-        stage.setHeight(800);
+        stage.setWidth(900);
+        stage.setHeight(700);
         stage.setOnHidden(e -> stopAllAudio());
 
         root = new BorderPane();
@@ -59,6 +68,7 @@ public class StudyView {
         );
         finishBtn.setOnAction(e -> {
             if (onFinish != null) onFinish.run();
+            fireSessionEnd();
             stage.close();
         });
         topBar.getChildren().add(finishBtn);
@@ -71,10 +81,10 @@ public class StudyView {
         assessmentBox = new HBox(10);
         assessmentBox.setAlignment(Pos.CENTER);
         String[][] assessments = {
-            {"Falsch", "#dc3545"},
+            {"Falsch",    "#dc3545"},
             {"Schwierig", "#FF9800"},
-            {"Ok", "#2196F3"},
-            {"Leicht", "#4CAF50"}
+            {"Ok",        "#2196F3"},
+            {"Leicht",    "#4CAF50"}
         };
         for (String[] ass : assessments) {
             Button btn = new Button(ass[0]);
@@ -83,10 +93,7 @@ public class StudyView {
                 "-fx-font-size: 13px; -fx-padding: 8 20; -fx-background-radius: 8; -fx-cursor: hand;",
                 ass[1]
             ));
-            btn.setOnAction(e -> {
-                cardSelector.recordRating(currentCard, ass[0].toUpperCase());
-                if (onAssessment != null) onAssessment.accept(ass[0]);
-            });
+            btn.setOnAction(e -> handleAssessment(ass[0]));
             assessmentBox.getChildren().add(btn);
         }
         assessmentBox.setVisible(false);
@@ -102,7 +109,7 @@ public class StudyView {
         );
         flipBtn.setOnAction(e -> flipCard());
 
-        nextBtn = new Button("Next Card");
+        nextBtn = new Button("Nächste Karte");
         nextBtn.setStyle(
             "-fx-background-color: #607D8B; -fx-text-fill: white; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
@@ -119,6 +126,22 @@ public class StudyView {
         stage.setScene(scene);
 
         showCardFront();
+    }
+
+    private void handleAssessment(String label) {
+        if (currentCard == null) return;
+        String ratingKey = label.toUpperCase();
+        cardSelector.recordRating(currentCard, ratingKey);
+        currentCard.getStudyHistory().add(new StudyRecord(ratingKey));
+        sessionRatings.merge(label, 1, Integer::sum);
+        ratedCardIds.add(currentCard.getId());
+        if (onAssessment != null) onAssessment.accept(label);
+
+        if (ratedCardIds.size() >= studyCards.size()) {
+            showStats();
+        } else {
+            nextCard();
+        }
     }
 
     private Node buildSidePanel(String text, String textStyle,
@@ -149,7 +172,7 @@ public class StudyView {
 
         if (imageData != null && !imageData.isEmpty()) {
             content.getChildren().add(
-                FlashcardsView.buildImageUI(imageData, imageName, 300, 250));
+                FlashcardsView.buildImageUI(imageData, imageName, 300, 200));
         }
         if (audioData != null && !audioData.isEmpty()) {
             content.getChildren().add(
@@ -166,7 +189,7 @@ public class StudyView {
     private void showCardFront() {
         stopAllAudio();
         if (currentCard == null) {
-            Label empty = new Label("No cards to study.");
+            Label empty = new Label("Keine Karten zum Lernen.");
             empty.setStyle("-fx-font-size: 18px; -fx-text-fill: #999999;");
             root.setCenter(new StackPane(empty));
             flipBtn.setVisible(false);
@@ -197,31 +220,29 @@ public class StudyView {
     private void flipCard() {
         if (currentCard == null) return;
 
-        String frontStyle = "-fx-font-size: 28px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
-        String backStyle  = "-fx-font-size: 28px; -fx-text-fill: #1B5E20; -fx-font-weight: bold;";
+        String frontStyle = "-fx-font-size: 26px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
+        String backStyle  = "-fx-font-size: 26px; -fx-text-fill: #1B5E20; -fx-font-weight: bold;";
 
-        Node left = buildSidePanel(
+        Node top = buildSidePanel(
             currentCard.getQuestion(), frontStyle,
             currentCard.getFrontImageData(), currentCard.getFrontImageName(),
             currentCard.getFrontAudioData(), currentCard.getFrontAudioName()
         );
-
-        Node right = buildSidePanel(
+        Node bottom = buildSidePanel(
             currentCard.getAnswer(), backStyle,
             currentCard.getBackImageData(), currentCard.getBackImageName(),
             currentCard.getBackAudioData(), currentCard.getBackAudioName()
         );
 
-        HBox.setHgrow(left, Priority.ALWAYS);
-        HBox.setHgrow(right, Priority.ALWAYS);
-        if (left instanceof Region lr) lr.setMaxWidth(Double.MAX_VALUE);
-        if (right instanceof Region rr) rr.setMaxWidth(Double.MAX_VALUE);
+        if (top instanceof Region tr) { tr.setMaxWidth(Double.MAX_VALUE); VBox.setVgrow(tr, Priority.ALWAYS); }
+        if (bottom instanceof Region br) { br.setMaxWidth(Double.MAX_VALUE); VBox.setVgrow(br, Priority.ALWAYS); }
 
-        Separator divider = new Separator(Orientation.VERTICAL);
+        Separator divider = new Separator(Orientation.HORIZONTAL);
+        divider.setPadding(new Insets(4, 0, 4, 0));
 
-        HBox split = new HBox(10, left, divider, right);
+        VBox split = new VBox(10, top, divider, bottom);
         split.setAlignment(Pos.CENTER);
-        VBox.setVgrow(split, Priority.ALWAYS);
+        split.setFillWidth(true);
 
         root.setCenter(split);
 
@@ -231,6 +252,91 @@ public class StudyView {
         nextBtn.setManaged(true);
         assessmentBox.setVisible(true);
         assessmentBox.setManaged(true);
+    }
+
+    private void showStats() {
+        stopAllAudio();
+
+        VBox statsBox = new VBox(20);
+        statsBox.setAlignment(Pos.CENTER);
+        statsBox.setPadding(new Insets(40));
+        statsBox.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 16;");
+
+        Label title = new Label("Session abgeschlossen!");
+        title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #212121;");
+
+        Label subtitle = new Label(studyCards.size() + " Karten bewertet");
+        subtitle.setStyle("-fx-font-size: 16px; -fx-text-fill: #757575;");
+
+        VBox ratingsBox = new VBox(10);
+        ratingsBox.setAlignment(Pos.CENTER);
+        String[][] ratings = {
+            {"Leicht",    "#4CAF50"},
+            {"Ok",        "#2196F3"},
+            {"Schwierig", "#FF9800"},
+            {"Falsch",    "#dc3545"}
+        };
+        for (String[] r : ratings) {
+            int count = sessionRatings.getOrDefault(r[0], 0);
+            HBox row = new HBox(12);
+            row.setAlignment(Pos.CENTER);
+            Label dot = new Label("●");
+            dot.setStyle("-fx-font-size: 18px; -fx-text-fill: " + r[1] + ";");
+            Label lbl = new Label(r[0] + ": " + count);
+            lbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #212121; -fx-min-width: 160;");
+            row.getChildren().addAll(dot, lbl);
+            ratingsBox.getChildren().add(row);
+        }
+
+        HBox buttons = new HBox(16);
+        buttons.setAlignment(Pos.CENTER);
+
+        Button retryBtn = new Button("Wiederholen");
+        retryBtn.setStyle(
+            "-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 14px; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"
+        );
+        retryBtn.setOnAction(e -> {
+            sessionRatings.clear();
+            ratedCardIds.clear();
+            cardSelector.reset();
+            currentCard = studyCards.isEmpty() ? null : cardSelector.selectNext(studyCards);
+            flipBtn.setVisible(true);
+            flipBtn.setManaged(true);
+            nextBtn.setVisible(false);
+            nextBtn.setManaged(false);
+            assessmentBox.setVisible(false);
+            assessmentBox.setManaged(false);
+            showCardFront();
+        });
+
+        Button doneBtn = new Button("Fertig");
+        doneBtn.setStyle(
+            "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-font-size: 14px; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"
+        );
+        doneBtn.setOnAction(e -> {
+            fireSessionEnd();
+            stage.close();
+        });
+
+        buttons.getChildren().addAll(retryBtn, doneBtn);
+        statsBox.getChildren().addAll(title, subtitle, ratingsBox, buttons);
+
+        StackPane centerWrapper = new StackPane(statsBox);
+        centerWrapper.setAlignment(Pos.CENTER);
+        root.setCenter(centerWrapper);
+
+        flipBtn.setVisible(false);
+        flipBtn.setManaged(false);
+        nextBtn.setVisible(false);
+        nextBtn.setManaged(false);
+        assessmentBox.setVisible(false);
+        assessmentBox.setManaged(false);
+    }
+
+    private void fireSessionEnd() {
+        if (onSessionEnd != null) onSessionEnd.run();
     }
 
     private void stopAllAudio() {
@@ -250,11 +356,7 @@ public class StudyView {
         stage.show();
     }
 
-    public void setOnAssessment(Consumer<String> cb) {
-        this.onAssessment = cb;
-    }
-
-    public void setOnFinish(Runnable cb) {
-        this.onFinish = cb;
-    }
+    public void setOnAssessment(Consumer<String> cb) { this.onAssessment = cb; }
+    public void setOnFinish(Runnable cb) { this.onFinish = cb; }
+    public void setOnSessionEnd(Runnable cb) { this.onSessionEnd = cb; }
 }
