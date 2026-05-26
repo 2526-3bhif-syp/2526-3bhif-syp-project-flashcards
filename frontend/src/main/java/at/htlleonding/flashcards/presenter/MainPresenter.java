@@ -66,7 +66,15 @@ public class MainPresenter {
             if (viewBeforeSearch != null) {
                 String targetView = viewBeforeSearch;
                 viewBeforeSearch = null;
-                navigateTo(targetView, false);
+                if (targetView.equals(currentViewName)) {
+                    if ("Flashcards".equals(currentViewName)) {
+                        refreshFlashcardsView();
+                    } else if ("Home".equals(currentViewName)) {
+                        refreshHomeView();
+                    }
+                } else {
+                    navigateTo(targetView, false);
+                }
             } else {
                 if ("Flashcards".equals(currentViewName)) {
                     refreshFlashcardsView();
@@ -519,8 +527,10 @@ public class MainPresenter {
     private void refreshFlashcardsView() {
         FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
         if (currentDeck != null) {
+            fView.setDeckInfo(currentDeck.getName(), currentDeck.getDescription() != null ? currentDeck.getDescription() : "", currentDeck.getIconId());
             fView.renderCards(currentDeck.getCards());
         } else {
+            fView.clearDeckInfo();
             List<Card> allCards = model.getDecks().stream()
                     .flatMap(d -> d.getCards().stream())
                     .collect(Collectors.toList());
