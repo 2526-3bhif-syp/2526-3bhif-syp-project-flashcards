@@ -55,4 +55,29 @@ class WeightedCardAlgorithmTest {
         Card a = card("A"), b = card("B");
         assertNotNull(algo.selectNext(List.of(a, b), weights));
     }
+
+    @Test
+    void selectNext_highWeightCardSelectedMoreOften() {
+        WeightedCardAlgorithm seeded = new WeightedCardAlgorithm(new Random(0));
+        Card falsch = card("Hard"), leicht = card("Easy");
+        weights.put(falsch.getId(), WeightedCardAlgorithm.WEIGHT_FALSCH);
+        weights.put(leicht.getId(), WeightedCardAlgorithm.WEIGHT_LEICHT);
+
+        int falschCount = 0;
+        for (int i = 0; i < 1000; i++) {
+            if (seeded.selectNext(List.of(falsch, leicht), weights) == falsch) falschCount++;
+        }
+        assertTrue(falschCount > 800, "Expected >80% picks for FALSCH card, got " + falschCount);
+    }
+
+    @Test
+    void selectNext_deterministicWithSeededRng() {
+        Card a = card("A"), b = card("B");
+        weights.put(a.getId(), WeightedCardAlgorithm.WEIGHT_FALSCH);
+        weights.put(b.getId(), WeightedCardAlgorithm.WEIGHT_LEICHT);
+
+        WeightedCardAlgorithm first = new WeightedCardAlgorithm(new Random(99));
+        WeightedCardAlgorithm second = new WeightedCardAlgorithm(new Random(99));
+        assertSame(first.selectNext(List.of(a, b), weights), second.selectNext(List.of(a, b), weights));
+    }
 }
