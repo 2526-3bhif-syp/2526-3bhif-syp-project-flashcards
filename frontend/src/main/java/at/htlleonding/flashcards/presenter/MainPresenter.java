@@ -21,6 +21,8 @@ public class MainPresenter {
     private final Stack<String> forwardStack = new Stack<>();
     private String currentViewName;
     private Deck currentDeck; // null = "all cards" mode
+    private CardSelector cardSelector = CardSelector.of(CardSelector.AlgorithmType.WEIGHTED);
+    private Card lastStudyCard;
     private String viewBeforeSearch = null;
 
     public MainPresenter(MainView view) {
@@ -43,13 +45,20 @@ public class MainPresenter {
         flashcardsView.setOnEditCardRequested(card -> handleEditCardRequested(flashcardsView, card));
         flashcardsView.setOnDeleteCardRequested(card -> handleDeleteCardRequested(flashcardsView, card));
         flashcardsView.setOnImportRequested(() -> handleImportRequested(flashcardsView));
+        flashcardsView.setOnStudyRequested(() -> handleStudyRequested(flashcardsView));
         flashcardsView.setOnExportCardRequested(card -> handleCardExportRequested(card, flashcardsView));
         flashcardsView.setOnExportSelectedCardsRequested(cards -> handleCardsExportRequested(cards, flashcardsView));
         flashcardsView.setOnDeleteSelectedCardsRequested(cards -> handleDeleteSelectedCardsRequested(cards, flashcardsView));
         flashcardsView.setDeckNameResolver(card -> { Deck d = findDeckForCard(card); return d != null ? d.getName() : null; });
+        flashcardsView.setOnStartLearnModeRequested(this::handleStartLearnMode);
+
+        StudyModeView studyModeView = new StudyModeView();
+        studyModeView.setOnRatingSelected(this::handleLearnRating);
+        studyModeView.setOnStopRequested(this::handleStopLearnMode);
 
         views.put("Home", homeView);
         views.put("Flashcards", flashcardsView);
+        views.put("StudyMode", studyModeView);
         views.put("Statistic", new StatisticView());
         views.put("Settings", new SettingsView());
 
@@ -414,6 +423,24 @@ public class MainPresenter {
         });
     }
 
+    // ── study mode ─────────────────────────────────────────────────────────
+
+    private void handleStudyRequested(FlashcardsView flashcardsView) {
+        if (currentDeck == null) {
+            alert(Alert.AlertType.WARNING, "Please select a deck first.");
+            return;
+        }
+        List<Card> cards = currentDeck.getCards();
+        if (cards.isEmpty()) {
+            alert(Alert.AlertType.WARNING, "This deck has no cards.");
+            return;
+        }
+
+        StudyView studyView = new StudyView(cards);
+        studyView.setOnSessionEnd(() -> model.updateDeck(currentDeck));
+        studyView.show();
+    }
+
     // ── navigation ─────────────────────────────────────────────────────────
 
     private void handleDeckSelected(Deck deck) {
@@ -480,6 +507,36 @@ public class MainPresenter {
     private void updateArrowStates() {
         view.getSidebar().setBackEnabled(!backStack.isEmpty());
         view.getSidebar().setForwardEnabled(!forwardStack.isEmpty());
+    }
+
+    // ── learn mode ─────────────────────────────────────────────────────────
+
+    private void handleStartLearnMode() {
+        if (currentDeck == null || currentDeck.getCards().isEmpty()) {
+            alert(Alert.AlertType.WARNING, "Der Stapel enthält keine Karten.");
+            return;
+        }
+        cardSelector.reset();
+        lastStudyCard = null;
+        StudyModeView studyView = (StudyModeView) views.get("StudyMode");
+        studyView.setDeckName(currentDeck.getName());
+        lastStudyCard = cardSelector.selectNext(currentDeck.getCards());
+        studyView.showCard(lastStudyCard);
+        navigateTo("StudyMode", true);
+    }
+
+    private void handleLearnRating(String rating) {
+        if (currentDeck == null || currentDeck.getCards().isEmpty()) return;
+        cardSelector.recordRating(lastStudyCard, rating);
+        StudyModeView studyView = (StudyModeView) views.get("StudyMode");
+        lastStudyCard = cardSelector.selectNext(currentDeck.getCards());
+        studyView.showCard(lastStudyCard);
+    }
+
+    private void handleStopLearnMode() {
+        cardSelector.reset();
+        lastStudyCard = null;
+        navigateTo("Flashcards", true);
     }
 
     // ── helpers ────────────────────────────────────────────────────────────

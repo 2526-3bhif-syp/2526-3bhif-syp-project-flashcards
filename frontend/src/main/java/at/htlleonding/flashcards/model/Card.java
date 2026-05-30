@@ -28,6 +28,8 @@ public class Card {
     private String backImageData; // Base64
     private String backImageName;
 
+    private List<StudyRecord> studyHistory = new ArrayList<>();
+
     public Card() {
         this.id = UUID.randomUUID().toString();
         this.tags = new ArrayList<>();
@@ -88,4 +90,7 @@ public class Card {
 
     public String getBackImageName() { return backImageName; }
     public void setBackImageName(String backImageName) { this.backImageName = backImageName; }
+
+    public List<StudyRecord> getStudyHistory() { return studyHistory; }
+    public void setStudyHistory(List<StudyRecord> studyHistory) { this.studyHistory = studyHistory != null ? studyHistory : new ArrayList<>(); }
 }
