@@ -80,4 +80,64 @@ class WeightedCardAlgorithmTest {
         WeightedCardAlgorithm second = new WeightedCardAlgorithm(new Random(99));
         assertSame(first.selectNext(List.of(a, b), weights), second.selectNext(List.of(a, b), weights));
     }
+
+    // ── recordRating ──────────────────────────────────────────────────────────
+
+    @Test
+    void recordRating_falsch_setsHighestWeight() {
+        algo.recordRating("id1", "FALSCH", weights);
+        assertEquals(WeightedCardAlgorithm.WEIGHT_FALSCH, weights.get("id1"));
+    }
+
+    @Test
+    void recordRating_schwierig_setsMediumHighWeight() {
+        algo.recordRating("id1", "SCHWIERIG", weights);
+        assertEquals(WeightedCardAlgorithm.WEIGHT_SCHWIERIG, weights.get("id1"));
+    }
+
+    @Test
+    void recordRating_ok_setsMediumWeight() {
+        algo.recordRating("id1", "OK", weights);
+        assertEquals(WeightedCardAlgorithm.WEIGHT_OK, weights.get("id1"));
+    }
+
+    @Test
+    void recordRating_leicht_setsLowestWeight() {
+        algo.recordRating("id1", "LEICHT", weights);
+        assertEquals(WeightedCardAlgorithm.WEIGHT_LEICHT, weights.get("id1"));
+    }
+
+    @Test
+    void recordRating_unknownRating_setsDefaultWeight() {
+        algo.recordRating("id1", "WHATEVER", weights);
+        assertEquals(WeightedCardAlgorithm.WEIGHT_DEFAULT, weights.get("id1"));
+    }
+
+    @Test
+    void recordRating_caseInsensitive() {
+        algo.recordRating("id1", "falsch", weights);
+        assertEquals(WeightedCardAlgorithm.WEIGHT_FALSCH, weights.get("id1"));
+
+        algo.recordRating("id2", "Leicht", weights);
+        assertEquals(WeightedCardAlgorithm.WEIGHT_LEICHT, weights.get("id2"));
+    }
+
+    @Test
+    void recordRating_nullCardId_doesNothing() {
+        algo.recordRating(null, "FALSCH", weights);
+        assertTrue(weights.isEmpty());
+    }
+
+    @Test
+    void recordRating_nullRating_doesNothing() {
+        algo.recordRating("id1", null, weights);
+        assertTrue(weights.isEmpty());
+    }
+
+    @Test
+    void recordRating_overwritesPreviousRating() {
+        algo.recordRating("id1", "FALSCH", weights);
+        algo.recordRating("id1", "LEICHT", weights);
+        assertEquals(WeightedCardAlgorithm.WEIGHT_LEICHT, weights.get("id1"));
+    }
 }
