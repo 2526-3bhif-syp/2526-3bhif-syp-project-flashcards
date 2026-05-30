@@ -2,6 +2,7 @@ package at.htlleonding.flashcards.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Model {
     private List<Deck> decks = new ArrayList<>();
@@ -15,6 +16,28 @@ public class Model {
         this.persistence = persistence;
         this.decks = persistence.loadDecks();
 
+    }
+
+    public List<Card> searchCards(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        String lowerQuery = query.toLowerCase();
+        return decks.stream()
+                .flatMap(d -> {
+                    boolean nameMatches = d.getName() != null && d.getName().toLowerCase().contains(lowerQuery);
+                    boolean descMatches = d.getDescription() != null && d.getDescription().toLowerCase().contains(lowerQuery);
+                    boolean deckLevelMatch = nameMatches || descMatches;
+
+                    return d.getCards().stream().filter(c -> {
+                        boolean inQuestion = c.getQuestion() != null && c.getQuestion().toLowerCase().contains(lowerQuery);
+                        boolean inAnswer = c.getAnswer() != null && c.getAnswer().toLowerCase().contains(lowerQuery);
+                        boolean inTags = c.getTags() != null && c.getTags().stream().anyMatch(t -> t.toLowerCase().contains(lowerQuery));
+                        return inQuestion || inAnswer || inTags || deckLevelMatch;
+                    });
+                })
+                .collect(Collectors.toList());
     }
 
     public List<Deck> getDecks() {

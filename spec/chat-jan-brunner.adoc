@@ -239,4 +239,9 @@ dateien steht. Desweiteren sollst du unit tests schreiben für die Deck klasse u
 
 * *Prompt:* Nein verändere nichts in der Card.java schreibe nur die Tests dafür
 
+== Session 7
+
+* *Prompt* /openspec-apply-change such-tag-filter. Wenn du fragen hast stellt sie mir ich hab genug Zeit.
+* *Prompt* Der Search funktioniert noch nicht ganz. Wenn ich search auf der Deck view und dann wieder Search bar leer ist möchte das ich wieder zur Deck view komme. Zudem soll nach Topic
+und tag geschaut werden.
 
