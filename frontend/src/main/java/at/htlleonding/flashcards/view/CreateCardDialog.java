@@ -1,6 +1,7 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
+import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -78,7 +79,7 @@ public class CreateCardDialog {
         stage.setOnCloseRequest(e -> stopPreview());
 
         boolean isEditMode = cardToEdit != null;
-        stage.setTitle(isEditMode ? "Edit Flashcard" : "Create New Flashcard");
+        stage.setTitle(isEditMode ? TranslationProvider.get("card.edit_title") : TranslationProvider.get("card.create_title"));
 
         // Initialize state if editing
         if (isEditMode) {
@@ -104,17 +105,17 @@ public class CreateCardDialog {
         // --- Question Section Header ---
         HBox qHeader = new HBox(10);
         qHeader.setAlignment(Pos.CENTER_LEFT);
-        Label qLabel = new Label("Question (Front):");
+        Label qLabel = new Label(TranslationProvider.get("card.front_label"));
         qLabel.setStyle("-fx-font-weight: bold;");
         Region qSpacer = new Region();
         HBox.setHgrow(qSpacer, Priority.ALWAYS);
-        Button qAddExtra = new Button("Add Extra");
+        Button qAddExtra = new Button(TranslationProvider.get("card.add_extra"));
         styleExtraButton(qAddExtra);
         qAddExtra.setOnAction(e -> showExtraMenu(qAddExtra, true));
         qHeader.getChildren().addAll(qLabel, qSpacer, qAddExtra);
 
         questionArea = new TextArea();
-        questionArea.setPromptText("Enter the question here...");
+        questionArea.setPromptText(TranslationProvider.get("card.front_prompt"));
         questionArea.setPrefRowCount(3);
         questionArea.setWrapText(true);
         if (isEditMode) questionArea.setText(cardToEdit.getQuestion());
@@ -125,17 +126,17 @@ public class CreateCardDialog {
         // --- Answer Section Header ---
         HBox aHeader = new HBox(10);
         aHeader.setAlignment(Pos.CENTER_LEFT);
-        Label aLabel = new Label("Answer (Back):");
+        Label aLabel = new Label(TranslationProvider.get("card.back_label"));
         aLabel.setStyle("-fx-font-weight: bold;");
         Region aSpacer = new Region();
         HBox.setHgrow(aSpacer, Priority.ALWAYS);
-        Button aAddExtra = new Button("Add Extra");
+        Button aAddExtra = new Button(TranslationProvider.get("card.add_extra"));
         styleExtraButton(aAddExtra);
         aAddExtra.setOnAction(e -> showExtraMenu(aAddExtra, false));
         aHeader.getChildren().addAll(aLabel, aSpacer, aAddExtra);
 
         answerArea = new TextArea();
-        answerArea.setPromptText("Enter the answer here...");
+        answerArea.setPromptText(TranslationProvider.get("card.back_prompt"));
         answerArea.setPrefRowCount(3);
         answerArea.setWrapText(true);
         if (isEditMode) answerArea.setText(cardToEdit.getAnswer());
@@ -144,13 +145,13 @@ public class CreateCardDialog {
         bImageInfoBox = new VBox(5);
 
         // --- Tags Section ---
-        Label tagsLabel = new Label("Labels (Tags):");
+        Label tagsLabel = new Label(TranslationProvider.get("card.tags_label"));
         tagsLabel.setStyle("-fx-font-weight: bold;");
         
         tagField = new TextField();
-        tagField.setPromptText("Type a tag and press Enter...");
+        tagField.setPromptText(TranslationProvider.get("card.tags_prompt"));
         
-        Button addTagBtn = new Button("Add");
+        Button addTagBtn = new Button(TranslationProvider.get("card.add_btn"));
         styleAddTagButton(addTagBtn);
         addTagBtn.setOnAction(e -> addTagFromField());
         
@@ -175,11 +176,11 @@ public class CreateCardDialog {
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         
-        saveButton = new Button(isEditMode ? "Save Changes" : "Save Card");
+        saveButton = new Button(isEditMode ? TranslationProvider.get("card.save_btn") : TranslationProvider.get("card.create_btn"));
         saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
         saveButton.setDisable(!isEditMode);
         
-        Button cancelButton = new Button("Cancel");
+        Button cancelButton = new Button(TranslationProvider.get("card.cancel_btn"));
         cancelButton.setOnAction(e -> {
             stopPreview();
             stage.close();
@@ -267,7 +268,7 @@ public class CreateCardDialog {
         musicIcon.setScaleX(0.7);
         musicIcon.setScaleY(0.7);
         
-        MenuItem audioItem = new MenuItem("Add Audio File");
+        MenuItem audioItem = new MenuItem(TranslationProvider.get("card.add_audio"));
         audioItem.setGraphic(musicIcon);
         audioItem.setOnAction(e -> handleAddAudio(isFront));
 
@@ -278,7 +279,7 @@ public class CreateCardDialog {
         imageIcon.setScaleX(0.7);
         imageIcon.setScaleY(0.7);
 
-        MenuItem imageItem = new MenuItem("Add Image");
+        MenuItem imageItem = new MenuItem(TranslationProvider.get("card.add_image"));
         imageItem.setGraphic(imageIcon);
         imageItem.setOnAction(e -> handleAddImage(isFront));
         
@@ -388,13 +389,13 @@ public class CreateCardDialog {
         if (file != null) {
             // Check file size (5MB limit)
             if (file.length() > 5 * 1024 * 1024) {
-                new Alert(Alert.AlertType.ERROR, "The file is too large. Maximum size is 5MB.").show();
+                new Alert(Alert.AlertType.ERROR, TranslationProvider.get("card.err_file_too_large")).show();
                 return;
             }
 
             AudioHelper.getDurationInSeconds(file, seconds -> {
                 if (seconds > 60) {
-                    new Alert(Alert.AlertType.ERROR, "The audio file is too long. Please select a file under 1 minute.").show();
+                    new Alert(Alert.AlertType.ERROR, TranslationProvider.get("card.err_audio_too_long")).show();
                     return;
                 }
 
@@ -423,7 +424,7 @@ public class CreateCardDialog {
                     }
                     updateAudioInfo(isFront);
                 } catch (Exception ex) {
-                    new Alert(Alert.AlertType.ERROR, "Could not load audio file.").show();
+                    new Alert(Alert.AlertType.ERROR, TranslationProvider.get("card.err_load_audio_failed")).show();
                 }
             });        }
     }
@@ -436,7 +437,7 @@ public class CreateCardDialog {
         if (file == null) return;
 
         if (file.length() > 5 * 1024 * 1024) {
-            new Alert(Alert.AlertType.ERROR, "The file is too large. Maximum size is 5MB.").show();
+            new Alert(Alert.AlertType.ERROR, TranslationProvider.get("card.err_file_too_large")).show();
             return;
         }
         try {
@@ -451,7 +452,7 @@ public class CreateCardDialog {
             }
             updateImageInfo(isFront);
         } catch (Exception ex) {
-            new Alert(Alert.AlertType.ERROR, "Could not load image file.").show();
+            new Alert(Alert.AlertType.ERROR, TranslationProvider.get("card.err_load_image_failed")).show();
         }
     }
 
@@ -550,7 +551,7 @@ public class CreateCardDialog {
                     previewPlayer.play();
                     btn.setText("⏸");
                 } catch (Exception ex) {
-                    new Alert(Alert.AlertType.WARNING, "Playback failed: Your system might be missing MP3 codecs or JavaFX Media is not configured correctly.").show();
+                    new Alert(Alert.AlertType.WARNING, TranslationProvider.get("card.err_playback_failed")).show();
                     btn.setText("▶");
                 }
             }

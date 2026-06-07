@@ -1,5 +1,6 @@
 package at.htlleonding.flashcards.view;
 
+import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,7 +22,7 @@ public class DuplicateDeckActionDialog {
         stage = new Stage();
         stage.initOwner(owner);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Import Duplicates");
+        stage.setTitle(TranslationProvider.get("duplicate.import_duplicates_title"));
 
         VBox root = new VBox(15);
         root.setPadding(new Insets(25));
@@ -29,10 +30,10 @@ public class DuplicateDeckActionDialog {
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #ffffff; -fx-border-color: #eeeeee; -fx-border-radius: 10; -fx-background-radius: 10;");
 
-        Label headerLabel = new Label("Duplicate Decks Detected");
+        Label headerLabel = new Label(TranslationProvider.get("duplicate.deck_header"));
         headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;");
 
-        Label subLabel = new Label("Some decks already exist with the same name. How would you like to proceed?");
+        Label subLabel = new Label(TranslationProvider.get("duplicate.deck_sub"));
         subLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #666666;");
         subLabel.setWrapText(true);
 
@@ -40,10 +41,10 @@ public class DuplicateDeckActionDialog {
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(10, 0, 0, 0));
 
-        Button allowAllBtn = createStyledButton("Import All (keep both)", "#2196F3", "white");
-        Button replaceBtn  = createStyledButton("Replace Existing Decks", "#FF9800", "white");
-        Button skipBtn     = createStyledButton("Skip Duplicates",         "white",   "#555555");
-        Button cancelBtn   = createStyledButton("Cancel Import",           "#f8f9fa", "#666666");
+        Button allowAllBtn = createStyledButton(TranslationProvider.get("duplicate.allow_all"), "#2196F3", "white");
+        Button replaceBtn  = createStyledButton(TranslationProvider.get("duplicate.replace_decks"), "#FF9800", "white");
+        Button skipBtn     = createStyledButton(TranslationProvider.get("duplicate.skip_duplicates"),         "white",   "#555555");
+        Button cancelBtn   = createStyledButton(TranslationProvider.get("duplicate.cancel_import"),           "#f8f9fa", "#666666");
 
         allowAllBtn.setOnAction(e -> { selectedAction = Action.ALLOW_ALL; stage.close(); });
         replaceBtn .setOnAction(e -> { selectedAction = Action.REPLACE;   stage.close(); });

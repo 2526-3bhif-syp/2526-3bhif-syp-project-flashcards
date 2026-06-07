@@ -1,6 +1,7 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
+import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -39,7 +40,8 @@ public class StudyModeView extends VBox {
         cardArea.setAlignment(Pos.CENTER);
         VBox.setVgrow(cardArea, Priority.ALWAYS);
 
-        revealBtn = createBtn("Aufdecken", "#2196F3", "#1565C0");
+        revealBtn = createBtn("", "#2196F3", "#1565C0");
+        revealBtn.textProperty().bind(TranslationProvider.createStringBinding("study.reveal_btn"));
         revealBtn.setPrefWidth(180);
         revealBtn.setOnAction(e -> reveal());
 
@@ -63,7 +65,8 @@ public class StudyModeView extends VBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button stopBtn = createSubtleBtn("Beenden", "#dc3545");
+        Button stopBtn = createSubtleBtn("", "#dc3545");
+        stopBtn.textProperty().bind(TranslationProvider.createStringBinding("study.finish_btn"));
         stopBtn.setOnAction(e -> { if (onStopRequested != null) onStopRequested.run(); });
 
         HBox header = new HBox(12, deckLabel, spacer, stopBtn);
@@ -72,10 +75,14 @@ public class StudyModeView extends VBox {
     }
 
     private HBox buildRatingBar() {
-        Button falschBtn  = createRatingBtn("Falsch",    "#dc3545", "#b02a37");
-        Button schwierigBtn = createRatingBtn("Schwierig", "#FF9800", "#e65100");
-        Button okBtn      = createRatingBtn("Ok",        "#2196F3", "#1565C0");
-        Button leichtBtn  = createRatingBtn("Leicht",    "#4CAF50", "#2E7D32");
+        Button falschBtn  = createRatingBtn("",    "#dc3545", "#b02a37");
+        falschBtn.textProperty().bind(TranslationProvider.createStringBinding("study.wrong"));
+        Button schwierigBtn = createRatingBtn("", "#FF9800", "#e65100");
+        schwierigBtn.textProperty().bind(TranslationProvider.createStringBinding("study.difficult"));
+        Button okBtn      = createRatingBtn("",        "#2196F3", "#1565C0");
+        okBtn.textProperty().bind(TranslationProvider.createStringBinding("study.ok"));
+        Button leichtBtn  = createRatingBtn("",    "#4CAF50", "#2E7D32");
+        leichtBtn.textProperty().bind(TranslationProvider.createStringBinding("study.easy"));
 
         falschBtn.setOnAction(e   -> rate("FALSCH"));
         schwierigBtn.setOnAction(e -> rate("SCHWIERIG"));
@@ -103,7 +110,7 @@ public class StudyModeView extends VBox {
 
         cardArea.getChildren().clear();
         cardArea.getChildren().add(buildSide(
-            "FRAGE", card.getQuestion(),
+            TranslationProvider.get("study.question"), card.getQuestion(),
             card.getFrontImageData(), card.getFrontImageName(),
             "#E3F2FD", "#90CAF9", "#0D47A1"
         ));
@@ -121,12 +128,12 @@ public class StudyModeView extends VBox {
 
         cardArea.getChildren().clear();
         cardArea.getChildren().add(buildSide(
-            "FRAGE", currentCard.getQuestion(),
+            TranslationProvider.get("study.question"), currentCard.getQuestion(),
             currentCard.getFrontImageData(), currentCard.getFrontImageName(),
             "#E3F2FD", "#90CAF9", "#0D47A1"
         ));
         cardArea.getChildren().add(buildSide(
-            "ANTWORT", currentCard.getAnswer(),
+            TranslationProvider.get("study.answer"), currentCard.getAnswer(),
             currentCard.getBackImageData(), currentCard.getBackImageName(),
             "#E8F5E9", "#A5D6A7", "#1B5E20"
         ));

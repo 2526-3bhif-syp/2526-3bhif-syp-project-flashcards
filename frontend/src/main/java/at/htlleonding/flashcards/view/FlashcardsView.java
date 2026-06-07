@@ -1,6 +1,7 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
+import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -71,22 +72,24 @@ public class FlashcardsView extends HBox {
 
     private VBox buildLeftSide() {
         // ── action bar ────────────────────────────────────────────────────
-        Button importBtn = createSubtleBtn("⬇ Import Cards", "#2196F3");
+        Button importBtn = createSubtleBtn("", "#2196F3");
+        importBtn.textProperty().bind(TranslationProvider.createStringBinding("cards.import_btn"));
         importBtn.setOnAction(e -> { if (onImportRequested != null) onImportRequested.run(); });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        learnModeBtn = createBtn("Lern-Modus", "#4CAF50", "#2E7D32");
+        learnModeBtn = createBtn("", "#4CAF50", "#2E7D32");
+        learnModeBtn.textProperty().bind(TranslationProvider.createStringBinding("cards.learn_mode"));
         learnModeBtn.setVisible(false);
         learnModeBtn.setManaged(false);
         learnModeBtn.setOnAction(e -> { if (onStartLearnModeRequested != null) onStartLearnModeRequested.run(); });
 
-        selectToggleBtn = createBtn("Select", "#607D8B", "#455A64");
+        selectToggleBtn = createBtn(TranslationProvider.get("home.select"), "#607D8B", "#455A64");
         selectToggleBtn.setOnAction(e -> toggleSelectMode());
 
         // shown only in select mode
-        deleteSelectedBtn = createBtn("Delete (0)", "#dc3545", "#b02a37");
+        deleteSelectedBtn = createBtn(TranslationProvider.get("cards.delete_selected", 0), "#dc3545", "#b02a37");
         deleteSelectedBtn.setVisible(false);
         deleteSelectedBtn.setManaged(false);
         deleteSelectedBtn.setDisable(true);
@@ -95,7 +98,7 @@ public class FlashcardsView extends HBox {
                 onDeleteSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        exportSelectedBtn = createSubtleBtn("⬆ Export (0)", "#4CAF50");
+        exportSelectedBtn = createSubtleBtn(TranslationProvider.get("cards.export_selected", 0), "#4CAF50");
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         exportSelectedBtn.setDisable(true);
@@ -104,11 +107,17 @@ public class FlashcardsView extends HBox {
                 onExportSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        Button studyBtn = createBtn("Study", "#FF9800", "#F57C00");
+        Button studyBtn = createBtn("", "#FF9800", "#F57C00");
+        studyBtn.textProperty().bind(TranslationProvider.createStringBinding("cards.study_btn"));
         studyBtn.setOnAction(e -> { if (onStudyRequested != null) onStudyRequested.run(); });
 
         HBox actionBar = new HBox(8, studyBtn, importBtn, spacer, selectToggleBtn, deleteSelectedBtn, exportSelectedBtn);
         actionBar.setAlignment(Pos.CENTER_LEFT);
+
+        TranslationProvider.localeProperty().addListener((obs, oldLocale, newLocale) -> {
+            selectToggleBtn.setText(TranslationProvider.get(selectMode ? "home.cancel" : "home.select"));
+            updateSelectModeButtons();
+        });
 
         // ── cards grid ────────────────────────────────────────────────────
         cardsGrid = new FlowPane();
@@ -208,7 +217,7 @@ public class FlashcardsView extends HBox {
     private void showPlaceholder() {
         stopAllAudio();
         contentArea.getChildren().clear();
-        Label placeholder = new Label("Select a card\nto see details");
+        Label placeholder = new Label(TranslationProvider.get("cards.placeholder"));
         placeholder.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 14px;");
         placeholder.setAlignment(Pos.CENTER);
         placeholder.setMaxWidth(Double.MAX_VALUE);
@@ -228,7 +237,7 @@ public class FlashcardsView extends HBox {
         if (!deckInfoRow.isVisible() && deckNameResolver != null) {
             String deckName = deckNameResolver.apply(card);
             if (deckName != null) {
-                Label badge = new Label("Deck: " + deckName);
+                Label badge = new Label(TranslationProvider.get("cards.deck_badge", deckName));
                 badge.setPadding(new Insets(4, 10, 4, 10));
                 badge.setStyle("-fx-background-color: #EEEEEE; -fx-border-color: #BDBDBD; " +
                                "-fx-border-radius: 12; -fx-background-radius: 12; " +
@@ -240,7 +249,7 @@ public class FlashcardsView extends HBox {
         VBox questionBox = new VBox(6);
         questionBox.setPadding(new Insets(12));
         questionBox.setStyle("-fx-background-color: #E3F2FD; -fx-border-color: #90CAF9; -fx-border-radius: 8; -fx-background-radius: 8;");
-        Label qHeader = new Label("QUESTION");
+        Label qHeader = new Label(TranslationProvider.get("study.question"));
         qHeader.setStyle("-fx-font-size: 10px; -fx-text-fill: #1565C0; -fx-font-weight: bold;");
         Label qText = new Label(card.getQuestion());
         qText.setWrapText(true);
@@ -257,7 +266,7 @@ public class FlashcardsView extends HBox {
         VBox answerBox = new VBox(6);
         answerBox.setPadding(new Insets(12));
         answerBox.setStyle("-fx-background-color: #E8F5E9; -fx-border-color: #A5D6A7; -fx-border-radius: 8; -fx-background-radius: 8;");
-        Label aHeader = new Label("ANSWER");
+        Label aHeader = new Label(TranslationProvider.get("study.answer"));
         aHeader.setStyle("-fx-font-size: 10px; -fx-text-fill: #2E7D32; -fx-font-weight: bold;");
         Label aText = new Label(card.getAnswer());
         aText.setWrapText(true);
@@ -422,7 +431,7 @@ public class FlashcardsView extends HBox {
         selectMode = !selectMode;
         selectedCards.clear();
         if (selectMode) {
-            selectToggleBtn.setText("Cancel");
+            selectToggleBtn.setText(TranslationProvider.get("home.cancel"));
             deleteSelectedBtn.setVisible(true);
             deleteSelectedBtn.setManaged(true);
             exportSelectedBtn.setVisible(true);
@@ -430,7 +439,7 @@ public class FlashcardsView extends HBox {
             updateSelectModeButtons();
 
             contentArea.getChildren().clear();
-            Label hint = new Label("Select cards\nto export or delete");
+            Label hint = new Label(TranslationProvider.get("cards.select_hint"));
             hint.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 14px;");
             hint.setAlignment(Pos.CENTER);
             hint.setMaxWidth(Double.MAX_VALUE);
@@ -439,7 +448,7 @@ public class FlashcardsView extends HBox {
             VBox.setVgrow(hint, Priority.ALWAYS);
             contentArea.getChildren().add(hint);
         } else {
-            selectToggleBtn.setText("Select");
+            selectToggleBtn.setText(TranslationProvider.get("home.select"));
             deleteSelectedBtn.setVisible(false);
             deleteSelectedBtn.setManaged(false);
             exportSelectedBtn.setVisible(false);
@@ -451,9 +460,9 @@ public class FlashcardsView extends HBox {
 
     private void updateSelectModeButtons() {
         int n = selectedCards.size();
-        exportSelectedBtn.setText("Export (" + n + ")");
+        exportSelectedBtn.setText(TranslationProvider.get("cards.export_selected", n));
         exportSelectedBtn.setDisable(n == 0);
-        deleteSelectedBtn.setText("Delete (" + n + ")");
+        deleteSelectedBtn.setText(TranslationProvider.get("cards.delete_selected", n));
         deleteSelectedBtn.setDisable(n == 0);
     }
 
@@ -475,7 +484,7 @@ public class FlashcardsView extends HBox {
         if (!selectMode) return;
         selectMode = false;
         selectedCards.clear();
-        selectToggleBtn.setText("Select");
+        selectToggleBtn.setText(TranslationProvider.get("home.select"));
         deleteSelectedBtn.setVisible(false);
         deleteSelectedBtn.setManaged(false);
         exportSelectedBtn.setVisible(false);

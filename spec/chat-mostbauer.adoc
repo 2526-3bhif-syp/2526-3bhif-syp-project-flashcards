@@ -202,3 +202,21 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
 * Der Text steht endlich wie er soll, aber Bilder sind noch immer links-bündig wie der Text früher
 
 * Alles funktioniert jetzt wie erwartet. Stelle sicher dass die openspec docs die wir dafür angelegt haben alle am neuesten Stand sind und fahre dann mit den letzen Schritt des worklfows fort: Archive
+
+
+== Session 7.6
+
+* Read up on spec/ and openspec/ for context of this project. We use the openspec.dev workflow of explore - propose - apply - archive; You can use the github cli to read up on issues and the git cli to commit *localy*(Orient yourself with existing commits and keep them in a similar style); The goal of todays session is Issue #57, specifically the translation system
+
+* /openspec:explore what would be a suitable translation system for this project?
+
+* /openspec:propose Yes i am satisfied with the native Java  ResourceBundle  approach utilizing JavaFX bindings
+  for instant, restart-free translation switching?
+  
+  * /openspec:apply Go ahead with the implementation
+  
+  * create a continuation prompt
+  
+  * continue
+  
+  

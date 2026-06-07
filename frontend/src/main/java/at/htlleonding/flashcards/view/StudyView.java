@@ -3,6 +3,7 @@ package at.htlleonding.flashcards.view;
 import at.htlleonding.flashcards.model.Card;
 import at.htlleonding.flashcards.model.CardSelector;
 import at.htlleonding.flashcards.model.StudyRecord;
+import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -62,7 +63,8 @@ public class StudyView {
         // ── TOP: Beenden ───────────────────────────────────────────────────
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
-        beendenBtn = new Button("Beenden");
+        beendenBtn = new Button();
+        beendenBtn.textProperty().bind(TranslationProvider.createStringBinding("study.finish_btn"));
         beendenBtn.setStyle(
             "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
@@ -82,10 +84,10 @@ public class StudyView {
         assessmentBox = new HBox(10);
         assessmentBox.setAlignment(Pos.CENTER);
         String[][] assessments = {
-            {"Falsch",    "#dc3545"},
-            {"Schwierig", "#FF9800"},
-            {"Ok",        "#2196F3"},
-            {"Leicht",    "#4CAF50"}
+            {TranslationProvider.get("study.wrong"),     "#dc3545", "FALSCH"},
+            {TranslationProvider.get("study.difficult"),  "#FF9800", "SCHWIERIG"},
+            {TranslationProvider.get("study.ok"),          "#2196F3", "OK"},
+            {TranslationProvider.get("study.easy"),        "#4CAF50", "LEICHT"}
         };
         for (String[] ass : assessments) {
             Button btn = new Button(ass[0]);
@@ -94,7 +96,7 @@ public class StudyView {
                 "-fx-font-size: 13px; -fx-padding: 8 20; -fx-background-radius: 8; -fx-cursor: hand;",
                 ass[1]
             ));
-            btn.setOnAction(e -> handleAssessment(ass[0]));
+            btn.setOnAction(e -> handleAssessment(ass[2]));
             assessmentBox.getChildren().add(btn);
         }
         assessmentBox.setVisible(false);
@@ -103,7 +105,8 @@ public class StudyView {
         HBox navBox = new HBox(20);
         navBox.setAlignment(Pos.CENTER);
 
-        flipBtn = new Button("Aufdecken");
+        flipBtn = new Button();
+        flipBtn.textProperty().bind(TranslationProvider.createStringBinding("study.reveal_btn"));
         flipBtn.setStyle(
             "-fx-background-color: #607D8B; -fx-text-fill: white; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
@@ -131,7 +134,7 @@ public class StudyView {
 
     private void handleAssessment(String label) {
         if (currentCard == null) return;
-        String ratingKey = label.toUpperCase();
+        String ratingKey = label;
         cardSelector.recordRating(currentCard, ratingKey);
         currentCard.getStudyHistory().add(new StudyRecord(ratingKey));
         sessionRatings.merge(label, 1, Integer::sum);
@@ -190,7 +193,8 @@ public class StudyView {
     private void showCardFront() {
         stopAllAudio();
         if (currentCard == null) {
-            Label empty = new Label("Keine Karten zum Lernen.");
+            Label empty = new Label();
+            empty.textProperty().bind(TranslationProvider.createStringBinding("study.empty_deck"));
             empty.setStyle("-fx-font-size: 18px; -fx-text-fill: #999999;");
             root.setCenter(new StackPane(empty));
             flipBtn.setVisible(false);
@@ -209,7 +213,7 @@ public class StudyView {
             currentCard.getFrontAudioData(), currentCard.getFrontAudioName()
         ));
 
-        flipBtn.setText("Aufdecken");
+        flipBtn.setText(TranslationProvider.get("study.reveal_btn"));
         flipBtn.setVisible(true);
         flipBtn.setManaged(true);
         nextBtn.setVisible(false);
@@ -263,22 +267,22 @@ public class StudyView {
         statsBox.setPadding(new Insets(40));
         statsBox.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 16;");
 
-        Label title = new Label("Session abgeschlossen!");
+        Label title = new Label(TranslationProvider.get("study.stats_title"));
         title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #212121;");
 
-        Label subtitle = new Label(studyCards.size() + " Karten bewertet");
+        Label subtitle = new Label(TranslationProvider.get("study.stats_subtitle", studyCards.size()));
         subtitle.setStyle("-fx-font-size: 16px; -fx-text-fill: #757575;");
 
         VBox ratingsBox = new VBox(10);
         ratingsBox.setAlignment(Pos.CENTER);
         String[][] ratings = {
-            {"Leicht",    "#4CAF50"},
-            {"Ok",        "#2196F3"},
-            {"Schwierig", "#FF9800"},
-            {"Falsch",    "#dc3545"}
+            {TranslationProvider.get("study.easy"),      "#4CAF50", "LEICHT"},
+            {TranslationProvider.get("study.ok"),         "#2196F3", "OK"},
+            {TranslationProvider.get("study.difficult"),  "#FF9800", "SCHWIERIG"},
+            {TranslationProvider.get("study.wrong"),      "#dc3545", "FALSCH"}
         };
         for (String[] r : ratings) {
-            int count = sessionRatings.getOrDefault(r[0], 0);
+            int count = sessionRatings.getOrDefault(r[2], 0);
             HBox row = new HBox(12);
             row.setAlignment(Pos.CENTER);
             Label dot = new Label("●");
@@ -292,7 +296,7 @@ public class StudyView {
         HBox buttons = new HBox(16);
         buttons.setAlignment(Pos.CENTER);
 
-        Button retryBtn = new Button("Wiederholen");
+        Button retryBtn = new Button(TranslationProvider.get("study.retry_btn"));
         retryBtn.setStyle(
             "-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"
@@ -307,7 +311,7 @@ public class StudyView {
             showCardFront();
         });
 
-        Button doneBtn = new Button("Fertig");
+        Button doneBtn = new Button(TranslationProvider.get("study.done_btn"));
         doneBtn.setStyle(
             "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"
