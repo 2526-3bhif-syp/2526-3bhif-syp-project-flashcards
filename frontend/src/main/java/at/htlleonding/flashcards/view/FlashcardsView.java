@@ -1,6 +1,7 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
+import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -72,24 +73,24 @@ public class FlashcardsView extends HBox {
 
     private VBox buildLeftSide() {
         // ── action bar ────────────────────────────────────────────────────
-        Button importBtn = createSubtleBtn("", "#2196F3");
+        Button importBtn = createSubtleBtn("", ThemeProvider.get("accent-blue"));
         importBtn.textProperty().bind(TranslationProvider.createStringBinding("cards.import_btn"));
         importBtn.setOnAction(e -> { if (onImportRequested != null) onImportRequested.run(); });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        learnModeBtn = createBtn("", "#4CAF50", "#2E7D32");
+        learnModeBtn = createBtn("", ThemeProvider.get("accent-green"), ThemeProvider.get("accent-green-strong"));
         learnModeBtn.textProperty().bind(TranslationProvider.createStringBinding("cards.learn_mode"));
         learnModeBtn.setVisible(false);
         learnModeBtn.setManaged(false);
         learnModeBtn.setOnAction(e -> { if (onStartLearnModeRequested != null) onStartLearnModeRequested.run(); });
 
-        selectToggleBtn = createBtn(TranslationProvider.get("home.select"), "#607D8B", "#455A64");
+        selectToggleBtn = createBtn(TranslationProvider.get("home.select"), ThemeProvider.get("neutral-gray"), ThemeProvider.get("neutral-gray-dark"));
         selectToggleBtn.setOnAction(e -> toggleSelectMode());
 
         // shown only in select mode
-        deleteSelectedBtn = createBtn(TranslationProvider.get("cards.delete_selected", 0), "#dc3545", "#b02a37");
+        deleteSelectedBtn = createBtn(TranslationProvider.get("cards.delete_selected", 0), ThemeProvider.get("accent-red"), ThemeProvider.get("accent-red-hover"));
         deleteSelectedBtn.setVisible(false);
         deleteSelectedBtn.setManaged(false);
         deleteSelectedBtn.setDisable(true);
@@ -98,7 +99,7 @@ public class FlashcardsView extends HBox {
                 onDeleteSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        exportSelectedBtn = createSubtleBtn(TranslationProvider.get("cards.export_selected", 0), "#4CAF50");
+        exportSelectedBtn = createSubtleBtn(TranslationProvider.get("cards.export_selected", 0), ThemeProvider.get("accent-green"));
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         exportSelectedBtn.setDisable(true);
@@ -107,7 +108,7 @@ public class FlashcardsView extends HBox {
                 onExportSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        Button studyBtn = createBtn("", "#FF9800", "#F57C00");
+        Button studyBtn = createBtn("", ThemeProvider.get("accent-orange"), ThemeProvider.get("accent-orange-hover"));
         studyBtn.textProperty().bind(TranslationProvider.createStringBinding("cards.study_btn"));
         studyBtn.setOnAction(e -> { if (onStudyRequested != null) onStudyRequested.run(); });
 
@@ -142,12 +143,12 @@ public class FlashcardsView extends HBox {
         panel.setMinWidth(230);
         panel.setPadding(new Insets(16));
         panel.setSpacing(0);
-        panel.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #e0e0e0; " +
+        panel.setStyle("-fx-background-color: " + ThemeProvider.get("bg-secondary") + "; -fx-border-color: " + ThemeProvider.get("border-light") + "; " +
                        "-fx-border-radius: 12; -fx-background-radius: 12;");
 
         // ── deck info row ─────────────────────────────────────────────────
         deckTitleLabel = new Label("");
-        deckTitleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+        deckTitleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         deckTitleLabel.setWrapText(true);
         deckTitleLabel.setAlignment(Pos.CENTER);
         deckTitleLabel.setTextAlignment(TextAlignment.CENTER);
@@ -218,7 +219,7 @@ public class FlashcardsView extends HBox {
         stopAllAudio();
         contentArea.getChildren().clear();
         Label placeholder = new Label(TranslationProvider.get("cards.placeholder"));
-        placeholder.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 14px;");
+        placeholder.setStyle("-fx-text-fill: " + ThemeProvider.get("text-placeholder") + "; -fx-font-size: 14px;");
         placeholder.setAlignment(Pos.CENTER);
         placeholder.setMaxWidth(Double.MAX_VALUE);
         placeholder.setMaxHeight(Double.MAX_VALUE);
@@ -239,21 +240,21 @@ public class FlashcardsView extends HBox {
             if (deckName != null) {
                 Label badge = new Label(TranslationProvider.get("cards.deck_badge", deckName));
                 badge.setPadding(new Insets(4, 10, 4, 10));
-                badge.setStyle("-fx-background-color: #EEEEEE; -fx-border-color: #BDBDBD; " +
+                badge.setStyle("-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; " +
                                "-fx-border-radius: 12; -fx-background-radius: 12; " +
-                               "-fx-font-size: 11px; -fx-text-fill: #555555;");
+                               "-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-secondary") + ";");
                 contentArea.getChildren().add(badge);
             }
         }
 
         VBox questionBox = new VBox(6);
         questionBox.setPadding(new Insets(12));
-        questionBox.setStyle("-fx-background-color: #E3F2FD; -fx-border-color: #90CAF9; -fx-border-radius: 8; -fx-background-radius: 8;");
+        questionBox.setStyle("-fx-background-color: " + ThemeProvider.get("accent-blue-bg") + "; -fx-border-color: " + ThemeProvider.get("accent-blue-light") + "; -fx-border-radius: 8; -fx-background-radius: 8;");
         Label qHeader = new Label(TranslationProvider.get("study.question"));
-        qHeader.setStyle("-fx-font-size: 10px; -fx-text-fill: #1565C0; -fx-font-weight: bold;");
+        qHeader.setStyle("-fx-font-size: 10px; -fx-text-fill: " + ThemeProvider.get("accent-blue-active") + "; -fx-font-weight: bold;");
         Label qText = new Label(card.getQuestion());
         qText.setWrapText(true);
-        qText.setStyle("-fx-font-size: 14px; -fx-text-fill: #0D47A1;");
+        qText.setStyle("-fx-font-size: 14px; -fx-text-fill: " + ThemeProvider.get("accent-blue-strong") + ";");
         questionBox.getChildren().addAll(qHeader, qText);
         
         if (card.getFrontAudioData() != null) {
@@ -265,12 +266,12 @@ public class FlashcardsView extends HBox {
 
         VBox answerBox = new VBox(6);
         answerBox.setPadding(new Insets(12));
-        answerBox.setStyle("-fx-background-color: #E8F5E9; -fx-border-color: #A5D6A7; -fx-border-radius: 8; -fx-background-radius: 8;");
+        answerBox.setStyle("-fx-background-color: " + ThemeProvider.get("accent-green-bg") + "; -fx-border-color: " + ThemeProvider.get("accent-green-light") + "; -fx-border-radius: 8; -fx-background-radius: 8;");
         Label aHeader = new Label(TranslationProvider.get("study.answer"));
-        aHeader.setStyle("-fx-font-size: 10px; -fx-text-fill: #2E7D32; -fx-font-weight: bold;");
+        aHeader.setStyle("-fx-font-size: 10px; -fx-text-fill: " + ThemeProvider.get("accent-green-strong") + "; -fx-font-weight: bold;");
         Label aText = new Label(card.getAnswer());
         aText.setWrapText(true);
-        aText.setStyle("-fx-font-size: 14px; -fx-text-fill: #1B5E20;");
+        aText.setStyle("-fx-font-size: 14px; -fx-text-fill: " + ThemeProvider.get("accent-green-dark") + ";");
         answerBox.getChildren().addAll(aHeader, aText);
 
         if (card.getBackAudioData() != null) {
@@ -288,7 +289,7 @@ public class FlashcardsView extends HBox {
             for (String tag : card.getTags()) {
                 Label chip = new Label(tag);
                 chip.setPadding(new Insets(3, 8, 3, 8));
-                chip.setStyle("-fx-background-color: #EEEEEE; -fx-border-color: #BDBDBD; -fx-border-radius: 12; -fx-background-radius: 12; -fx-font-size: 11px; -fx-text-fill: #555555;");
+                chip.setStyle("-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-radius: 12; -fx-background-radius: 12; -fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-secondary") + ";");
                 tagsPane.getChildren().add(chip);
             }
             contentArea.getChildren().add(tagsPane);
@@ -298,11 +299,11 @@ public class FlashcardsView extends HBox {
         VBox.setVgrow(spacer, Priority.ALWAYS);
         contentArea.getChildren().add(spacer);
 
-        Button editBtn = createBtn("Edit", "#607D8B", "#455A64");
+        Button editBtn = createBtn("Edit", ThemeProvider.get("neutral-gray"), ThemeProvider.get("neutral-gray-dark"));
         editBtn.setMaxWidth(Double.MAX_VALUE);
         editBtn.setOnAction(e -> { if (onEditCardRequested != null) onEditCardRequested.accept(card); });
 
-        Button exportCardBtn = createSubtleBtn("⬆ Export Card", "#4CAF50");
+        Button exportCardBtn = createSubtleBtn("⬆ Export Card", ThemeProvider.get("accent-green"));
         exportCardBtn.setMaxWidth(Double.MAX_VALUE);
         exportCardBtn.setOnAction(e -> { if (onExportCardRequested != null) onExportCardRequested.accept(card); });
 
@@ -343,13 +344,13 @@ public class FlashcardsView extends HBox {
         player.setPadding(new Insets(8, 0, 0, 0));
 
         Label nameLabel = new Label("🎵 " + fileName);
-        nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
+        nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
         HBox controls = new HBox(8);
         controls.setAlignment(Pos.CENTER_LEFT);
 
         Button playBtn = new Button("▶");
-        playBtn.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 50; -fx-min-width: 30; -fx-min-height: 30; -fx-cursor: hand;");
+        playBtn.setStyle("-fx-background-color: " + ThemeProvider.get("accent-blue") + "; -fx-text-fill: white; -fx-background-radius: 50; -fx-min-width: 30; -fx-min-height: 30; -fx-cursor: hand;");
 
         Slider progressSlider = new Slider(0, 100, 0);
         HBox.setHgrow(progressSlider, Priority.ALWAYS);
@@ -417,7 +418,7 @@ public class FlashcardsView extends HBox {
         imageView.setSmooth(true);
 
         Label nameLabel = new Label("🖼 " + (fileName != null ? fileName : ""));
-        nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
+        nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
         VBox container = new VBox(4, imageView, nameLabel);
         container.setAlignment(Pos.CENTER);
@@ -440,7 +441,7 @@ public class FlashcardsView extends HBox {
 
             contentArea.getChildren().clear();
             Label hint = new Label(TranslationProvider.get("cards.select_hint"));
-            hint.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 14px;");
+            hint.setStyle("-fx-text-fill: " + ThemeProvider.get("text-placeholder") + "; -fx-font-size: 14px;");
             hint.setAlignment(Pos.CENTER);
             hint.setMaxWidth(Double.MAX_VALUE);
             hint.setMaxHeight(Double.MAX_VALUE);
@@ -472,9 +473,9 @@ public class FlashcardsView extends HBox {
         VBox plusCard = new VBox();
         plusCard.setPrefSize(120, 160);
         plusCard.setAlignment(Pos.CENTER);
-        plusCard.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;");
+        plusCard.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;");
         Label plusLabel = new Label("+");
-        plusLabel.setStyle("-fx-font-size: 40px; -fx-text-fill: #999999;");
+        plusLabel.setStyle("-fx-font-size: 40px; -fx-text-fill: " + ThemeProvider.get("text-disabled") + ";");
         plusCard.getChildren().add(plusLabel);
         plusCard.setOnMouseClicked(e -> { if (onAddCardRequested != null) onAddCardRequested.run(); });
         cardsGrid.getChildren().add(plusCard);
@@ -499,8 +500,8 @@ public class FlashcardsView extends HBox {
 
         for (Card card : cards) {
             boolean isSelected = selectedCards.contains(card);
-            String borderColor = isSelected ? "#2196F3" : "#cccccc";
-            String bgColor     = isSelected ? "#E3F2FD" : "white";
+            String borderColor = isSelected ? ThemeProvider.get("accent-blue") : ThemeProvider.get("border-default");
+            String bgColor     = isSelected ? ThemeProvider.get("accent-blue-bg") : ThemeProvider.get("bg-card");
 
             VBox cardTile = new VBox();
             cardTile.setPrefSize(120, 160);
@@ -516,15 +517,17 @@ public class FlashcardsView extends HBox {
 
             if (selectMode) {
                 Label checkmark = new Label(isSelected ? "✔" : "○");
-                checkmark.setStyle("-fx-font-size: 14px; -fx-text-fill: " + (isSelected ? "#2196F3" : "#bbbbbb") + ";");
+                checkmark.setStyle("-fx-font-size: 14px; -fx-text-fill: " + (isSelected ? ThemeProvider.get("accent-blue") : ThemeProvider.get("text-hint")) + ";");
                 Region sp = new Region();
                 HBox.setHgrow(sp, Priority.ALWAYS);
                 topBox.getChildren().addAll(checkmark, sp);
             } else {
                 Button editBtn = new Button("✎");
-                editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
-                editBtn.setOnMouseEntered(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
-                editBtn.setOnMouseExited(ev -> editBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+                String editNormal = "-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("text-disabled") + "; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;";
+                String editHover = "-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("accent-link") + "; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;";
+                editBtn.setStyle(editNormal);
+                editBtn.setOnMouseEntered(ev -> editBtn.setStyle(editHover));
+                editBtn.setOnMouseExited(ev -> editBtn.setStyle(editNormal));
                 editBtn.setOnAction(e -> {
                     e.consume();
                     if (onEditCardRequested != null) onEditCardRequested.accept(card);
@@ -534,9 +537,11 @@ public class FlashcardsView extends HBox {
                 HBox.setHgrow(sp, Priority.ALWAYS);
 
                 Button deleteBtn = new Button("✖");
-                deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;");
-                deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #dc3545; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
-                deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #999999; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;"));
+                String deleteNormal = "-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("text-disabled") + "; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;";
+                String deleteHover = "-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("accent-red") + "; -fx-cursor: hand; -fx-font-size: 14px; -fx-padding: 0 4;";
+                deleteBtn.setStyle(deleteNormal);
+                deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle(deleteHover));
+                deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle(deleteNormal));
                 deleteBtn.setOnAction(e -> {
                     e.consume();
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -555,7 +560,7 @@ public class FlashcardsView extends HBox {
             qLabel.setTextAlignment(TextAlignment.CENTER);
             qLabel.setAlignment(Pos.CENTER);
             qLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            qLabel.setStyle("-fx-text-fill: black;");
+            qLabel.setStyle("-fx-text-fill: " + ThemeProvider.get("fg-black") + ";");
             VBox.setVgrow(qLabel, Priority.ALWAYS);
 
             cardTile.getChildren().addAll(topBox, qLabel);
@@ -567,16 +572,16 @@ public class FlashcardsView extends HBox {
                 int count = 0;
                 for (String tag : card.getTags()) {
                     if (count >= 3) {
-                        Label more = new Label("...");
-                        more.setStyle("-fx-font-size: 9px; -fx-text-fill: #888888;");
+                    Label more = new Label("...");
+                    more.setStyle("-fx-font-size: 9px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
                         tagsPane.getChildren().add(more);
                         break;
                     }
                     Label tagLabel = new Label(tag);
                     tagLabel.setPadding(new Insets(1, 6, 1, 6));
-                    tagLabel.setStyle("-fx-background-color: #E3F2FD; -fx-border-color: #2196F3; " +
+                    tagLabel.setStyle("-fx-background-color: " + ThemeProvider.get("accent-blue-bg") + "; -fx-border-color: " + ThemeProvider.get("accent-blue") + "; " +
                                        "-fx-border-radius: 10; -fx-background-radius: 10; " +
-                                       "-fx-font-size: 9px; -fx-text-fill: #1976D2; -fx-border-width: 0.5; -fx-font-weight: bold;");
+                                       "-fx-font-size: 9px; -fx-text-fill: " + ThemeProvider.get("accent-blue-hover") + "; -fx-border-width: 0.5; -fx-font-weight: bold;");
                     tagsPane.getChildren().add(tagLabel);
                     count++;
                 }
@@ -601,36 +606,43 @@ public class FlashcardsView extends HBox {
     // ── helpers ────────────────────────────────────────────────────────────
 
      private Button createBtn(String text, String color, String hoverColor) {
-         Button btn = new Button(text);
-         String s1 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", color, hoverColor);
-         String s2 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", hoverColor, hoverColor);
-         btn.setStyle(s1);
-         btn.setOnMouseEntered(e -> btn.setStyle(s2));
-         btn.setOnMouseExited(e -> btn.setStyle(s1));
-         return btn;
-     }
+          Button btn = new Button(text);
+          String s1 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", color, hoverColor);
+          String s2 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", hoverColor, hoverColor);
+          btn.setStyle(s1);
+          btn.setOnMouseEntered(e -> btn.setStyle(s2));
+          btn.setOnMouseExited(e -> btn.setStyle(s1));
+          return btn;
+      }
 
      private Button createSubtleBtn(String text, String accentColor) {
-         Button btn = new Button(text);
-         String s1 = String.format(
-             "-fx-background-color: white; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
-             "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
-             "-fx-text-fill: #000000; -fx-font-weight: bold;",
-             accentColor
-         );
-         String s2 = String.format(
-             "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
-             "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
-             "-fx-text-fill: white; -fx-font-weight: bold;",
-             accentColor, accentColor
-         );
-         btn.setStyle(s1);
-         btn.setOnMouseEntered(e -> btn.setStyle(s2));
-         btn.setOnMouseExited(e -> btn.setStyle(s1));
-         return btn;
-     }
+          Button btn = new Button(text);
+          String s1 = String.format(
+              "-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+              "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
+              "-fx-text-fill: " + ThemeProvider.get("fg-black") + "; -fx-font-weight: bold;",
+              accentColor
+          );
+          String s2 = String.format(
+              "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+              "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
+              "-fx-text-fill: white; -fx-font-weight: bold;",
+              accentColor, accentColor
+          );
+          btn.setStyle(s1);
+          btn.setOnMouseEntered(e -> btn.setStyle(s2));
+          btn.setOnMouseExited(e -> btn.setStyle(s1));
+          return btn;
+      }
 
     // ── callback setters ───────────────────────────────────────────────────
+
+    public void applyTheme() {
+        renderCards(currentCards);
+        if (selectedDetailCard != null) {
+            showCardDetail(selectedDetailCard);
+        }
+    }
 
     public void setOnAddCardRequested(Runnable cb) { this.onAddCardRequested = cb; }
     public void setOnEditCardRequested(Consumer<Card> cb) { this.onEditCardRequested = cb; }

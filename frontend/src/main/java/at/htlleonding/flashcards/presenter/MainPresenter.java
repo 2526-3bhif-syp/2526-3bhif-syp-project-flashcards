@@ -66,6 +66,8 @@ public class MainPresenter {
         view.getNavbar().setOnSearchTextChanged(this::handleSearch);
 
         navigateTo("Home", false);
+
+        ThemeProvider.addThemeListener(this::applyThemeToCurrentView);
     }
 
     // ── Search ─────────────────────────────────────────────────────────────
@@ -457,6 +459,17 @@ public class MainPresenter {
         else {
             if (destination.equals("Flashcards")) currentDeck = null;
             navigateTo(destination, true);
+        }
+    }
+
+    private void applyThemeToCurrentView() {
+        view.applyTheme();
+        if (currentViewName != null) {
+            Node current = views.get(currentViewName);
+            if (current instanceof HomeView hv) hv.applyTheme();
+            else if (current instanceof FlashcardsView fv) fv.applyTheme();
+            else if (current instanceof StudyModeView smv) smv.applyTheme();
+            else if (current instanceof SettingsView sv) sv.applyTheme();
         }
     }
 

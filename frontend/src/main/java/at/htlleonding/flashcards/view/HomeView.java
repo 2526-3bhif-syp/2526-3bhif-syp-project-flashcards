@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
+import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.*;
 import java.util.function.Consumer;
@@ -24,6 +25,7 @@ public class HomeView extends VBox {
     private Button selectToggleBtn;
     private Button exportSelectedBtn;
     private Button deleteSelectedBtn;
+    private Button importBtn;
 
     // ── callbacks ──────────────────────────────────────────────────────────
     private Consumer<Deck> onDeckSelected;
@@ -44,6 +46,24 @@ public class HomeView extends VBox {
         });
     }
 
+    public void applyTheme() {
+        renderDecks(currentDecks);
+        rebuildHeaderButtons();
+    }
+
+    private void rebuildHeaderButtons() {
+        String importColor = ThemeProvider.get("accent-blue");
+        String exportColor = ThemeProvider.get("accent-green");
+        String deleteColor = ThemeProvider.get("accent-red");
+        String deleteHover = ThemeProvider.get("accent-red-hover");
+        String neutral = ThemeProvider.get("neutral-gray");
+        String neutralDark = ThemeProvider.get("neutral-gray-dark");
+        importBtn.setStyle(buildSubtleBtnStyle(importColor));
+        selectToggleBtn.setStyle(buildBtnStyle(neutral, neutralDark));
+        deleteSelectedBtn.setStyle(buildBtnStyle(deleteColor, deleteHover));
+        exportSelectedBtn.setStyle(buildSubtleBtnStyle(exportColor));
+    }
+
     // ── layout builders ────────────────────────────────────────────────────
 
     private HBox buildHeader() {
@@ -54,14 +74,14 @@ public class HomeView extends VBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button importBtn = createSubtleBtn(TranslationProvider.get("home.import_deck"), "#2196F3");
+        importBtn = createSubtleBtn(TranslationProvider.get("home.import_deck"), ThemeProvider.get("accent-blue"));
         importBtn.textProperty().bind(TranslationProvider.createStringBinding("home.import_deck"));
         importBtn.setOnAction(e -> { if (onImportDeckRequested != null) onImportDeckRequested.run(); });
 
-        selectToggleBtn = createBtn(TranslationProvider.get("home.select"), "#607D8B", "#455A64");
+        selectToggleBtn = createBtn(TranslationProvider.get("home.select"), ThemeProvider.get("neutral-gray"), ThemeProvider.get("neutral-gray-dark"));
         selectToggleBtn.setOnAction(e -> toggleSelectMode());
 
-        exportSelectedBtn = createSubtleBtn(TranslationProvider.get("home.export_selected", 0), "#4CAF50");
+        exportSelectedBtn = createSubtleBtn(TranslationProvider.get("home.export_selected", 0), ThemeProvider.get("accent-green"));
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         exportSelectedBtn.setDisable(true);
@@ -70,7 +90,7 @@ public class HomeView extends VBox {
                 onExportSelectedDecksRequested.accept(new ArrayList<>(selectedDecks));
         });
 
-        deleteSelectedBtn = createBtn(TranslationProvider.get("home.delete_selected", 0), "#dc3545", "#b02a37");
+        deleteSelectedBtn = createBtn(TranslationProvider.get("home.delete_selected", 0), ThemeProvider.get("accent-red"), ThemeProvider.get("accent-red-hover"));
         deleteSelectedBtn.setVisible(false);
         deleteSelectedBtn.setManaged(false);
         deleteSelectedBtn.setDisable(true);
@@ -155,10 +175,10 @@ public class HomeView extends VBox {
     private void addPlusTile() {
         StackPane tile = new StackPane();
         tile.setPrefSize(150, 200);
-        tile.setStyle("-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1; " +
+        tile.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-width: 1; " +
                       "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;");
         Label plusLabel = new Label("+");
-        plusLabel.setStyle("-fx-font-size: 60px; -fx-text-fill: #999999;");
+        plusLabel.setStyle("-fx-font-size: 60px; -fx-text-fill: " + ThemeProvider.get("text-disabled") + ";");
         tile.getChildren().add(plusLabel);
         tile.setOnMouseClicked(e -> { if (onCreateDeckRequested != null) onCreateDeckRequested.run(); });
         deckGrid.getChildren().add(tile);
@@ -166,8 +186,8 @@ public class HomeView extends VBox {
 
     private void addDeckTile(Deck deck) {
         boolean isSelected = selectedDecks.contains(deck);
-        String borderColor = isSelected ? "#2196F3" : "#cccccc";
-        String bgColor     = isSelected ? "#E3F2FD" : "white";
+        String borderColor = isSelected ? ThemeProvider.get("accent-blue") : ThemeProvider.get("border-default");
+        String bgColor     = isSelected ? ThemeProvider.get("accent-blue-bg") : ThemeProvider.get("bg-card");
         String borderWidth = isSelected ? "2" : "1";
 
         StackPane tile = new StackPane();
@@ -184,7 +204,7 @@ public class HomeView extends VBox {
 
         if (selectMode) {
             Label check = new Label(isSelected ? "✔" : "○");
-            check.setStyle("-fx-font-size: 18px; -fx-text-fill: " + (isSelected ? "#2196F3" : "#bbbbbb") + ";");
+            check.setStyle("-fx-font-size: 18px; -fx-text-fill: " + (isSelected ? ThemeProvider.get("accent-blue") : ThemeProvider.get("text-hint")) + ";");
             content.getChildren().add(check);
         }
 
@@ -196,7 +216,7 @@ public class HomeView extends VBox {
         iconView.setSmooth(true);
 
         Label nameLabel = new Label(deck.getName() != null ? deck.getName() : "");
-        nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+        nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         nameLabel.setWrapText(true);
         nameLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         nameLabel.setAlignment(Pos.CENTER);
@@ -204,7 +224,7 @@ public class HomeView extends VBox {
 
         Label countLabel = new Label();
         countLabel.textProperty().bind(TranslationProvider.createStringBinding("home.cards", deck.getCardCount()));
-        countLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #888888;");
+        countLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
         content.getChildren().addAll(iconView, nameLabel, countLabel);
         tile.getChildren().add(content);
@@ -224,16 +244,16 @@ public class HomeView extends VBox {
             topRow.setPickOnBounds(false);
             StackPane.setAlignment(topRow, Pos.TOP_LEFT);
 
-            Button editBtn = iconBtn("✎", "#aaaaaa", "#007bff");
+            Button editBtn = iconBtn("✎", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-link"));
             editBtn.setOnAction(e -> { e.consume(); if (onEditDeckRequested != null) onEditDeckRequested.accept(deck); });
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            Button exportBtn = iconBtn("⬆", "#aaaaaa", "#FF9800");
+            Button exportBtn = iconBtn("⬆", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-orange"));
             exportBtn.setOnAction(e -> { e.consume(); if (onExportDeckRequested != null) onExportDeckRequested.accept(deck); });
 
-            Button deleteBtn = iconBtn("✖", "#aaaaaa", "#dc3545");
+            Button deleteBtn = iconBtn("✖", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-red"));
             deleteBtn.setOnAction(e -> { e.consume(); if (onDeleteDeckRequested != null) onDeleteDeckRequested.accept(deck); });
 
             topRow.getChildren().addAll(editBtn, spacer, exportBtn, deleteBtn);
@@ -257,24 +277,32 @@ public class HomeView extends VBox {
         return btn;
     }
 
+    private static String buildBtnStyle(String color, String hoverColor) {
+        return String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", color, hoverColor);
+    }
+
     private Button createBtn(String text, String color, String hoverColor) {
         Button btn = new Button(text);
-        String s1 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", color, hoverColor);
-        String s2 = String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", hoverColor, hoverColor);
+        String s1 = buildBtnStyle(color, hoverColor);
+        String s2 = buildBtnStyle(hoverColor, hoverColor);
         btn.setStyle(s1);
         btn.setOnMouseEntered(e -> btn.setStyle(s2));
         btn.setOnMouseExited(e -> btn.setStyle(s1));
         return btn;
     }
 
-    private Button createSubtleBtn(String text, String accentColor) {
-        Button btn = new Button(text);
-        String s1 = String.format(
-            "-fx-background-color: white; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+    private static String buildSubtleBtnStyle(String accentColor) {
+        return String.format(
+            "-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
             "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
-            "-fx-text-fill: #000000; -fx-font-weight: bold;",
+            "-fx-text-fill: " + ThemeProvider.get("fg-black") + "; -fx-font-weight: bold;",
             accentColor
         );
+    }
+
+    private Button createSubtleBtn(String text, String accentColor) {
+        Button btn = new Button(text);
+        String s1 = buildSubtleBtnStyle(accentColor);
         String s2 = String.format(
             "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
             "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +

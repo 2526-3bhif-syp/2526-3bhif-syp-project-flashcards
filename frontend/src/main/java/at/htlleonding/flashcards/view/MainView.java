@@ -1,5 +1,6 @@
 package at.htlleonding.flashcards.view;
 
+import at.htlleonding.flashcards.model.ThemeProvider;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
@@ -13,8 +14,6 @@ public class MainView extends BorderPane {
     private final NavbarView navbar;
 
     public MainView() {
-        this.setStyle("-fx-background-color: white;");
-
         sidebar = new SidebarView();
         this.setLeft(sidebar);
 
@@ -24,16 +23,21 @@ public class MainView extends BorderPane {
         mainContent = new StackPane();
         VBox.setVgrow(mainContent, Priority.ALWAYS);
         
+        rightArea.getChildren().addAll(navbar, mainContent);
+        this.setCenter(rightArea);
+
+        applyTheme();
+    }
+
+    public void applyTheme() {
+        this.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + ";");
         mainContent.setStyle(
-            "-fx-background-color: #f8f9fa; " + 
+            "-fx-background-color: " + ThemeProvider.get("bg-primary") + "; " + 
             "-fx-background-radius: 20 0 0 0; " + 
-            "-fx-border-color: #e0e0e0; " +
+            "-fx-border-color: " + ThemeProvider.get("border-light") + "; " +
             "-fx-border-width: 1 0 0 1; " + 
             "-fx-border-radius: 20 0 0 0;"
         );
-        
-        rightArea.getChildren().addAll(navbar, mainContent);
-        this.setCenter(rightArea);
     }
 
     public void setView(Node view) {

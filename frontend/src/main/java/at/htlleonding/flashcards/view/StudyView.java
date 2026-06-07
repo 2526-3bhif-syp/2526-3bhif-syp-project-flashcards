@@ -3,6 +3,7 @@ package at.htlleonding.flashcards.view;
 import at.htlleonding.flashcards.model.Card;
 import at.htlleonding.flashcards.model.CardSelector;
 import at.htlleonding.flashcards.model.StudyRecord;
+import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -36,6 +37,7 @@ public class StudyView {
     private final Button nextBtn;
     private final HBox assessmentBox;
     private final Button beendenBtn;
+    private final List<Button> assessmentBtns = new ArrayList<>();
 
     private final List<MediaPlayer> activeMediaPlayers = new ArrayList<>();
 
@@ -54,11 +56,10 @@ public class StudyView {
         stage.setTitle("Study Mode");
         stage.setWidth(900);
         stage.setHeight(700);
-        stage.setOnHidden(e -> stopAllAudio());
 
         root = new BorderPane();
         root.setPadding(new Insets(20));
-        root.setStyle("-fx-background-color: #f8f9fa;");
+        root.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + ";");
 
         // ── TOP: Beenden ───────────────────────────────────────────────────
         HBox topBar = new HBox();
@@ -66,7 +67,7 @@ public class StudyView {
         beendenBtn = new Button();
         beendenBtn.textProperty().bind(TranslationProvider.createStringBinding("study.finish_btn"));
         beendenBtn.setStyle(
-            "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
         );
         beendenBtn.setOnAction(e -> {
@@ -84,19 +85,21 @@ public class StudyView {
         assessmentBox = new HBox(10);
         assessmentBox.setAlignment(Pos.CENTER);
         String[][] assessments = {
-            {TranslationProvider.get("study.wrong"),     "#dc3545", "FALSCH"},
-            {TranslationProvider.get("study.difficult"),  "#FF9800", "SCHWIERIG"},
-            {TranslationProvider.get("study.ok"),          "#2196F3", "OK"},
-            {TranslationProvider.get("study.easy"),        "#4CAF50", "LEICHT"}
+            {TranslationProvider.get("study.wrong"),     "accent-red",    "FALSCH"},
+            {TranslationProvider.get("study.difficult"),  "accent-orange", "SCHWIERIG"},
+            {TranslationProvider.get("study.ok"),          "accent-blue",   "OK"},
+            {TranslationProvider.get("study.easy"),        "accent-green",  "LEICHT"}
         };
         for (String[] ass : assessments) {
             Button btn = new Button(ass[0]);
             btn.setStyle(String.format(
-                "-fx-background-color: %s; -fx-text-fill: white; -fx-font-weight: bold; " +
+                "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-weight: bold; " +
                 "-fx-font-size: 13px; -fx-padding: 8 20; -fx-background-radius: 8; -fx-cursor: hand;",
-                ass[1]
+                ThemeProvider.get(ass[1]), ThemeProvider.get("text-on-primary")
             ));
             btn.setOnAction(e -> handleAssessment(ass[2]));
+            btn.setUserData(ass[1]);
+            assessmentBtns.add(btn);
             assessmentBox.getChildren().add(btn);
         }
         assessmentBox.setVisible(false);
@@ -108,14 +111,14 @@ public class StudyView {
         flipBtn = new Button();
         flipBtn.textProperty().bind(TranslationProvider.createStringBinding("study.reveal_btn"));
         flipBtn.setStyle(
-            "-fx-background-color: #607D8B; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-background-color: " + ThemeProvider.get("neutral-gray") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
         );
         flipBtn.setOnAction(e -> flipCard());
 
         nextBtn = new Button("Nächste Karte");
         nextBtn.setStyle(
-            "-fx-background-color: #607D8B; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-background-color: " + ThemeProvider.get("neutral-gray") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
         );
         nextBtn.setOnAction(e -> nextCard());
@@ -128,6 +131,13 @@ public class StudyView {
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
+
+        Runnable themeListener = this::applyTheme;
+        ThemeProvider.addThemeListener(themeListener);
+        stage.setOnHidden(e -> {
+            stopAllAudio();
+            ThemeProvider.removeThemeListener(themeListener);
+        });
 
         showCardFront();
     }
@@ -195,7 +205,7 @@ public class StudyView {
         if (currentCard == null) {
             Label empty = new Label();
             empty.textProperty().bind(TranslationProvider.createStringBinding("study.empty_deck"));
-            empty.setStyle("-fx-font-size: 18px; -fx-text-fill: #999999;");
+            empty.setStyle("-fx-font-size: 18px; -fx-text-fill: " + ThemeProvider.get("text-disabled") + ";");
             root.setCenter(new StackPane(empty));
             flipBtn.setVisible(false);
             flipBtn.setManaged(false);
@@ -206,7 +216,7 @@ public class StudyView {
             return;
         }
 
-        String style = "-fx-font-size: 36px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
+        String style = "-fx-font-size: 36px; -fx-text-fill: " + ThemeProvider.get("accent-blue-strong") + "; -fx-font-weight: bold;";
         root.setCenter(buildSidePanel(
             currentCard.getQuestion(), style,
             currentCard.getFrontImageData(), currentCard.getFrontImageName(),
@@ -225,8 +235,8 @@ public class StudyView {
     private void flipCard() {
         if (currentCard == null) return;
 
-        String frontStyle = "-fx-font-size: 26px; -fx-text-fill: #0D47A1; -fx-font-weight: bold;";
-        String backStyle  = "-fx-font-size: 26px; -fx-text-fill: #1B5E20; -fx-font-weight: bold;";
+        String frontStyle = "-fx-font-size: 26px; -fx-text-fill: " + ThemeProvider.get("accent-blue-strong") + "; -fx-font-weight: bold;";
+        String backStyle  = "-fx-font-size: 26px; -fx-text-fill: " + ThemeProvider.get("accent-green-dark") + "; -fx-font-weight: bold;";
 
         Node top = buildSidePanel(
             currentCard.getQuestion(), frontStyle,
@@ -265,30 +275,30 @@ public class StudyView {
         VBox statsBox = new VBox(20);
         statsBox.setAlignment(Pos.CENTER);
         statsBox.setPadding(new Insets(40));
-        statsBox.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 16;");
+        statsBox.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-background-radius: 16;");
 
         Label title = new Label(TranslationProvider.get("study.stats_title"));
-        title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #212121;");
+        title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("fg-dark") + ";");
 
         Label subtitle = new Label(TranslationProvider.get("study.stats_subtitle", studyCards.size()));
-        subtitle.setStyle("-fx-font-size: 16px; -fx-text-fill: #757575;");
+        subtitle.setStyle("-fx-font-size: 16px; -fx-text-fill: " + ThemeProvider.get("text-subtle") + ";");
 
         VBox ratingsBox = new VBox(10);
         ratingsBox.setAlignment(Pos.CENTER);
         String[][] ratings = {
-            {TranslationProvider.get("study.easy"),      "#4CAF50", "LEICHT"},
-            {TranslationProvider.get("study.ok"),         "#2196F3", "OK"},
-            {TranslationProvider.get("study.difficult"),  "#FF9800", "SCHWIERIG"},
-            {TranslationProvider.get("study.wrong"),      "#dc3545", "FALSCH"}
+            {TranslationProvider.get("study.easy"),      "accent-green",  "LEICHT"},
+            {TranslationProvider.get("study.ok"),         "accent-blue",   "OK"},
+            {TranslationProvider.get("study.difficult"),  "accent-orange", "SCHWIERIG"},
+            {TranslationProvider.get("study.wrong"),      "accent-red",    "FALSCH"}
         };
         for (String[] r : ratings) {
             int count = sessionRatings.getOrDefault(r[2], 0);
             HBox row = new HBox(12);
             row.setAlignment(Pos.CENTER);
-            Label dot = new Label("●");
-            dot.setStyle("-fx-font-size: 18px; -fx-text-fill: " + r[1] + ";");
+            Label dot = new Label("\u25CF");
+            dot.setStyle("-fx-font-size: 18px; -fx-text-fill: " + ThemeProvider.get(r[1]) + ";");
             Label lbl = new Label(r[0] + ": " + count);
-            lbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #212121; -fx-min-width: 160;");
+            lbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("fg-dark") + "; -fx-min-width: 160;");
             row.getChildren().addAll(dot, lbl);
             ratingsBox.getChildren().add(row);
         }
@@ -298,7 +308,7 @@ public class StudyView {
 
         Button retryBtn = new Button(TranslationProvider.get("study.retry_btn"));
         retryBtn.setStyle(
-            "-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-background-color: " + ThemeProvider.get("accent-blue") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"
         );
         retryBtn.setOnAction(e -> {
@@ -313,7 +323,7 @@ public class StudyView {
 
         Button doneBtn = new Button(TranslationProvider.get("study.done_btn"));
         doneBtn.setStyle(
-            "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; " +
+            "-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; " +
             "-fx-font-size: 14px; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"
         );
         doneBtn.setOnAction(e -> {
@@ -336,6 +346,30 @@ public class StudyView {
         nextBtn.setManaged(false);
         assessmentBox.setVisible(false);
         assessmentBox.setManaged(false);
+    }
+
+    public void applyTheme() {
+        root.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + ";");
+        beendenBtn.setStyle(
+            "-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; " +
+            "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
+        );
+        for (Button btn : assessmentBtns) {
+            String token = (String) btn.getUserData();
+            btn.setStyle(String.format(
+                "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-weight: bold; " +
+                "-fx-font-size: 13px; -fx-padding: 8 20; -fx-background-radius: 8; -fx-cursor: hand;",
+                ThemeProvider.get(token), ThemeProvider.get("text-on-primary")
+            ));
+        }
+        flipBtn.setStyle(
+            "-fx-background-color: " + ThemeProvider.get("neutral-gray") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; " +
+            "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
+        );
+        nextBtn.setStyle(
+            "-fx-background-color: " + ThemeProvider.get("neutral-gray") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; " +
+            "-fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;"
+        );
     }
 
     private void fireSessionEnd() {

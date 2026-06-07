@@ -1,5 +1,6 @@
 package at.htlleonding.flashcards.view;
 
+import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,23 +29,23 @@ public class DuplicateDeckActionDialog {
         root.setPadding(new Insets(25));
         root.setPrefWidth(350);
         root.setAlignment(Pos.CENTER);
-        root.setStyle("-fx-background-color: #ffffff; -fx-border-color: #eeeeee; -fx-border-radius: 10; -fx-background-radius: 10;");
+        root.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-light") + "; -fx-border-radius: 10; -fx-background-radius: 10;");
 
         Label headerLabel = new Label(TranslationProvider.get("duplicate.deck_header"));
-        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
         Label subLabel = new Label(TranslationProvider.get("duplicate.deck_sub"));
-        subLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #666666;");
+        subLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
         subLabel.setWrapText(true);
 
         VBox buttonBox = new VBox(10);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(10, 0, 0, 0));
 
-        Button allowAllBtn = createStyledButton(TranslationProvider.get("duplicate.allow_all"), "#2196F3", "white");
-        Button replaceBtn  = createStyledButton(TranslationProvider.get("duplicate.replace_decks"), "#FF9800", "white");
-        Button skipBtn     = createStyledButton(TranslationProvider.get("duplicate.skip_duplicates"),         "white",   "#555555");
-        Button cancelBtn   = createStyledButton(TranslationProvider.get("duplicate.cancel_import"),           "#f8f9fa", "#666666");
+        Button allowAllBtn = createStyledButton(TranslationProvider.get("duplicate.allow_all"), "accent-blue", "text-on-primary");
+        Button replaceBtn  = createStyledButton(TranslationProvider.get("duplicate.replace_decks"), "accent-orange", "text-on-primary");
+        Button skipBtn     = createStyledButton(TranslationProvider.get("duplicate.skip_duplicates"),         "bg-card",   "text-secondary");
+        Button cancelBtn   = createStyledButton(TranslationProvider.get("duplicate.cancel_import"),           "bg-primary", "text-muted");
 
         allowAllBtn.setOnAction(e -> { selectedAction = Action.ALLOW_ALL; stage.close(); });
         replaceBtn .setOnAction(e -> { selectedAction = Action.REPLACE;   stage.close(); });
@@ -58,12 +59,14 @@ public class DuplicateDeckActionDialog {
         stage.setScene(scene);
     }
 
-    private Button createStyledButton(String text, String bgColor, String textColor) {
+    private Button createStyledButton(String text, String bgToken, String fgToken) {
         Button btn = new Button(text);
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setPrefHeight(40);
 
-        String baseStyle = String.format("-fx-background-color: %s; -fx-border-color: #cccccc; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: %s; -fx-font-weight: bold;", bgColor, textColor);
+        String bgColor = ThemeProvider.get(bgToken);
+        String textColor = ThemeProvider.get(fgToken);
+        String baseStyle = String.format("-fx-background-color: %s; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8; -fx-cursor: hand; -fx-font-size: 14px; -fx-text-fill: %s; -fx-font-weight: bold;", bgColor, textColor);
         btn.setStyle(baseStyle);
 
         btn.setOnMouseEntered(e -> btn.setStyle(baseStyle + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 1); -fx-opacity: 0.9;"));

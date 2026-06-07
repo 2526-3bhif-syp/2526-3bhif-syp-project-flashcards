@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.Optional;
 
@@ -111,7 +112,7 @@ public class CreateDeckDialog {
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         
         saveButton = new Button(deckToEdit == null ? TranslationProvider.get("deck.create_btn") : TranslationProvider.get("deck.save_btn"));
-        saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+        saveButton.setStyle("-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold;");
         
         if (deckToEdit == null) {
             saveButton.setDisable(true);
@@ -140,9 +141,9 @@ public class CreateDeckDialog {
 
     private void updateIconButtonStyle(Button btn, boolean selected) {
         if (selected) {
-            btn.setStyle("-fx-background-color: #007bff; -fx-border-color: #007bff; -fx-border-radius: 5; -fx-padding: 0;");
+            btn.setStyle("-fx-background-color: " + ThemeProvider.get("accent-link") + "; -fx-border-color: " + ThemeProvider.get("accent-link") + "; -fx-border-radius: 5; -fx-padding: 0;");
         } else {
-            btn.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 0;");
+            btn.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-radius: 5; -fx-padding: 0;");
         }
     }
 

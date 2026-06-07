@@ -1,6 +1,7 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
+import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
@@ -177,7 +178,7 @@ public class CreateCardDialog {
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         
         saveButton = new Button(isEditMode ? TranslationProvider.get("card.save_btn") : TranslationProvider.get("card.create_btn"));
-        saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+        saveButton.setStyle("-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold;");
         saveButton.setDisable(!isEditMode);
         
         Button cancelButton = new Button(TranslationProvider.get("card.cancel_btn"));
@@ -233,16 +234,16 @@ public class CreateCardDialog {
             HBox chip = new HBox(5);
             chip.setAlignment(Pos.CENTER_LEFT);
             chip.setPadding(new Insets(3, 8, 3, 8));
-            chip.setStyle("-fx-background-color: #E3F2FD; -fx-border-color: #2196F3; " +
+            chip.setStyle("-fx-background-color: " + ThemeProvider.get("accent-blue-bg") + "; -fx-border-color: " + ThemeProvider.get("accent-blue") + "; " +
                            "-fx-border-radius: 15; -fx-background-radius: 15; -fx-border-width: 0.5;");
-            
+
             Label label = new Label(tag);
-            label.setStyle("-fx-font-size: 11px; -fx-text-fill: #1976D2; -fx-font-weight: bold;");
-            
-            Button removeBtn = new Button("×");
-            removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: #1976D2; -fx-cursor: hand; -fx-font-weight: bold;");
-            removeBtn.setOnMouseEntered(e -> removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: #D32F2F; -fx-cursor: hand; -fx-font-weight: bold;"));
-            removeBtn.setOnMouseExited(e -> removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: #1976D2; -fx-cursor: hand; -fx-font-weight: bold;"));
+            label.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("accent-blue-hover") + "; -fx-font-weight: bold;");
+
+            Button removeBtn = new Button("\u00D7");
+            removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: " + ThemeProvider.get("accent-blue-hover") + "; -fx-cursor: hand; -fx-font-weight: bold;");
+            removeBtn.setOnMouseEntered(e -> removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: " + ThemeProvider.get("accent-red-strong") + "; -fx-cursor: hand; -fx-font-weight: bold;"));
+            removeBtn.setOnMouseExited(e -> removeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0; -fx-text-fill: " + ThemeProvider.get("accent-blue-hover") + "; -fx-cursor: hand; -fx-font-weight: bold;"));
             removeBtn.setOnAction(e -> {
                 tags.remove(tag);
                 updateTagsUI();
@@ -255,16 +256,16 @@ public class CreateCardDialog {
 
     private void showExtraMenu(Button anchor, boolean isFront) {
         ContextMenu menu = new ContextMenu();
-        menu.setStyle("-fx-background-color: white; " +
+        menu.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; " +
                      "-fx-background-radius: 8; " +
-                     "-fx-border-color: #eeeeee; " +
+                     "-fx-border-color: " + ThemeProvider.get("border-light") + "; " +
                      "-fx-border-radius: 8; " +
                      "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);");
 
         // Audio Item
         SVGPath musicIcon = new SVGPath();
         musicIcon.setContent("M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z");
-        musicIcon.setFill(Color.web("#555555"));
+        musicIcon.setFill(Color.web(ThemeProvider.get("text-secondary")));
         musicIcon.setScaleX(0.7);
         musicIcon.setScaleY(0.7);
         
@@ -275,7 +276,7 @@ public class CreateCardDialog {
         // Image Item
         SVGPath imageIcon = new SVGPath();
         imageIcon.setContent("M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z");
-        imageIcon.setFill(Color.web("#555555"));
+        imageIcon.setFill(Color.web(ThemeProvider.get("text-secondary")));
         imageIcon.setScaleX(0.7);
         imageIcon.setScaleY(0.7);
 
@@ -291,50 +292,47 @@ public class CreateCardDialog {
     private void styleExtraButton(Button btn) {
         SVGPath plusIcon = new SVGPath();
         plusIcon.setContent("M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z");
-        plusIcon.setFill(Color.web("#2196F3"));
+        plusIcon.setFill(Color.web(ThemeProvider.get("accent-blue")));
         plusIcon.setScaleX(0.45);
         plusIcon.setScaleY(0.45);
-        
+
         btn.setGraphic(plusIcon);
         btn.setContentDisplay(ContentDisplay.RIGHT);
-        btn.setGraphicTextGap(-2); // Adjusted for scaled icon
+        btn.setGraphicTextGap(-2);
 
-        btn.setStyle("-fx-background-color: transparent; " +
-                     "-fx-border-color: #2196F3; " +
+        String normalStyle = "-fx-background-color: transparent; " +
+                     "-fx-border-color: " + ThemeProvider.get("accent-blue") + "; " +
                      "-fx-border-radius: 5; " +
-                     "-fx-text-fill: #2196F3; " +
+                     "-fx-text-fill: " + ThemeProvider.get("accent-blue") + "; " +
                      "-fx-cursor: hand; " +
                      "-fx-font-weight: bold; " +
                      "-fx-font-size: 11px; " +
-                     "-fx-padding: 3 4 3 8;"); // Adjusted right padding for icon
+                     "-fx-padding: 3 4 3 8;";
+
+        String hoverStyle = "-fx-background-color: " + ThemeProvider.get("accent-blue") + "; " +
+                     "-fx-border-color: " + ThemeProvider.get("accent-blue") + "; " +
+                     "-fx-border-radius: 5; " +
+                     "-fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; " +
+                     "-fx-cursor: hand; " +
+                     "-fx-font-weight: bold; " +
+                     "-fx-font-size: 11px; " +
+                     "-fx-padding: 3 4 3 8;";
+
+        btn.setStyle(normalStyle);
 
         ScaleTransition st = new ScaleTransition(Duration.millis(150), btn);
-        
+
         btn.setOnMouseEntered(e -> {
-            btn.setStyle("-fx-background-color: #2196F3; " +
-                         "-fx-border-color: #2196F3; " +
-                         "-fx-border-radius: 5; " +
-                         "-fx-text-fill: white; " +
-                         "-fx-cursor: hand; " +
-                         "-fx-font-weight: bold; " +
-                         "-fx-font-size: 11px; " +
-                         "-fx-padding: 3 4 3 8;");
-            plusIcon.setFill(Color.WHITE);
+            btn.setStyle(hoverStyle);
+            plusIcon.setFill(Color.web(ThemeProvider.get("text-on-primary")));
             st.setToX(1.1);
             st.setToY(1.1);
             st.playFromStart();
         });
-        
+
         btn.setOnMouseExited(e -> {
-            btn.setStyle("-fx-background-color: transparent; " +
-                         "-fx-border-color: #2196F3; " +
-                         "-fx-border-radius: 5; " +
-                         "-fx-text-fill: #2196F3; " +
-                         "-fx-cursor: hand; " +
-                         "-fx-font-weight: bold; " +
-                         "-fx-font-size: 11px; " +
-                         "-fx-padding: 3 4 3 8;");
-            plusIcon.setFill(Color.web("#2196F3"));
+            btn.setStyle(normalStyle);
+            plusIcon.setFill(Color.web(ThemeProvider.get("accent-blue")));
             st.setToX(1.0);
             st.setToY(1.0);
             st.playFromStart();
@@ -342,22 +340,22 @@ public class CreateCardDialog {
     }
 
     private void styleAddTagButton(Button btn) {
-        String baseStyle = "-fx-background-color: white; " +
-                           "-fx-border-color: #2196F3; " +
+        String baseStyle = "-fx-background-color: " + ThemeProvider.get("bg-card") + "; " +
+                           "-fx-border-color: " + ThemeProvider.get("accent-blue") + "; " +
                            "-fx-border-width: 1.5; " +
                            "-fx-border-radius: 8; " +
                            "-fx-background-radius: 8; " +
-                           "-fx-text-fill: #2196F3; " +
+                           "-fx-text-fill: " + ThemeProvider.get("accent-blue") + "; " +
                            "-fx-cursor: hand; " +
                            "-fx-font-weight: bold; " +
                            "-fx-padding: 4 16;";
-        
-        String hoverStyle = "-fx-background-color: #2196F3; " +
-                            "-fx-border-color: #2196F3; " +
+
+        String hoverStyle = "-fx-background-color: " + ThemeProvider.get("accent-blue") + "; " +
+                            "-fx-border-color: " + ThemeProvider.get("accent-blue") + "; " +
                             "-fx-border-width: 1.5; " +
                             "-fx-border-radius: 8; " +
                             "-fx-background-radius: 8; " +
-                            "-fx-text-fill: white; " +
+                            "-fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; " +
                             "-fx-cursor: hand; " +
                             "-fx-font-weight: bold; " +
                             "-fx-padding: 4 16;";
@@ -476,8 +474,8 @@ public class CreateCardDialog {
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            Button delBtn = new Button("🗑");
-            delBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand;");
+            Button delBtn = new Button("\uD83D\uDDD1");
+            delBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("accent-red") + "; -fx-cursor: hand;");
             delBtn.setOnAction(e -> {
                 if (isFront) { fImageData = null; fImageName = null; }
                 else { bImageData = null; bImageName = null; }
@@ -487,7 +485,7 @@ public class CreateCardDialog {
             HBox info = new HBox(10);
             info.setAlignment(Pos.CENTER_LEFT);
             info.setPadding(new Insets(5));
-            info.setStyle("-fx-background-color: #f0f0f0; -fx-background-radius: 5;");
+            info.setStyle("-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-background-radius: 5;");
             info.getChildren().addAll(thumb, label, spacer, delBtn);
             box.getChildren().add(info);
         }
@@ -504,9 +502,9 @@ public class CreateCardDialog {
             HBox info = new HBox(10);
             info.setAlignment(Pos.CENTER_LEFT);
             info.setPadding(new Insets(5));
-            info.setStyle("-fx-background-color: #f0f0f0; -fx-background-radius: 5;");
-            
-            Label label = new Label(String.format("🎵 %s (%s)", name, dur));
+            info.setStyle("-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-background-radius: 5;");
+
+            Label label = new Label(String.format("\uD83C\uDFB5 %s (%s)", name, dur));
             label.setStyle("-fx-font-size: 11px;");
             
             Region spacer = new Region();
@@ -516,8 +514,8 @@ public class CreateCardDialog {
             playBtn.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
             playBtn.setOnAction(e -> togglePreview(data, playBtn));
 
-            Button delBtn = new Button("🗑");
-            delBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand;");
+            Button delBtn = new Button("\uD83D\uDDD1");
+            delBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("accent-red") + "; -fx-cursor: hand;");
             delBtn.setOnAction(e -> {
                 stopPreview();
                 if (isFront) {

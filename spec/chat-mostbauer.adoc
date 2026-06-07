@@ -233,3 +233,15 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
   
   
   * I am going to describe the current state of the app: 1. All the text is in german. 2. After changing the settings from german to english, some texts are still in german. 3. After going back to german, all the text is now in english. 4. Changing back to english makes all the text be german again
+  
+  * /openspec:archive Good! It works now.
+  
+  * /clear
+  
+  * Read up on spec/ and openspec/ for context of this project. We use the openspec.dev workflow of explore - propose - apply - archive; You can use the github cli to read up on issues and the git cli to commit *localy*(Orient yourself with existing commits and keep them in a similar style); The goal of todays session is Issue #57, specifically the color theme system. The translation system of this issue has already been implemented. 
+  
+  * /opensepc:explore get familiar with this application and suggest a fitting way to implement a color theme system based on the requirements in the issue and sub issues
+  
+  * /openspec:propose this looks good, go ahead
+  
+  * /opsx:apply
