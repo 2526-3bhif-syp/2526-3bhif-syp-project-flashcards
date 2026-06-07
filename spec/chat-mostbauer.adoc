@@ -225,3 +225,8 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
   * stop searching the git logs 10 times in a row
   
   * You broke the translations, all i can see are texts like [bla.foo] instead of actual text.
+  
+  * We are back at the problem, that selecting german shows you the english translations, and pressing english shows you the german translations
+  
+  *  This is probably a front-end issue, that the selection model in the settings is somehow
+  switched up

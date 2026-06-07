@@ -38,18 +38,28 @@ public class SettingsView extends VBox {
         // Set initial selection based on current locale
         Locale current = TranslationProvider.getLocale();
         if ("de".equals(current.getLanguage())) {
-            languageDropdown.getSelectionModel().select("Deutsch");
+            languageDropdown.setValue("Deutsch");
         } else {
-            languageDropdown.getSelectionModel().select("English");
+            languageDropdown.setValue("English");
         }
 
-        // Wire dropdown to TranslationProvider
-        languageDropdown.setOnAction(e -> {
-            String selected = languageDropdown.getSelectionModel().getSelectedItem();
-            if ("Deutsch".equals(selected)) {
-                TranslationProvider.setLocale(Locale.GERMAN);
-            } else {
-                TranslationProvider.setLocale(Locale.ENGLISH);
+        // Bind dropdown value to TranslationProvider locale changes
+        TranslationProvider.localeProperty().addListener((obs, oldLocale, newLocale) -> {
+            if (newLocale != null) {
+                String expected = "de".equals(newLocale.getLanguage()) ? "Deutsch" : "English";
+                if (!expected.equals(languageDropdown.getValue())) {
+                    languageDropdown.setValue(expected);
+                }
+            }
+        });
+
+        // Bind TranslationProvider locale to dropdown value changes
+        languageDropdown.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                Locale targetLocale = "Deutsch".equals(newVal) ? Locale.GERMAN : Locale.ENGLISH;
+                if (!targetLocale.equals(TranslationProvider.getLocale())) {
+                    TranslationProvider.setLocale(targetLocale);
+                }
             }
         });
 

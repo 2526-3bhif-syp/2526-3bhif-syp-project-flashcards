@@ -23,6 +23,9 @@ public class TranslationProvider {
         locale.set(initialLocale);
         try {
             bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, initialLocale);
+            System.out.println("DEBUG: static init -> Initial: " + initialLocale + 
+                               ", Loaded Bundle Locale: " + (bundle != null ? bundle.getLocale() : "null") + 
+                               ", settings.title: " + (bundle != null && bundle.containsKey("settings.title") ? bundle.getString("settings.title") : "not found"));
         } catch (Exception e) {
             System.err.println("Could not load ResourceBundle: " + e.getMessage());
         }
@@ -43,6 +46,9 @@ public class TranslationProvider {
         locale.set(newLocale);
         try {
             bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, newLocale);
+            System.out.println("DEBUG: setLocale -> Requested: " + newLocale + 
+                               ", Loaded Bundle Locale: " + (bundle != null ? bundle.getLocale() : "null") + 
+                               ", settings.title: " + (bundle != null && bundle.containsKey("settings.title") ? bundle.getString("settings.title") : "not found"));
         } catch (Exception e) {
             System.err.println("Could not change ResourceBundle locale: " + e.getMessage());
         }
