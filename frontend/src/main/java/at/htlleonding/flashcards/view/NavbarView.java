@@ -8,6 +8,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.function.Consumer;
 
 public class NavbarView extends HBox {
@@ -28,7 +29,7 @@ public class NavbarView extends HBox {
         HBox.setHgrow(searchContainer, Priority.ALWAYS);
 
         searchField = new TextField();
-        searchField.setPromptText("Search");
+        searchField.promptTextProperty().bind(TranslationProvider.createStringBinding("navbar.search_prompt"));
         searchField.setStyle(
             "-fx-background-radius: 20; " +
             "-fx-border-radius: 20; " +

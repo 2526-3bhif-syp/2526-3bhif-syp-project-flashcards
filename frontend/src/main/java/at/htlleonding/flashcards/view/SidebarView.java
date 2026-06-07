@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
+import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.function.Consumer;
 
 public class SidebarView extends VBox {
@@ -85,7 +86,8 @@ public class SidebarView extends VBox {
         
         btn.setGraphic(icon);
 
-        Tooltip tooltip = new Tooltip(text);
+        Tooltip tooltip = new Tooltip();
+        tooltip.textProperty().bind(TranslationProvider.createStringBinding("sidebar." + text.toLowerCase()));
         tooltip.setShowDelay(Duration.ZERO);
         tooltip.setStyle("-fx-font-size: 11px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 3 7 3 7; -fx-background-radius: 4;");
 
@@ -140,7 +142,8 @@ public class SidebarView extends VBox {
         
         btn.setGraphic(icon);
 
-        Tooltip tooltip = new Tooltip(text);
+        Tooltip tooltip = new Tooltip();
+        tooltip.textProperty().bind(TranslationProvider.createStringBinding("sidebar." + text.toLowerCase()));
         tooltip.setShowDelay(Duration.ZERO);
         tooltip.setStyle("-fx-font-size: 12px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 5 10 5 10; -fx-background-radius: 5;");
 

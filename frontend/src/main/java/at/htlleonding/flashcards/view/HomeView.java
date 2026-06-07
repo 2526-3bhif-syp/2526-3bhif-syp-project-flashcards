@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
+import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -38,24 +39,29 @@ public class HomeView extends VBox {
         this.setPadding(new Insets(20));
         this.setSpacing(16);
         this.getChildren().addAll(buildHeader(), buildDeckGrid());
+        TranslationProvider.localeProperty().addListener((obs, oldLocale, newLocale) -> {
+            updateTextOnLocaleChange();
+        });
     }
 
     // ── layout builders ────────────────────────────────────────────────────
 
     private HBox buildHeader() {
-        Label title = new Label("My Decks");
+        Label title = new Label();
+        title.textProperty().bind(TranslationProvider.createStringBinding("home.title"));
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button importBtn = createSubtleBtn("⬇ Import Deck", "#2196F3");
+        Button importBtn = createSubtleBtn(TranslationProvider.get("home.import_deck"), "#2196F3");
+        importBtn.textProperty().bind(TranslationProvider.createStringBinding("home.import_deck"));
         importBtn.setOnAction(e -> { if (onImportDeckRequested != null) onImportDeckRequested.run(); });
 
-        selectToggleBtn = createBtn("Select", "#607D8B", "#455A64");
+        selectToggleBtn = createBtn(TranslationProvider.get("home.select"), "#607D8B", "#455A64");
         selectToggleBtn.setOnAction(e -> toggleSelectMode());
 
-        exportSelectedBtn = createSubtleBtn("⬆ Export (0)", "#4CAF50");
+        exportSelectedBtn = createSubtleBtn(TranslationProvider.get("home.export_selected", 0), "#4CAF50");
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         exportSelectedBtn.setDisable(true);
@@ -64,7 +70,7 @@ public class HomeView extends VBox {
                 onExportSelectedDecksRequested.accept(new ArrayList<>(selectedDecks));
         });
 
-        deleteSelectedBtn = createBtn("Delete (0)", "#dc3545", "#b02a37");
+        deleteSelectedBtn = createBtn(TranslationProvider.get("home.delete_selected", 0), "#dc3545", "#b02a37");
         deleteSelectedBtn.setVisible(false);
         deleteSelectedBtn.setManaged(false);
         deleteSelectedBtn.setDisable(true);
@@ -100,7 +106,7 @@ public class HomeView extends VBox {
         if (!selectMode) return;
         selectMode = false;
         selectedDecks.clear();
-        selectToggleBtn.setText("Select");
+        selectToggleBtn.setText(TranslationProvider.get("home.select"));
         exportSelectedBtn.setVisible(false);
         exportSelectedBtn.setManaged(false);
         deleteSelectedBtn.setVisible(false);
@@ -120,13 +126,13 @@ public class HomeView extends VBox {
         selectMode = !selectMode;
         selectedDecks.clear();
         if (selectMode) {
-            selectToggleBtn.setText("Cancel");
+            selectToggleBtn.setText(TranslationProvider.get("home.cancel"));
             exportSelectedBtn.setVisible(true);
             exportSelectedBtn.setManaged(true);
             deleteSelectedBtn.setVisible(true);
             deleteSelectedBtn.setManaged(true);
         } else {
-            selectToggleBtn.setText("Select");
+            selectToggleBtn.setText(TranslationProvider.get("home.select"));
             exportSelectedBtn.setVisible(false);
             exportSelectedBtn.setManaged(false);
             deleteSelectedBtn.setVisible(false);
@@ -138,9 +144,9 @@ public class HomeView extends VBox {
 
     private void updateSelectModeButtons() {
         int n = selectedDecks.size();
-        exportSelectedBtn.setText("Export (" + n + ")");
+        exportSelectedBtn.setText(TranslationProvider.get("home.export_selected", n));
         exportSelectedBtn.setDisable(n == 0);
-        deleteSelectedBtn.setText("Delete (" + n + ")");
+        deleteSelectedBtn.setText(TranslationProvider.get("home.delete_selected", n));
         deleteSelectedBtn.setDisable(n == 0);
     }
 
@@ -196,7 +202,8 @@ public class HomeView extends VBox {
         nameLabel.setAlignment(Pos.CENTER);
         nameLabel.setMaxWidth(130);
 
-        Label countLabel = new Label(deck.getCardCount() + " cards");
+        Label countLabel = new Label();
+        countLabel.textProperty().bind(TranslationProvider.createStringBinding("home.cards", deck.getCardCount()));
         countLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #888888;");
 
         content.getChildren().addAll(iconView, nameLabel, countLabel);
@@ -290,4 +297,10 @@ public class HomeView extends VBox {
     public void setOnDeleteSelectedDecksRequested(Consumer<List<Deck>> cb) { this.onDeleteSelectedDecksRequested = cb; }
     public void setOnCreateDeckRequested(Runnable cb) { this.onCreateDeckRequested = cb; }
     public void setOnImportDeckRequested(Runnable cb) { this.onImportDeckRequested = cb; }
+
+    private void updateTextOnLocaleChange() {
+        selectToggleBtn.setText(TranslationProvider.get(selectMode ? "home.cancel" : "home.select"));
+        updateSelectModeButtons();
+    }
 }
+

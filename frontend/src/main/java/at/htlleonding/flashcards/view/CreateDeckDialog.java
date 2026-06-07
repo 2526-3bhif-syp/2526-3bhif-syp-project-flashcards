@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.Optional;
 
 public class CreateDeckDialog {
@@ -36,9 +37,9 @@ public class CreateDeckDialog {
         stage.initModality(Modality.APPLICATION_MODAL);
         
         if (deckToEdit == null) {
-            stage.setTitle("Create New Deck");
+            stage.setTitle(TranslationProvider.get("deck.create_title"));
         } else {
-            stage.setTitle("Edit Deck");
+            stage.setTitle(TranslationProvider.get("deck.edit_title"));
             selectedIconId = deckToEdit.getIconId();
         }
 
@@ -46,19 +47,19 @@ public class CreateDeckDialog {
         root.setPadding(new Insets(20));
         root.setPrefWidth(550);
 
-        Label nameLabel = new Label("Deck Name:");
+        Label nameLabel = new Label(TranslationProvider.get("deck.name_label"));
         nameLabel.setStyle("-fx-font-weight: bold;");
         nameField = new TextField();
-        nameField.setPromptText("e.g. Mathematics, History...");
+        nameField.setPromptText(TranslationProvider.get("deck.name_prompt"));
 
-        Label descLabel = new Label("Description:");
+        Label descLabel = new Label(TranslationProvider.get("deck.description_label"));
         descLabel.setStyle("-fx-font-weight: bold;");
         descriptionArea = new TextArea();
-        descriptionArea.setPromptText("What is this deck about?");
+        descriptionArea.setPromptText(TranslationProvider.get("deck.description_prompt"));
         descriptionArea.setPrefRowCount(2);
         descriptionArea.setWrapText(true);
 
-        Label iconLabel = new Label("Choose Icon:");
+        Label iconLabel = new Label(TranslationProvider.get("deck.icon_label"));
         iconLabel.setStyle("-fx-font-weight: bold;");
         
         FlowPane iconPicker = new FlowPane(10, 10);
@@ -109,14 +110,14 @@ public class CreateDeckDialog {
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         
-        saveButton = new Button(deckToEdit == null ? "Create Deck" : "Save Changes");
+        saveButton = new Button(deckToEdit == null ? TranslationProvider.get("deck.create_btn") : TranslationProvider.get("deck.save_btn"));
         saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
         
         if (deckToEdit == null) {
             saveButton.setDisable(true);
         }
         
-        Button cancelButton = new Button("Cancel");
+        Button cancelButton = new Button(TranslationProvider.get("deck.cancel_btn"));
         cancelButton.setOnAction(e -> stage.close());
 
         buttonBox.getChildren().addAll(cancelButton, saveButton);
