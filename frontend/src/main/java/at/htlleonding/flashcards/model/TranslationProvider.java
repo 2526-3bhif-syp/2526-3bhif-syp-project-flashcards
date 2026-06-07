@@ -20,7 +20,6 @@ public class TranslationProvider {
 
     static {
         Locale initialLocale = loadSavedLocale();
-        locale.set(initialLocale);
         try {
             bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, initialLocale);
             System.out.println("DEBUG: static init -> Initial: " + initialLocale + 
@@ -29,6 +28,7 @@ public class TranslationProvider {
         } catch (Exception e) {
             System.err.println("Could not load ResourceBundle: " + e.getMessage());
         }
+        locale.set(initialLocale);
     }
 
     public static ObjectProperty<Locale> localeProperty() {
@@ -43,7 +43,6 @@ public class TranslationProvider {
         if (newLocale == null) {
             newLocale = Locale.ENGLISH;
         }
-        locale.set(newLocale);
         try {
             bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, newLocale);
             System.out.println("DEBUG: setLocale -> Requested: " + newLocale + 
@@ -52,6 +51,7 @@ public class TranslationProvider {
         } catch (Exception e) {
             System.err.println("Could not change ResourceBundle locale: " + e.getMessage());
         }
+        locale.set(newLocale);
         saveLocale(newLocale);
     }
 

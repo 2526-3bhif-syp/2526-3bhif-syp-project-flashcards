@@ -230,3 +230,6 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
   
   *  This is probably a front-end issue, that the selection model in the settings is somehow
   switched up
+  
+  
+  * I am going to describe the current state of the app: 1. All the text is in german. 2. After changing the settings from german to english, some texts are still in german. 3. After going back to german, all the text is now in english. 4. Changing back to english makes all the text be german again
