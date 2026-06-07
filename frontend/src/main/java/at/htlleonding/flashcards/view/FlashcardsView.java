@@ -42,6 +42,8 @@ public class FlashcardsView extends HBox {
     private Button exportSelectedBtn;
     private Button deleteSelectedBtn;
     private Button learnModeBtn;
+    private Button importBtn;
+    private Button studyBtn;
     private Label deckTitleLabel;
     private ImageView iconView;
 
@@ -73,7 +75,7 @@ public class FlashcardsView extends HBox {
 
     private VBox buildLeftSide() {
         // ── action bar ────────────────────────────────────────────────────
-        Button importBtn = createSubtleBtn("", ThemeProvider.get("accent-blue"));
+        importBtn = createSubtleBtn("", ThemeProvider.get("accent-blue"));
         importBtn.textProperty().bind(TranslationProvider.createStringBinding("cards.import_btn"));
         importBtn.setOnAction(e -> { if (onImportRequested != null) onImportRequested.run(); });
 
@@ -108,7 +110,7 @@ public class FlashcardsView extends HBox {
                 onExportSelectedCardsRequested.accept(new ArrayList<>(selectedCards));
         });
 
-        Button studyBtn = createBtn("", ThemeProvider.get("accent-orange"), ThemeProvider.get("accent-orange-hover"));
+        studyBtn = createBtn("", ThemeProvider.get("accent-orange"), ThemeProvider.get("accent-orange-hover"));
         studyBtn.textProperty().bind(TranslationProvider.createStringBinding("cards.study_btn"));
         studyBtn.setOnAction(e -> { if (onStudyRequested != null) onStudyRequested.run(); });
 
@@ -638,10 +640,57 @@ public class FlashcardsView extends HBox {
     // ── callback setters ───────────────────────────────────────────────────
 
     public void applyTheme() {
+        restyleActionBar();
+        detailPanel.setStyle("-fx-background-color: " + ThemeProvider.get("bg-secondary") + "; -fx-border-color: " + ThemeProvider.get("border-light") + "; " +
+                       "-fx-border-radius: 12; -fx-background-radius: 12;");
+        deckTitleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         renderCards(currentCards);
         if (selectedDetailCard != null) {
             showCardDetail(selectedDetailCard);
         }
+    }
+
+    private void restyleActionBar() {
+        restyleSubtleBtn(importBtn, ThemeProvider.get("accent-blue"));
+        restyleBtn(studyBtn, ThemeProvider.get("accent-orange"), ThemeProvider.get("accent-orange-hover"));
+        restyleBtn(learnModeBtn, ThemeProvider.get("accent-green"), ThemeProvider.get("accent-green-strong"));
+        restyleBtn(selectToggleBtn, ThemeProvider.get("neutral-gray"), ThemeProvider.get("neutral-gray-dark"));
+        restyleBtn(deleteSelectedBtn, ThemeProvider.get("accent-red"), ThemeProvider.get("accent-red-hover"));
+        restyleSubtleBtn(exportSelectedBtn, ThemeProvider.get("accent-green"));
+    }
+
+    private void restyleBtn(Button btn, String color, String hoverColor) {
+        String s1 = btnStyle(color, hoverColor);
+        String s2 = btnStyle(hoverColor, hoverColor);
+        btn.setStyle(s1);
+        btn.setOnMouseEntered(e -> btn.setStyle(s2));
+        btn.setOnMouseExited(e -> btn.setStyle(s1));
+    }
+
+    private void restyleSubtleBtn(Button btn, String accentColor) {
+        String s1 = subtleBtnStyle(accentColor);
+        String s2 = String.format(
+            "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+            "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
+            "-fx-text-fill: white; -fx-font-weight: bold;",
+            accentColor, accentColor
+        );
+        btn.setStyle(s1);
+        btn.setOnMouseEntered(e -> btn.setStyle(s2));
+        btn.setOnMouseExited(e -> btn.setStyle(s1));
+    }
+
+    private static String btnStyle(String color, String hoverColor) {
+        return String.format("-fx-background-color: %s; -fx-border-color: %s; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", color, hoverColor);
+    }
+
+    private String subtleBtnStyle(String accentColor) {
+        return String.format(
+            "-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: %s; -fx-border-width: 1.5; -fx-border-radius: 8; " +
+            "-fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px; " +
+            "-fx-text-fill: " + ThemeProvider.get("fg-black") + "; -fx-font-weight: bold;",
+            accentColor
+        );
     }
 
     public void setOnAddCardRequested(Runnable cb) { this.onAddCardRequested = cb; }

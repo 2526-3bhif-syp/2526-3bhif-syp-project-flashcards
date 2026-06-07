@@ -67,7 +67,7 @@ public class MainPresenter {
 
         navigateTo("Home", false);
 
-        ThemeProvider.addThemeListener(this::applyThemeToCurrentView);
+        ThemeProvider.addThemeListener(this::applyThemeToAllViews);
     }
 
     // ── Search ─────────────────────────────────────────────────────────────
@@ -457,19 +457,20 @@ public class MainPresenter {
         if (destination.equals("Back")) goBack();
         else if (destination.equals("Forward")) goForward();
         else {
-            if (destination.equals("Flashcards")) currentDeck = null;
             navigateTo(destination, true);
         }
     }
 
-    private void applyThemeToCurrentView() {
+    private void applyThemeToAllViews() {
         view.applyTheme();
-        if (currentViewName != null) {
-            Node current = views.get(currentViewName);
-            if (current instanceof HomeView hv) hv.applyTheme();
-            else if (current instanceof FlashcardsView fv) fv.applyTheme();
-            else if (current instanceof StudyModeView smv) smv.applyTheme();
-            else if (current instanceof SettingsView sv) sv.applyTheme();
+        view.getSidebar().applyTheme();
+        view.getNavbar().applyTheme();
+        for (Node v : views.values()) {
+            if (v instanceof HomeView hv) hv.applyTheme();
+            else if (v instanceof FlashcardsView fv) fv.applyTheme();
+            else if (v instanceof StudyModeView smv) smv.applyTheme();
+            else if (v instanceof SettingsView sv) sv.applyTheme();
+            else if (v instanceof StatisticView sv) sv.applyTheme();
         }
     }
 

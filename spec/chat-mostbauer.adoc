@@ -245,3 +245,19 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
   * /openspec:propose this looks good, go ahead
   
   * /opsx:apply
+  
+  * The theming mostly works, your dark theme missed a few spots that are now still light. But there is a bigger issue: Somewhere along this process the ability to study a deck got lost. I now only get a warning when i try to start the study mode in a deck
+  
+  * you changed the styling wrong when you patched up the missing white spots. You were supposed to change them in the theme, not globally. Now the white theme has black parts
+  
+  * I understand the issue better now: The top bar which is the parent of the search bar remains in the style it was loaded in, even when the style is switched. It only updated when the app is closed and reopened, unlike other elements
+  
+  * Thank you for fixing the color issue, but the study mode is still broken! Pressing study only shows the "No deck selected" warning
+  
+  * We have the same issue as before, you fixed the styling fro the side panel and button, but they only switch theme on app restart, not live
+  
+  * you fixed it for the side panel, but not for the import cards button
+  
+  * There is a new bug i just noticed: After switching language, you cant switch theme anymore. Probably an issue with the translated theme names
+  
+  * I am seeing the no-deck select issues again. I think it brakes after changing the language

@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -38,10 +39,7 @@ public class SettingsView extends VBox {
 
         languageDropdown = new ComboBox<>();
         languageDropdown.getItems().addAll("Deutsch", "English");
-        languageDropdown.setStyle(
-            "-fx-font-size: 14px; -fx-padding: 6 12; -fx-background-radius: 8; " +
-            "-fx-border-radius: 8; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-cursor: hand;"
-        );
+        styleComboBox(languageDropdown);
         languageDropdown.setPrefWidth(200);
 
         Locale current = TranslationProvider.getLocale();
@@ -89,10 +87,7 @@ public class SettingsView extends VBox {
             TranslationProvider.get("settings.theme_light"),
             TranslationProvider.get("settings.theme_dark")
         );
-        themeDropdown.setStyle(
-            "-fx-font-size: 14px; -fx-padding: 6 12; -fx-background-radius: 8; " +
-            "-fx-border-radius: 8; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-cursor: hand;"
-        );
+        styleComboBox(themeDropdown);
         themeDropdown.setPrefWidth(200);
 
         String currentTheme = ThemeProvider.getTheme();
@@ -131,27 +126,77 @@ public class SettingsView extends VBox {
         );
 
         this.getChildren().addAll(title, languageSection, themeSection);
+
+        TranslationProvider.localeProperty().addListener((obs, oldLocale, newLocale) -> {
+            themeDropdown.getItems().setAll(
+                TranslationProvider.get("settings.theme_light"),
+                TranslationProvider.get("settings.theme_dark")
+            );
+            themeDropdown.setValue("light".equals(ThemeProvider.getTheme())
+                ? TranslationProvider.get("settings.theme_light")
+                : TranslationProvider.get("settings.theme_dark"));
+        });
     }
 
     public void applyTheme() {
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         languageLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-secondary") + ";");
-        languageDropdown.setStyle(
-            "-fx-font-size: 14px; -fx-padding: 6 12; -fx-background-radius: 8; " +
-            "-fx-border-radius: 8; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-cursor: hand;"
-        );
+        styleComboBox(languageDropdown);
         languageSection.setStyle(
             "-fx-background-color: " + ThemeProvider.get("bg-secondary") + "; -fx-border-color: " + ThemeProvider.get("border-light") + "; " +
             "-fx-border-radius: 12; -fx-background-radius: 12;"
         );
         themeLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-secondary") + ";");
-        themeDropdown.setStyle(
-            "-fx-font-size: 14px; -fx-padding: 6 12; -fx-background-radius: 8; " +
-            "-fx-border-radius: 8; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-cursor: hand;"
-        );
+        styleComboBox(themeDropdown);
         themeSection.setStyle(
             "-fx-background-color: " + ThemeProvider.get("bg-secondary") + "; -fx-border-color: " + ThemeProvider.get("border-light") + "; " +
             "-fx-border-radius: 12; -fx-background-radius: 12;"
         );
+    }
+
+    private void styleComboBox(ComboBox<String> comboBox) {
+        comboBox.setStyle(
+            "-fx-font-size: 14px; -fx-padding: 6 12; -fx-background-radius: 8; " +
+            "-fx-border-radius: 8; -fx-border-color: " + ThemeProvider.get("border-default") + "; " +
+            "-fx-cursor: hand; " +
+            "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; " +
+            "-fx-background-color: " + ThemeProvider.get("bg-card") + "; " +
+            "-fx-mark-color: " + ThemeProvider.get("text-primary") + ";"
+        );
+        comboBox.setButtonCell(new StyledListCell());
+        comboBox.setCellFactory(cb -> new StyledListCell());
+    }
+
+    private static class StyledListCell extends ListCell<String> {
+        StyledListCell() {}
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item);
+                setStyle(
+                    "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; " +
+                    "-fx-background-color: " + ThemeProvider.get("bg-card") + "; " +
+                    "-fx-font-size: 14px; -fx-padding: 6 12;"
+                );
+                setOnMouseEntered(e -> {
+                    if (!isEmpty()) setStyle(
+                        "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; " +
+                        "-fx-background-color: " + ThemeProvider.get("bg-hover") + "; " +
+                        "-fx-font-size: 14px; -fx-padding: 6 12;"
+                    );
+                });
+                setOnMouseExited(e -> {
+                    if (!isEmpty()) setStyle(
+                        "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; " +
+                        "-fx-background-color: " + ThemeProvider.get("bg-card") + "; " +
+                        "-fx-font-size: 14px; -fx-padding: 6 12;"
+                    );
+                });
+            }
+        }
     }
 }

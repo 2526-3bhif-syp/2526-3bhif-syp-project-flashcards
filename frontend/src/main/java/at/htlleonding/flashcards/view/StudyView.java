@@ -223,7 +223,6 @@ public class StudyView {
             currentCard.getFrontAudioData(), currentCard.getFrontAudioName()
         ));
 
-        flipBtn.setText(TranslationProvider.get("study.reveal_btn"));
         flipBtn.setVisible(true);
         flipBtn.setManaged(true);
         nextBtn.setVisible(false);
