@@ -12,7 +12,7 @@ class TranslationProviderTest {
     private static final String SETTINGS_FILE = "settings.properties";
     private static File backupFile;
 
-    @BeforeAll
+    @BeforeAll  
     static void backupSettings() {
         File file = new File(SETTINGS_FILE);
         if (file.exists()) {
@@ -53,6 +53,19 @@ class TranslationProviderTest {
     @Test
     void testFallbackTranslation() {
         assertEquals("[non.existent.key]", TranslationProvider.get("non.existent.key"));
+    }
+
+    @Test
+    void testEnglishTranslationWhenSystemDefaultIsGerman() {
+        Locale originalDefault = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.GERMAN);
+            TranslationProvider.setLocale(Locale.ENGLISH);
+            assertEquals("Search", TranslationProvider.get("navbar.search_prompt"));
+            assertEquals("Home", TranslationProvider.get("sidebar.home"));
+        } finally {
+            Locale.setDefault(originalDefault);
+        }
     }
 
     @Test

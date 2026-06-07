@@ -219,4 +219,5 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
   
   * continue
   
-  
+  * i can see english and german translations but they seem to be switched. After selecting
+  german in the settings i get the english text and vice verca
