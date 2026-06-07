@@ -22,7 +22,7 @@ public class TranslationProvider {
         Locale initialLocale = loadSavedLocale();
         locale.set(initialLocale);
         try {
-            bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, initialLocale, ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+            bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, initialLocale);
         } catch (Exception e) {
             System.err.println("Could not load ResourceBundle: " + e.getMessage());
         }
@@ -42,7 +42,7 @@ public class TranslationProvider {
         }
         locale.set(newLocale);
         try {
-            bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, newLocale, ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+            bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, newLocale);
         } catch (Exception e) {
             System.err.println("Could not change ResourceBundle locale: " + e.getMessage());
         }
