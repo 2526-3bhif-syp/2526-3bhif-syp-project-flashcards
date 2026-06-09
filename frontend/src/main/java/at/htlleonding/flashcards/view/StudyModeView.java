@@ -1,6 +1,8 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
+import at.htlleonding.flashcards.model.ThemeProvider;
+import at.htlleonding.flashcards.model.TranslationProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -22,6 +24,7 @@ public class StudyModeView extends VBox {
     private Label deckLabel;
     private VBox cardArea;
     private Button revealBtn;
+    private Button stopBtn;
     private HBox ratingBar;
 
     // ── callbacks ──────────────────────────────────────────────────────────
@@ -39,7 +42,8 @@ public class StudyModeView extends VBox {
         cardArea.setAlignment(Pos.CENTER);
         VBox.setVgrow(cardArea, Priority.ALWAYS);
 
-        revealBtn = createBtn("Aufdecken", "#2196F3", "#1565C0");
+        revealBtn = createBtn("", ThemeProvider.get("accent-blue"), ThemeProvider.get("accent-blue-active"));
+        revealBtn.textProperty().bind(TranslationProvider.createStringBinding("study.reveal_btn"));
         revealBtn.setPrefWidth(180);
         revealBtn.setOnAction(e -> reveal());
 
@@ -58,12 +62,13 @@ public class StudyModeView extends VBox {
 
     private HBox buildHeader() {
         deckLabel = new Label("");
-        deckLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333333;");
+        deckLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button stopBtn = createSubtleBtn("Beenden", "#dc3545");
+        stopBtn = createSubtleBtn("", ThemeProvider.get("accent-red"));
+        stopBtn.textProperty().bind(TranslationProvider.createStringBinding("study.finish_btn"));
         stopBtn.setOnAction(e -> { if (onStopRequested != null) onStopRequested.run(); });
 
         HBox header = new HBox(12, deckLabel, spacer, stopBtn);
@@ -72,10 +77,14 @@ public class StudyModeView extends VBox {
     }
 
     private HBox buildRatingBar() {
-        Button falschBtn  = createRatingBtn("Falsch",    "#dc3545", "#b02a37");
-        Button schwierigBtn = createRatingBtn("Schwierig", "#FF9800", "#e65100");
-        Button okBtn      = createRatingBtn("Ok",        "#2196F3", "#1565C0");
-        Button leichtBtn  = createRatingBtn("Leicht",    "#4CAF50", "#2E7D32");
+        Button falschBtn  = createRatingBtn("",    ThemeProvider.get("accent-red"), ThemeProvider.get("accent-red-hover"));
+        falschBtn.textProperty().bind(TranslationProvider.createStringBinding("study.wrong"));
+        Button schwierigBtn = createRatingBtn("", ThemeProvider.get("accent-orange"), ThemeProvider.get("accent-orange-active"));
+        schwierigBtn.textProperty().bind(TranslationProvider.createStringBinding("study.difficult"));
+        Button okBtn      = createRatingBtn("",        ThemeProvider.get("accent-blue"), ThemeProvider.get("accent-blue-active"));
+        okBtn.textProperty().bind(TranslationProvider.createStringBinding("study.ok"));
+        Button leichtBtn  = createRatingBtn("",    ThemeProvider.get("accent-green"), ThemeProvider.get("accent-green-strong"));
+        leichtBtn.textProperty().bind(TranslationProvider.createStringBinding("study.easy"));
 
         falschBtn.setOnAction(e   -> rate("FALSCH"));
         schwierigBtn.setOnAction(e -> rate("SCHWIERIG"));
@@ -103,9 +112,9 @@ public class StudyModeView extends VBox {
 
         cardArea.getChildren().clear();
         cardArea.getChildren().add(buildSide(
-            "FRAGE", card.getQuestion(),
+            TranslationProvider.get("study.question"), card.getQuestion(),
             card.getFrontImageData(), card.getFrontImageName(),
-            "#E3F2FD", "#90CAF9", "#0D47A1"
+            ThemeProvider.get("accent-blue-bg"), ThemeProvider.get("accent-blue-light"), ThemeProvider.get("accent-blue-strong")
         ));
     }
 
@@ -121,14 +130,14 @@ public class StudyModeView extends VBox {
 
         cardArea.getChildren().clear();
         cardArea.getChildren().add(buildSide(
-            "FRAGE", currentCard.getQuestion(),
+            TranslationProvider.get("study.question"), currentCard.getQuestion(),
             currentCard.getFrontImageData(), currentCard.getFrontImageName(),
-            "#E3F2FD", "#90CAF9", "#0D47A1"
+            ThemeProvider.get("accent-blue-bg"), ThemeProvider.get("accent-blue-light"), ThemeProvider.get("accent-blue-strong")
         ));
         cardArea.getChildren().add(buildSide(
-            "ANTWORT", currentCard.getAnswer(),
+            TranslationProvider.get("study.answer"), currentCard.getAnswer(),
             currentCard.getBackImageData(), currentCard.getBackImageName(),
-            "#E8F5E9", "#A5D6A7", "#1B5E20"
+            ThemeProvider.get("accent-green-bg"), ThemeProvider.get("accent-green-light"), ThemeProvider.get("accent-green-dark")
         ));
     }
 
@@ -164,7 +173,7 @@ public class StudyModeView extends VBox {
             iv.setPreserveRatio(true);
             iv.setSmooth(true);
             Label imgNameLabel = new Label("🖼 " + (imageName != null ? imageName : ""));
-            imgNameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
+            imgNameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
             box.getChildren().addAll(iv, imgNameLabel);
         }
 
@@ -177,12 +186,13 @@ public class StudyModeView extends VBox {
 
     private Button createBtn(String text, String color, String hoverColor) {
         Button btn = new Button(text);
+        String textOnPrimary = ThemeProvider.get("text-on-primary");
         String s1 = String.format(
-            "-fx-background-color: %s; -fx-text-fill: white; -fx-font-size: 14px; " +
-            "-fx-font-weight: bold; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;", color);
+            "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-size: 14px; " +
+            "-fx-font-weight: bold; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;", color, textOnPrimary);
         String s2 = String.format(
-            "-fx-background-color: %s; -fx-text-fill: white; -fx-font-size: 14px; " +
-            "-fx-font-weight: bold; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;", hoverColor);
+            "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-size: 14px; " +
+            "-fx-font-weight: bold; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;", hoverColor, textOnPrimary);
         btn.setStyle(s1);
         btn.setOnMouseEntered(e -> btn.setStyle(s2));
         btn.setOnMouseExited(e -> btn.setStyle(s1));
@@ -192,13 +202,14 @@ public class StudyModeView extends VBox {
     private Button createSubtleBtn(String text, String accentColor) {
         Button btn = new Button(text);
         String s1 = String.format(
-            "-fx-background-color: white; -fx-border-color: %s; -fx-border-width: 1.5; " +
+            "-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: %s; -fx-border-width: 1.5; " +
             "-fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 16; " +
-            "-fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: #000000; -fx-font-weight: bold;", accentColor);
+            "-fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: " + ThemeProvider.get("fg-black") + "; -fx-font-weight: bold;", accentColor);
+        String textOnPrimary = ThemeProvider.get("text-on-primary");
         String s2 = String.format(
             "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1.5; " +
             "-fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 16; " +
-            "-fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;", accentColor, accentColor);
+            "-fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: %s; -fx-font-weight: bold;", accentColor, accentColor, textOnPrimary);
         btn.setStyle(s1);
         btn.setOnMouseEntered(e -> btn.setStyle(s2));
         btn.setOnMouseExited(e -> btn.setStyle(s1));
@@ -207,12 +218,13 @@ public class StudyModeView extends VBox {
 
     private Button createRatingBtn(String text, String color, String hoverColor) {
         Button btn = new Button(text);
+        String textOnPrimary = ThemeProvider.get("text-on-primary");
         String s1 = String.format(
-            "-fx-background-color: %s; -fx-text-fill: white; -fx-font-size: 13px; " +
-            "-fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;", color);
+            "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-size: 13px; " +
+            "-fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;", color, textOnPrimary);
         String s2 = String.format(
-            "-fx-background-color: %s; -fx-text-fill: white; -fx-font-size: 13px; " +
-            "-fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;", hoverColor);
+            "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-size: 13px; " +
+            "-fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;", hoverColor, textOnPrimary);
         btn.setStyle(s1);
         btn.setOnMouseEntered(e -> btn.setStyle(s2));
         btn.setOnMouseExited(e -> btn.setStyle(s1));
@@ -220,6 +232,40 @@ public class StudyModeView extends VBox {
     }
 
     // ── callback setters ───────────────────────────────────────────────────
+
+    public void applyTheme() {
+        deckLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+
+        String textOnPrimary = ThemeProvider.get("text-on-primary");
+        String revealColor = ThemeProvider.get("accent-blue");
+        String revealHover = ThemeProvider.get("accent-blue-active");
+        String s1 = String.format(
+            "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-size: 14px; " +
+            "-fx-font-weight: bold; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;", revealColor, textOnPrimary);
+        String s2 = String.format(
+            "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-size: 14px; " +
+            "-fx-font-weight: bold; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand;", revealHover, textOnPrimary);
+        revealBtn.setStyle(s1);
+        revealBtn.setOnMouseEntered(e -> revealBtn.setStyle(s2));
+        revealBtn.setOnMouseExited(e -> revealBtn.setStyle(s1));
+
+        // Rebuild rating bar buttons with current theme colors
+        ratingBar.getChildren().clear();
+        HBox newBar = buildRatingBar();
+        ratingBar.getChildren().addAll(newBar.getChildren());
+
+        // Update stop button (first child of header)
+        stopBtn.setStyle(String.format(
+            "-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: %s; -fx-border-width: 1.5; " +
+            "-fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 16; " +
+            "-fx-cursor: hand; -fx-font-size: 13px; -fx-text-fill: " + ThemeProvider.get("fg-black") + "; -fx-font-weight: bold;",
+            ThemeProvider.get("accent-red")));
+
+        // Re-render current card
+        if (currentCard != null) {
+            showCard(currentCard);
+        }
+    }
 
     public void setOnRatingSelected(Consumer<String> cb) { this.onRatingSelected = cb; }
     public void setOnStopRequested(Runnable cb) { this.onStopRequested = cb; }

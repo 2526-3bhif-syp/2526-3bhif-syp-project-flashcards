@@ -1,5 +1,6 @@
 package at.htlleonding.flashcards.view;
 
+import at.htlleonding.flashcards.model.ThemeProvider;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
@@ -8,6 +9,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.function.Consumer;
 
 public class NavbarView extends HBox {
@@ -18,7 +20,6 @@ public class NavbarView extends HBox {
         this.setAlignment(Pos.CENTER);
         this.setPadding(new Insets(10, 20, 10, 20));
         this.setPrefHeight(60);
-        this.setStyle("-fx-background-color: white;"); // Keine Border, da MainContent abgerundet ist
 
         HBox leftSection = new HBox(10);
         leftSection.setAlignment(Pos.CENTER_LEFT);
@@ -28,11 +29,11 @@ public class NavbarView extends HBox {
         HBox.setHgrow(searchContainer, Priority.ALWAYS);
 
         searchField = new TextField();
-        searchField.setPromptText("Search");
+        searchField.promptTextProperty().bind(TranslationProvider.createStringBinding("navbar.search_prompt"));
         searchField.setStyle(
             "-fx-background-radius: 20; " +
             "-fx-border-radius: 20; " +
-            "-fx-border-color: #cccccc; " +
+            "-fx-border-color: " + ThemeProvider.get("border-default") + "; " +
             "-fx-background-color: transparent; " +
             "-fx-padding: 5 10 5 30;"
         );
@@ -55,6 +56,18 @@ public class NavbarView extends HBox {
         HBox.setHgrow(rightSection, Priority.ALWAYS);
 
         this.getChildren().addAll(leftSection, searchContainer, rightSection);
+        applyTheme();
+    }
+
+    public void applyTheme() {
+        this.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + ";");
+        searchField.setStyle(
+            "-fx-background-radius: 20; " +
+            "-fx-border-radius: 20; " +
+            "-fx-border-color: " + ThemeProvider.get("border-default") + "; " +
+            "-fx-background-color: transparent; " +
+            "-fx-padding: 5 10 5 30;"
+        );
     }
 
     public void setOnSearchTextChanged(Consumer<String> listener) {
