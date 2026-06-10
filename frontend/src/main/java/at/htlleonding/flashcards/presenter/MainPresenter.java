@@ -479,6 +479,8 @@ public class MainPresenter {
 
         if (destination.equals("Home")) {
             refreshHomeView();
+        } else if (destination.equals("Statistic")) {
+            ((StatisticView) views.get("Statistic")).refresh(model.getDecks());
         } else if (destination.equals("Flashcards") && currentDeck == null) {
             FlashcardsView fView = (FlashcardsView) views.get("Flashcards");
             fView.clearDeckInfo();
