@@ -157,4 +157,33 @@ public class Persistence {
             throw new IOException("Could not parse JSON – the file may be corrupt or contain invalid JSON. Details: " + e.getMessage());
         }
     }
+
+    public StreakData loadStreakData() {
+        File file = new File("streaks.json");
+        if (!file.exists()) return new StreakData();
+        try {
+            JsonNode node = mapper.readTree(file);
+            if (node.isArray()) {
+                List<String> dates = mapper.convertValue(node, new TypeReference<List<String>>() {});
+                StreakData data = new StreakData();
+                if (dates != null) {
+                    data.setStreakDates(dates);
+                }
+                return data;
+            } else {
+                return mapper.treeToValue(node, StreakData.class);
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading streak data: " + e.getMessage());
+            return new StreakData();
+        }
+    }
+
+    public void saveStreakData(StreakData data) {
+        try {
+            mapper.writeValue(new File("streaks.json"), data);
+        } catch (IOException e) {
+            System.err.println("Error saving streak data: " + e.getMessage());
+        }
+    }
 }

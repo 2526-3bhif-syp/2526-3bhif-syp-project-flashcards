@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,7 @@ class ModelTest {
         initialDecks.add(deck);
         // Standardverhalten für die meisten Tests: Persistenz liefert ein Deck
         lenient().when(persistence.loadDecks()).thenReturn(initialDecks);
+        lenient().when(persistence.loadStreakData()).thenReturn(new StreakData());
     }
 
     @Test
@@ -243,5 +246,81 @@ class ModelTest {
         // Search for "testdeck" (lowercase) - should match "TestDeck" exactly
         List<Card> results = model.searchCards("testdeck");
         assertEquals(1, results.size());
+    }
+
+    @Test
+    void testStreakCalculationEmpty() {
+        Model model = new Model(persistence);
+        assertEquals(0, model.calculateCurrentStreak());
+    }
+
+    @Test
+    void testStreakCalculationActiveToday() {
+        Model model = new Model(persistence);
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        model.addStreakDate(today.format(formatter));
+        model.addStreakDate(today.minusDays(1).format(formatter));
+        model.addStreakDate(today.minusDays(2).format(formatter));
+
+        assertEquals(3, model.calculateCurrentStreak());
+    }
+
+    @Test
+    void testStreakCalculationActiveYesterday() {
+        Model model = new Model(persistence);
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Did not study today, but studied yesterday and day before
+        model.addStreakDate(today.minusDays(1).format(formatter));
+        model.addStreakDate(today.minusDays(2).format(formatter));
+
+        assertEquals(2, model.calculateCurrentStreak());
+    }
+
+    @Test
+    void testStreakCalculationBroken() {
+        Model model = new Model(persistence);
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Studied today, but skipped yesterday, studied day before yesterday
+        model.addStreakDate(today.format(formatter));
+        model.addStreakDate(today.minusDays(2).format(formatter));
+
+        assertEquals(1, model.calculateCurrentStreak());
+    }
+
+    @Test
+    void testRecordDeckStudied() {
+        Model model = new Model(persistence);
+        String deckId = "test-deck-id";
+        model.recordDeckStudied(deckId);
+
+        // Verify saveStreakData was called with streakData updated
+        verify(persistence).saveStreakData(any(StreakData.class));
+
+        // Verify today's date was added to streak dates
+        String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        assertTrue(model.getStreakDates().contains(todayStr));
+    }
+
+    @Test
+    void testSyncDecksWithStreakData() {
+        StreakData streakData = new StreakData();
+        String deckId = "TestDeckId";
+        initialDecks.get(0).setId(deckId);
+        streakData.getRecentDecks().put(deckId, "2026-06-11T12:00:00");
+
+        Persistence mockPersistence = mock(Persistence.class);
+        when(mockPersistence.loadDecks()).thenReturn(initialDecks);
+        when(mockPersistence.loadStreakData()).thenReturn(streakData);
+
+        Model model = new Model(mockPersistence);
+        Deck deck = model.getDecks().get(0);
+        assertNotNull(deck.getLastStudied());
+        assertEquals(java.time.LocalDateTime.parse("2026-06-11T12:00:00"), deck.getLastStudied());
     }
 }
