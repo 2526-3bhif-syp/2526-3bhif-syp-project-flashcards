@@ -2,6 +2,7 @@
     requires javafx.controls;
     requires com.fasterxml.jackson.databind;
     requires javafx.media;
+    requires java.desktop;
 
     // Export packages so JavaFX and Jackson can access them
     exports at.htlleonding.flashcards;
