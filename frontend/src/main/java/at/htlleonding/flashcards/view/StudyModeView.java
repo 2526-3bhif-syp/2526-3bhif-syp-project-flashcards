@@ -102,6 +102,20 @@ public class StudyModeView extends VBox {
         deckLabel.setText(name != null ? name : "");
     }
 
+    public void showSessionDone() {
+        this.currentCard = null;
+        revealBtn.setVisible(false);
+        revealBtn.setManaged(false);
+        ratingBar.setVisible(false);
+        ratingBar.setManaged(false);
+        cardArea.getChildren().clear();
+        Label doneLabel = new Label();
+        doneLabel.textProperty().bind(TranslationProvider.createStringBinding("study.stats_title"));
+        doneLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: "
+                + ThemeProvider.get("accent-green") + ";");
+        cardArea.getChildren().add(doneLabel);
+    }
+
     public void showCard(Card card) {
         this.currentCard = card;
 
