@@ -6,32 +6,51 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.chart.*;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class StatisticView extends BorderPane {
 
     private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.ofPattern("dd.MM");
+    private static final String ALL_DECKS_KEY = "statistic.filter_all_decks";
 
     private final VBox contentBox;
+    private final ScrollPane scrollPane;
     private final Label noDataLabel;
+    private final ComboBox<String> deckCombo;
+    private final ComboBox<String> timeframeCombo;
+
+    private List<Deck> allDecks = new ArrayList<>();
     private PieChart ratingChart;
     private BarChart<String, Number> dailyChart;
 
     public StatisticView() {
-        contentBox = new VBox(24);
+        contentBox = new VBox(20);
         contentBox.setPadding(new Insets(24));
         contentBox.setAlignment(Pos.TOP_CENTER);
+        contentBox.setMaxWidth(900);
 
         Label title = new Label();
         title.textProperty().bind(TranslationProvider.createStringBinding("statistic.title"));
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: "
                 + ThemeProvider.get("text-primary") + ";");
+
+        deckCombo = new ComboBox<>();
+        deckCombo.setMinWidth(160);
+        deckCombo.setOnAction(e -> applyFilters());
+
+        timeframeCombo = new ComboBox<>();
+        timeframeCombo.setMinWidth(120);
+        timeframeCombo.setOnAction(e -> applyFilters());
+
+        HBox filterBar = new HBox(12, deckCombo, timeframeCombo);
+        filterBar.setAlignment(Pos.CENTER_LEFT);
 
         noDataLabel = new Label();
         noDataLabel.textProperty().bind(TranslationProvider.createStringBinding("statistic.no_data"));
@@ -39,15 +58,73 @@ public class StatisticView extends BorderPane {
         noDataLabel.setAlignment(Pos.CENTER);
         noDataLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
-        contentBox.getChildren().addAll(title, noDataLabel);
+        contentBox.getChildren().addAll(title, filterBar, noDataLabel);
 
-        setCenter(contentBox);
+        VBox wrapper = new VBox(contentBox);
+        wrapper.setAlignment(Pos.TOP_CENTER);
+
+        scrollPane = new ScrollPane(wrapper);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        setCenter(scrollPane);
         applyTheme();
     }
 
     public void refresh(List<Deck> decks) {
-        StatisticsAggregator agg = StatisticsAggregator.fromDecks(decks);
-        renderCharts(agg);
+        this.allDecks = new ArrayList<>(decks);
+        rebuildDeckCombo();
+        rebuildTimeframeCombo();
+        applyFilters();
+    }
+
+    private void rebuildDeckCombo() {
+        String allDecksLabel = TranslationProvider.get(ALL_DECKS_KEY);
+        List<String> items = new ArrayList<>();
+        items.add(allDecksLabel);
+        allDecks.forEach(d -> items.add(d.getName()));
+        deckCombo.setItems(FXCollections.observableArrayList(items));
+        deckCombo.getSelectionModel().selectFirst();
+    }
+
+    private void rebuildTimeframeCombo() {
+        List<String> items = List.of(
+                TranslationProvider.get("statistic.timeframe_day"),
+                TranslationProvider.get("statistic.timeframe_week"),
+                TranslationProvider.get("statistic.timeframe_month"),
+                TranslationProvider.get("statistic.timeframe_all")
+        );
+        timeframeCombo.setItems(FXCollections.observableArrayList(items));
+        timeframeCombo.getSelectionModel().select(3);
+    }
+
+    private void applyFilters() {
+        StatisticsAggregator agg = buildAggregator();
+        StatisticsAggregator.Timeframe tf = selectedTimeframe();
+        renderCharts(agg.filtered(tf));
+    }
+
+    private StatisticsAggregator buildAggregator() {
+        int deckIdx = deckCombo.getSelectionModel().getSelectedIndex();
+        if (deckIdx <= 0 || allDecks.isEmpty()) {
+            return StatisticsAggregator.fromDecks(allDecks);
+        }
+        int realIdx = deckIdx - 1;
+        if (realIdx < allDecks.size()) {
+            return StatisticsAggregator.fromDeck(allDecks.get(realIdx));
+        }
+        return StatisticsAggregator.fromDecks(allDecks);
+    }
+
+    private StatisticsAggregator.Timeframe selectedTimeframe() {
+        int idx = timeframeCombo.getSelectionModel().getSelectedIndex();
+        return switch (idx) {
+            case 0 -> StatisticsAggregator.Timeframe.DAY;
+            case 1 -> StatisticsAggregator.Timeframe.WEEK;
+            case 2 -> StatisticsAggregator.Timeframe.MONTH;
+            default -> StatisticsAggregator.Timeframe.ALL;
+        };
     }
 
     private void renderCharts(StatisticsAggregator agg) {
@@ -65,6 +142,23 @@ public class StatisticView extends BorderPane {
         ratingChart = buildPieChart(agg);
         dailyChart = buildDailyBarChart(agg);
         contentBox.getChildren().addAll(ratingChart, dailyChart);
+    }
+
+    private PieChart buildPieChart(StatisticsAggregator agg) {
+        Map<String, Long> counts = agg.getCountByRating();
+
+        ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+        addSlice(data, "statistic.rating_falsch", counts.getOrDefault("FALSCH", 0L));
+        addSlice(data, "statistic.rating_schwierig", counts.getOrDefault("SCHWIERIG", 0L));
+        addSlice(data, "statistic.rating_ok", counts.getOrDefault("OK", 0L));
+        addSlice(data, "statistic.rating_leicht", counts.getOrDefault("LEICHT", 0L));
+
+        PieChart chart = new PieChart(data);
+        chart.titleProperty().bind(TranslationProvider.createStringBinding("statistic.rating_chart"));
+        chart.setLabelsVisible(true);
+        chart.setLegendVisible(true);
+        chart.setPrefHeight(320);
+        return chart;
     }
 
     private BarChart<String, Number> buildDailyBarChart(StatisticsAggregator agg) {
@@ -88,26 +182,6 @@ public class StatisticView extends BorderPane {
         return chart;
     }
 
-    private PieChart buildPieChart(StatisticsAggregator agg) {
-        Map<String, Long> counts = agg.getCountByRating();
-
-        ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
-        addSlice(data, "statistic.rating_falsch", counts.getOrDefault("FALSCH", 0L));
-        addSlice(data, "statistic.rating_schwierig", counts.getOrDefault("SCHWIERIG", 0L));
-        addSlice(data, "statistic.rating_ok", counts.getOrDefault("OK", 0L));
-        addSlice(data, "statistic.rating_leicht", counts.getOrDefault("LEICHT", 0L));
-
-        data.removeIf(d -> d.getPieValue() == 0);
-
-        PieChart chart = new PieChart(data);
-        chart.titleProperty().bind(TranslationProvider.createStringBinding("statistic.rating_chart"));
-        chart.setLabelsVisible(true);
-        chart.setLegendVisible(true);
-        chart.setPrefHeight(320);
-        chart.setStyle("-fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
-        return chart;
-    }
-
     private void addSlice(ObservableList<PieChart.Data> data, String labelKey, long count) {
         if (count > 0) {
             String label = TranslationProvider.get(labelKey) + " (" + count + ")";
@@ -117,11 +191,20 @@ public class StatisticView extends BorderPane {
 
     public void applyTheme() {
         setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + ";");
+        scrollPane.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary")
+                + "; -fx-background: " + ThemeProvider.get("bg-primary") + ";");
 
         if (!contentBox.getChildren().isEmpty() && contentBox.getChildren().get(0) instanceof Label title) {
             title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: "
                     + ThemeProvider.get("text-primary") + ";");
         }
         noDataLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
+
+        String comboStyle = "-fx-background-color: " + ThemeProvider.get("bg-card")
+                + "; -fx-border-color: " + ThemeProvider.get("border-default")
+                + "; -fx-border-radius: 6; -fx-background-radius: 6;"
+                + " -fx-text-fill: " + ThemeProvider.get("text-primary") + ";";
+        deckCombo.setStyle(comboStyle);
+        timeframeCombo.setStyle(comboStyle);
     }
 }
