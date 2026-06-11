@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -30,6 +31,10 @@ public class StatisticView extends BorderPane {
     private List<Deck> allDecks = new ArrayList<>();
     private PieChart ratingChart;
     private LineChart<String, Number> dailyChart;
+    private Button shareRatingButton;
+    private Button shareDailyButton;
+    private VBox ratingChartContainer;
+    private VBox dailyChartContainer;
 
     public StatisticView() {
         contentBox = new VBox(20);
@@ -58,6 +63,11 @@ public class StatisticView extends BorderPane {
         noDataLabel.setWrapText(true);
         noDataLabel.setAlignment(Pos.CENTER);
         noDataLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
+
+        shareRatingButton = new Button("Share");
+        shareRatingButton.setDisable(true);
+        shareDailyButton = new Button("Share");
+        shareDailyButton.setDisable(true);
 
         contentBox.getChildren().addAll(title, filterBar, noDataLabel);
 
@@ -130,11 +140,13 @@ public class StatisticView extends BorderPane {
     }
 
     private void renderCharts(StatisticsAggregator agg) {
-        contentBox.getChildren().removeIf(n -> n instanceof PieChart || n instanceof LineChart);
+        contentBox.getChildren().removeIf(n -> n == ratingChartContainer || n == dailyChartContainer);
 
         if (agg.getTotalCount() == 0) {
             noDataLabel.setVisible(true);
             noDataLabel.setManaged(true);
+            shareRatingButton.setDisable(true);
+            shareDailyButton.setDisable(true);
             return;
         }
 
@@ -143,7 +155,35 @@ public class StatisticView extends BorderPane {
 
         ratingChart = buildPieChart(agg);
         dailyChart = buildDailyLineChart(agg);
-        contentBox.getChildren().addAll(ratingChart, dailyChart);
+
+        HBox ratingHeader = new HBox(shareRatingButton);
+        ratingHeader.setAlignment(Pos.CENTER_RIGHT);
+        ratingChartContainer = new VBox(4, ratingHeader, ratingChart);
+
+        HBox dailyHeader = new HBox(shareDailyButton);
+        dailyHeader.setAlignment(Pos.CENTER_RIGHT);
+        dailyChartContainer = new VBox(4, dailyHeader, dailyChart);
+
+        shareRatingButton.setDisable(false);
+        shareDailyButton.setDisable(false);
+
+        contentBox.getChildren().addAll(ratingChartContainer, dailyChartContainer);
+    }
+
+    public void setOnShareEinschaetzung(Runnable handler) {
+        shareRatingButton.setOnAction(e -> handler.run());
+    }
+
+    public void setOnShareKartenProTag(Runnable handler) {
+        shareDailyButton.setOnAction(e -> handler.run());
+    }
+
+    public Node getEinschaetzungChartNode() {
+        return ratingChartContainer;
+    }
+
+    public Node getKartenProTagChartNode() {
+        return dailyChartContainer;
     }
 
     private PieChart buildPieChart(StatisticsAggregator agg) {
