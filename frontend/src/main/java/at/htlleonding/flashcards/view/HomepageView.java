@@ -3,18 +3,32 @@ package at.htlleonding.flashcards.view;
 import at.htlleonding.flashcards.model.Deck;
 import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.RotateTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
+import javafx.util.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class HomepageView extends VBox {
@@ -335,18 +349,28 @@ public class HomepageView extends VBox {
         int col = startCol;
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        Set<String> studiedSet = new HashSet<>(streakDates);
+
+        // Current active streak: consecutive days back from today
+        Set<String> currentStreakSet = new HashSet<>();
+        LocalDate cursor = realToday;
+        if (!studiedSet.contains(cursor.format(formatter))) cursor = cursor.minusDays(1);
+        while (studiedSet.contains(cursor.format(formatter))) {
+            currentStreakSet.add(cursor.format(formatter));
+            cursor = cursor.minusDays(1);
+        }
 
         for (int day = 1; day <= daysInMonth; day++) {
             LocalDate date = currentViewMonth.withDayOfMonth(day);
             String dateStr = date.format(formatter);
-            boolean isStudied = streakDates.contains(dateStr);
-            boolean isToday = date.equals(realToday);
+            boolean isStudied = studiedSet.contains(dateStr);
+            boolean isActive  = currentStreakSet.contains(dateStr);
+            boolean isToday   = date.equals(realToday);
 
             StackPane dayCell = new StackPane();
-            dayCell.setMaxWidth(Double.MAX_VALUE); // Let width stretch dynamically
-            dayCell.setMaxHeight(Double.MAX_VALUE); // Let height stretch dynamically
+            dayCell.setMaxWidth(Double.MAX_VALUE);
+            dayCell.setMaxHeight(Double.MAX_VALUE);
 
-            // Styling cell
             if (isToday) {
                 dayCell.setStyle(String.format(
                     "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 2.5; -fx-border-radius: 10; -fx-background-radius: 10;",
@@ -360,26 +384,44 @@ public class HomepageView extends VBox {
             }
 
             if (isStudied) {
-                // Large fire SVG path in the center (Duolingo Style)
-                javafx.scene.shape.SVGPath fireSvg = new javafx.scene.shape.SVGPath();
-                fireSvg.setContent("M17.06,12.38c-0.34-0.65-0.78-1.24-1.31-1.74C14.71,9.6,14,8.1,14,6.5c0-1-0.27-1.92-0.74-2.7C12.3,5.1,11,7.1,11,9.5 c0,0.85,0.18,1.67,0.51,2.42c-0.96-0.32-1.75-0.93-2.31-1.68C8.52,11.36,8,12.63,8,14c0,3.31,2.69,6,6,6s6-2.69,6-6 C20,13.43,18.9,12.78,17.06,12.38z");
-                fireSvg.setFill(javafx.scene.paint.Color.web(ThemeProvider.get("accent-orange"))); // Use theme accent orange for flame
-                fireSvg.setScaleX(0);
-                fireSvg.setScaleY(0);
-                dayCell.getChildren().add(fireSvg);
+                Group flameGroup = buildFlameGroup(isActive);
+                double baseScale = 2.2;
+                flameGroup.setScaleX(baseScale);
+                flameGroup.setScaleY(baseScale);
+                dayCell.getChildren().add(flameGroup);
 
-                javafx.animation.ScaleTransition pop = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(1500), fireSvg);
-                pop.setFromX(0);
-                pop.setFromY(0);
-                pop.setToX(2.5);
-                pop.setToY(2.5);
-                pop.setInterpolator(javafx.animation.Interpolator.SPLINE(0.1, 1.0, 0.3, 1.2)); // custom bouncy pop effect!
-                pop.play();
+                if (isActive) {
+                    SVGPath flameLayer = (SVGPath) flameGroup.getChildren().get(0);
 
-                // Day number overlayed on top of the flame in black text
-                Label dayLabel = new Label(String.valueOf(day));
-                dayLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: black;");
-                dayCell.getChildren().add(dayLabel);
+                    // Breathe: scale 2.2 ↔ 2.5
+                    ScaleTransition breathe = new ScaleTransition(Duration.millis(950), flameGroup);
+                    breathe.setFromX(baseScale); breathe.setFromY(baseScale);
+                    breathe.setToX(baseScale * 1.14); breathe.setToY(baseScale * 1.14);
+                    breathe.setAutoReverse(true); breathe.setCycleCount(Animation.INDEFINITE);
+                    breathe.setInterpolator(Interpolator.EASE_BOTH); breathe.play();
+
+                    // Sway: -9° ↔ +9°
+                    RotateTransition sway = new RotateTransition(Duration.millis(1300), flameGroup);
+                    sway.setFromAngle(-9); sway.setToAngle(9);
+                    sway.setAutoReverse(true); sway.setCycleCount(Animation.INDEFINITE);
+                    sway.setInterpolator(Interpolator.EASE_BOTH); sway.play();
+
+                    // Glow pulse
+                    DropShadow glow = (DropShadow) flameLayer.getEffect();
+                    Timeline glowPulse = new Timeline(
+                        new KeyFrame(Duration.ZERO,        new KeyValue(glow.radiusProperty(), 4,  Interpolator.EASE_BOTH)),
+                        new KeyFrame(Duration.millis(950), new KeyValue(glow.radiusProperty(), 18, Interpolator.EASE_BOTH))
+                    );
+                    glowPulse.setAutoReverse(true); glowPulse.setCycleCount(Animation.INDEFINITE); glowPulse.play();
+
+                    Label dayLabel = new Label(String.valueOf(day));
+                    dayLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: black;");
+                    dayCell.getChildren().add(dayLabel);
+                } else {
+                    Label dayLabel = new Label(String.valueOf(day));
+                    dayLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
+                    dayCell.getChildren().add(dayLabel);
+                }
             } else {
                 Label dayLabel = new Label(String.valueOf(day));
                 dayLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
@@ -396,6 +438,29 @@ public class HomepageView extends VBox {
         }
 
         return grid;
+    }
+
+    private Group buildFlameGroup(boolean active) {
+        SVGPath flame = new SVGPath();
+        flame.setContent("M17.06,12.38c-0.34-0.65-0.78-1.24-1.31-1.74C14.71,9.6,14,8.1,14,6.5c0-1-0.27-1.92-0.74-2.7C12.3,5.1,11,7.1,11,9.5c0,0.85,0.18,1.67,0.51,2.42c-0.96-0.32-1.75-0.93-2.31-1.68C8.52,11.36,8,12.63,8,14c0,3.31,2.69,6,6,6s6-2.69,6-6C20,13.43,18.9,12.78,17.06,12.38z");
+
+        SVGPath inner = new SVGPath();
+        inner.setContent("M14,18c-1.1,0-2-0.56-2-1.25c0-0.69,0.45-1.25,1-1.75s0.75-1.25,0.75-1.25s0.56,0.44,0.75,1c0.19,0.56,0.75,0.94,1.25,1.25C15.75,16.5,16,17,16,17.5C16,17.78,15.1,18,14,18z");
+        inner.setFill(Color.web("#FFE082"));
+
+        if (active) {
+            flame.setFill(Color.web(ThemeProvider.get("accent-orange")));
+            DropShadow glow = new DropShadow();
+            glow.setColor(Color.web("#FF6D00", 0.8));
+            glow.setRadius(8); glow.setSpread(0.1);
+            flame.setEffect(glow);
+            return new Group(flame, inner);
+        } else {
+            flame.setFill(Color.web("#9E9E9E"));
+            flame.setOpacity(0.5);
+            inner.setOpacity(0.0);
+            return new Group(flame, inner);
+        }
     }
 
     private void handlePrevMonth() {
