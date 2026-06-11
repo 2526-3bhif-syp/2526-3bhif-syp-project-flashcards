@@ -158,6 +158,23 @@ public class StatisticView extends BorderPane {
         chart.setLabelsVisible(true);
         chart.setLegendVisible(true);
         chart.setPrefHeight(320);
+
+        String textColor = ThemeProvider.get("text-primary");
+        String bgColor = ThemeProvider.get("bg-card");
+        chart.setStyle("-fx-background-color: " + bgColor + "; -fx-text-fill: " + textColor + ";");
+
+        // color slices: red / orange / blue / green
+        String[] sliceColors = {
+            ThemeProvider.get("accent-red"),
+            ThemeProvider.get("accent-orange"),
+            ThemeProvider.get("accent-blue"),
+            ThemeProvider.get("accent-green")
+        };
+        chart.setStyle(chart.getStyle()
+                + " -fx-pie-color-0: " + sliceColors[0] + ";"
+                + " -fx-pie-color-1: " + sliceColors[1] + ";"
+                + " -fx-pie-color-2: " + sliceColors[2] + ";"
+                + " -fx-pie-color-3: " + sliceColors[3] + ";");
         return chart;
     }
 
@@ -172,6 +189,8 @@ public class StatisticView extends BorderPane {
         chart.setPrefHeight(280);
         chart.setBarGap(2);
         chart.setCategoryGap(8);
+        chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card")
+                + "; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         Map<LocalDate, Long> byDay = agg.getCountByDay();
