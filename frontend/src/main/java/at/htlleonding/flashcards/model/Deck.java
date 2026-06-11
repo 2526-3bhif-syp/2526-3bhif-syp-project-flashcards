@@ -1,6 +1,7 @@
 package at.htlleonding.flashcards.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ public class Deck {
     private String description;
     private String iconId;
     private List<Card> cards;
+    private LocalDateTime lastStudied;
 
     public Deck() {
         this.id = UUID.randomUUID().toString();
@@ -69,6 +71,23 @@ public class Deck {
     public void setIconId(String iconId) { this.iconId = iconId; }
     
     public List<Card> getCards() { return new ArrayList<>(cards); }
+    
+    @JsonIgnore
+    public LocalDateTime getLastStudied() { return lastStudied; }
+    @JsonIgnore
+    public void setLastStudied(LocalDateTime lastStudied) { this.lastStudied = lastStudied; }
+
+    @JsonIgnore
+    public String getLastStudiedAsString() {
+        return lastStudied != null ? lastStudied.toString() : null;
+    }
+
+    @JsonIgnore
+    public void setLastStudiedAsString(String lastStudiedStr) {
+        this.lastStudied = (lastStudiedStr != null && !lastStudiedStr.isEmpty()) 
+            ? LocalDateTime.parse(lastStudiedStr) 
+            : null;
+    }
     
     @JsonIgnore
     public int getCardCount() { return cards.size(); }

@@ -41,6 +41,11 @@ public class MainPresenter {
         homeView.setOnDeleteSelectedDecksRequested(decks -> handleDeleteSelectedDecksRequested(decks, homeView));
         homeView.renderDecks(model.getDecks());
 
+        HomepageView homepageView = new HomepageView();
+        homepageView.setOnDeckSelected(this::handleDeckSelected);
+        homepageView.setOnEditDeckRequested(deck -> handleEditDeckRequested(homeView, deck));
+        homepageView.setOnDeleteDeckRequested(deck -> handleDeleteDeckRequested(homeView, deck));
+
         FlashcardsView flashcardsView = new FlashcardsView();
         flashcardsView.setOnAddCardRequested(() -> handleAddCardRequested(flashcardsView));
         flashcardsView.setOnEditCardRequested(card -> handleEditCardRequested(flashcardsView, card));
@@ -57,7 +62,8 @@ public class MainPresenter {
         studyModeView.setOnRatingSelected(this::handleLearnRating);
         studyModeView.setOnStopRequested(this::handleStopLearnMode);
 
-        views.put("Home", homeView);
+        views.put("Home", homepageView);
+        views.put("Decks", homeView);
         views.put("Flashcards", flashcardsView);
         views.put("StudyMode", studyModeView);
         views.put("Statistic", new StatisticView());
@@ -82,6 +88,8 @@ public class MainPresenter {
                     if ("Flashcards".equals(currentViewName)) {
                         refreshFlashcardsView();
                     } else if ("Home".equals(currentViewName)) {
+                        refreshHomepageView();
+                    } else if ("Decks".equals(currentViewName)) {
                         refreshHomeView();
                     }
                 } else {
@@ -91,6 +99,8 @@ public class MainPresenter {
                 if ("Flashcards".equals(currentViewName)) {
                     refreshFlashcardsView();
                 } else if ("Home".equals(currentViewName)) {
+                    refreshHomepageView();
+                } else if ("Decks".equals(currentViewName)) {
                     refreshHomeView();
                 }
             }
@@ -186,7 +196,8 @@ public class MainPresenter {
         dialog.showAndWait().ifPresent(deckResult -> {
             Deck newDeck = new Deck(deckResult.name(), deckResult.description(), deckResult.iconId());
             model.addOrMergeDeck(newDeck);
-            homeView.renderDecks(model.getDecks());
+            refreshHomeView();
+            refreshHomepageView();
         });
     }
 
@@ -198,7 +209,8 @@ public class MainPresenter {
             deck.setDescription(deckResult.description());
             deck.setIconId(deckResult.iconId());
             model.updateDeck(deck);
-            homeView.renderDecks(model.getDecks());
+            refreshHomeView();
+            refreshHomepageView();
         });
     }
 
@@ -218,7 +230,8 @@ public class MainPresenter {
         try {
             model.getPersistence().exportDecksToJSON(decks, file);
             homeView.exitSelectMode();
-            homeView.renderDecks(model.getDecks());
+            refreshHomeView();
+            refreshHomepageView();
             alert(Alert.AlertType.INFORMATION, decks.size() + " deck(s) exported successfully.");
         } catch (IOException e) {
             alert(Alert.AlertType.ERROR, "Export failed: " + e.getMessage());
@@ -238,7 +251,8 @@ public class MainPresenter {
                     refreshFlashcardsView();
                 }
                 homeView.exitSelectMode();
-                homeView.renderDecks(model.getDecks());
+                refreshHomeView();
+                refreshHomepageView();
             }
         });
     }
@@ -256,7 +270,8 @@ public class MainPresenter {
                     currentDeck = null;
                     refreshFlashcardsView();
                 }
-                homeView.renderDecks(model.getDecks());
+                refreshHomeView();
+                refreshHomepageView();
             }
         });
     }
@@ -440,7 +455,15 @@ public class MainPresenter {
         }
 
         StudyView studyView = new StudyView(cards);
-        studyView.setOnSessionEnd(() -> model.updateDeck(currentDeck));
+        studyView.setOnSessionEnd(() -> {
+            if (currentDeck != null) {
+                model.recordDeckStudied(currentDeck.getId());
+            } else {
+                model.addStreakDate(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            }
+            refreshHomepageView();
+            refreshHomeView();
+        });
         studyView.show();
     }
 
@@ -468,6 +491,7 @@ public class MainPresenter {
         view.getNavbar().applyTheme();
         for (Node v : views.values()) {
             if (v instanceof HomeView hv) hv.applyTheme();
+            else if (v instanceof HomepageView hpv) hpv.applyTheme();
             else if (v instanceof FlashcardsView fv) fv.applyTheme();
             else if (v instanceof StudyModeView smv) smv.applyTheme();
             else if (v instanceof SettingsView sv) sv.applyTheme();
@@ -479,6 +503,8 @@ public class MainPresenter {
         if (destination.equals(currentViewName)) return;
 
         if (destination.equals("Home")) {
+            refreshHomepageView();
+        } else if (destination.equals("Decks")) {
             refreshHomeView();
         } else if (destination.equals("Statistic")) {
             ((StatisticView) views.get("Statistic")).refresh(model.getDecks());
@@ -561,14 +587,48 @@ public class MainPresenter {
         studyQueue.clear();
         studyQueueIdx = 0;
         lastStudyCard = null;
+        if (currentDeck != null) {
+            model.recordDeckStudied(currentDeck.getId());
+        } else {
+            model.addStreakDate(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        }
+        refreshHomepageView();
+        refreshHomeView();
         navigateTo("Flashcards", true);
     }
 
     // ── helpers ────────────────────────────────────────────────────────────
 
     private void refreshHomeView() {
-        HomeView hv = (HomeView) views.get("Home");
+        HomeView hv = (HomeView) views.get("Decks");
         hv.renderDecks(model.getDecks());
+    }
+
+    private void refreshHomepageView() {
+        HomepageView hpView = (HomepageView) views.get("Home");
+        if (hpView == null) return;
+
+        List<Deck> decks = model.getDecks();
+
+        // Recommended: oldest lastStudied first, never studied (null) first
+        List<Deck> recommended = new ArrayList<>(decks);
+        recommended.sort((d1, d2) -> {
+            if (d1.getLastStudied() == null && d2.getLastStudied() == null) return 0;
+            if (d1.getLastStudied() == null) return -1;
+            if (d2.getLastStudied() == null) return 1;
+            return d1.getLastStudied().compareTo(d2.getLastStudied());
+        });
+
+        // Recent: newest lastStudied first, filter out null
+        List<Deck> recent = decks.stream()
+                .filter(d -> d.getLastStudied() != null)
+                .sorted((d1, d2) -> d2.getLastStudied().compareTo(d1.getLastStudied()))
+                .collect(Collectors.toList());
+
+        List<String> streaks = model.getStreakDates();
+        int streakCount = model.calculateCurrentStreak();
+
+        hpView.setData(recommended, recent, streaks, streakCount);
     }
 
     private File saveDialog(Node anchor, String initialName) {

@@ -1,11 +1,17 @@
 package at.htlleonding.flashcards.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Model {
     private List<Deck> decks = new ArrayList<>();
+    private StreakData streakData = new StreakData();
     private final Persistence persistence;
 
     public Model() {
@@ -15,7 +21,24 @@ public class Model {
     public Model(Persistence persistence) {
         this.persistence = persistence;
         this.decks = persistence.loadDecks();
+        this.streakData = persistence.loadStreakData();
+        syncDecksWithStreakData();
+    }
 
+    private void syncDecksWithStreakData() {
+        if (streakData == null || streakData.getRecentDecks() == null) {
+            return;
+        }
+        for (Deck deck : decks) {
+            String lastStudiedStr = streakData.getRecentDecks().get(deck.getId());
+            if (lastStudiedStr != null && !lastStudiedStr.isEmpty()) {
+                try {
+                    deck.setLastStudied(LocalDateTime.parse(lastStudiedStr));
+                } catch (Exception e) {
+                    System.err.println("Error parsing lastStudied date for deck " + deck.getId() + ": " + e.getMessage());
+                }
+            }
+        }
     }
 
     public List<Card> searchCards(String query) {
@@ -86,5 +109,63 @@ public class Model {
 
     public Persistence getPersistence() {
         return persistence;
+    }
+
+    public List<String> getStreakDates() {
+        return new ArrayList<>(streakData.getStreakDates());
+    }
+
+    public void addStreakDate(String date) {
+        if (!streakData.getStreakDates().contains(date)) {
+            streakData.getStreakDates().add(date);
+            persistence.saveStreakData(streakData);
+        }
+    }
+
+    public void recordDeckStudied(String deckId) {
+        // Record streak date for today
+        String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        if (!streakData.getStreakDates().contains(todayStr)) {
+            streakData.getStreakDates().add(todayStr);
+        }
+        // Record last studied time
+        LocalDateTime now = LocalDateTime.now();
+        streakData.getRecentDecks().put(deckId, now.toString());
+
+        // Update the deck object in memory
+        for (Deck deck : decks) {
+            if (deck.getId().equals(deckId)) {
+                deck.setLastStudied(now);
+                break;
+            }
+        }
+
+        // Save the streak data
+        persistence.saveStreakData(streakData);
+    }
+
+    public int calculateCurrentStreak() {
+        List<String> dates = streakData.getStreakDates();
+        if (dates.isEmpty()) return 0;
+
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        Set<String> dateSet = new HashSet<>(dates);
+
+        int streak = 0;
+        LocalDate dateToCheck = today;
+
+        // If today is not in the set, check if they studied yesterday to keep the streak alive
+        if (!dateSet.contains(dateToCheck.format(formatter))) {
+            dateToCheck = dateToCheck.minusDays(1);
+        }
+
+        while (dateSet.contains(dateToCheck.format(formatter))) {
+            streak++;
+            dateToCheck = dateToCheck.minusDays(1);
+        }
+
+        return streak;
     }
 }
