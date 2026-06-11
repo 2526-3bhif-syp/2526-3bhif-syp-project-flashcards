@@ -245,3 +245,9 @@ dateien steht. Desweiteren sollst du unit tests schreiben für die Deck klasse u
 * *Prompt* Der Search funktioniert noch nicht ganz. Wenn ich search auf der Deck view und dann wieder Search bar leer ist möchte das ich wieder zur Deck view komme. Zudem soll nach Topic
 und tag geschaut werden.
 
+== Session 8
+
+* *Prompt* /openspec-explore: nimm dir die gh cli und hol dir das neue issue #64 und shcua es dir an. Schreib keinen Code wir besprechen nur.
+* 1. Speicherung des Streaks: Ist die Speicherung der gelernten Tage in  settings.properties  (als kommaseparierte Datumsliste) in Ordnung, oder wollen wir dafür das Datenmodell
+erweitern? Mach eine eine streaks.json und schreib da die Streak rein.
+* 2. Sidebar-Struktur: Passt es, dass  "Home"  nun zur neuen Homepage führt und die alte Kachelansicht unter einem neuen Menüpunkt  "Decks"  (Stapel) erreichbar ist? Home wird zur Homepage und die reine Karten Ansicht wird gelöscht und es wird zur Stapel Ansicht.
