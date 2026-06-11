@@ -1,7 +1,6 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Card;
-import at.htlleonding.flashcards.model.CardSelector;
 import at.htlleonding.flashcards.model.StudyRecord;
 import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
@@ -19,18 +18,17 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class StudyView {
     private final Stage stage;
     private final List<Card> studyCards;
     private Card currentCard;
-    private final CardSelector cardSelector = CardSelector.of(CardSelector.AlgorithmType.WEIGHTED);
+    private int studyIndex = 0;
 
     private final BorderPane root;
     private final Button flipBtn;
@@ -42,7 +40,6 @@ public class StudyView {
     private final List<MediaPlayer> activeMediaPlayers = new ArrayList<>();
 
     private final Map<String, Integer> sessionRatings = new HashMap<>();
-    private final Set<String> ratedCardIds = new HashSet<>();
 
     private Consumer<String> onAssessment;
     private Runnable onFinish;
@@ -50,7 +47,8 @@ public class StudyView {
 
     public StudyView(List<Card> cards) {
         this.studyCards = new ArrayList<>(cards);
-        this.currentCard = studyCards.isEmpty() ? null : cardSelector.selectNext(studyCards);
+        Collections.shuffle(this.studyCards);
+        this.currentCard = studyCards.isEmpty() ? null : studyCards.get(0);
 
         stage = new Stage();
         stage.setTitle("Study Mode");
@@ -144,18 +142,10 @@ public class StudyView {
 
     private void handleAssessment(String label) {
         if (currentCard == null) return;
-        String ratingKey = label;
-        cardSelector.recordRating(currentCard, ratingKey);
-        currentCard.getStudyHistory().add(new StudyRecord(ratingKey));
+        currentCard.getStudyHistory().add(new StudyRecord(label));
         sessionRatings.merge(label, 1, Integer::sum);
-        ratedCardIds.add(currentCard.getId());
         if (onAssessment != null) onAssessment.accept(label);
-
-        if (ratedCardIds.size() >= studyCards.size()) {
-            showStats();
-        } else {
-            nextCard();
-        }
+        nextCard();
     }
 
     private Node buildSidePanel(String text, String textStyle,
@@ -312,9 +302,9 @@ public class StudyView {
         );
         retryBtn.setOnAction(e -> {
             sessionRatings.clear();
-            ratedCardIds.clear();
-            cardSelector.reset();
-            currentCard = studyCards.isEmpty() ? null : cardSelector.selectNext(studyCards);
+            studyIndex = 0;
+            Collections.shuffle(studyCards);
+            currentCard = studyCards.isEmpty() ? null : studyCards.get(0);
             beendenBtn.setVisible(true);
             beendenBtn.setManaged(true);
             showCardFront();
@@ -384,7 +374,12 @@ public class StudyView {
     }
 
     private void nextCard() {
-        currentCard = cardSelector.selectNext(studyCards);
+        studyIndex++;
+        if (studyIndex >= studyCards.size()) {
+            showStats();
+            return;
+        }
+        currentCard = studyCards.get(studyIndex);
         showCardFront();
     }
 

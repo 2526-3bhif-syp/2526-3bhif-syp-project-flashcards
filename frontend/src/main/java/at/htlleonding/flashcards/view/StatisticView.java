@@ -1,6 +1,7 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -28,7 +29,7 @@ public class StatisticView extends BorderPane {
 
     private List<Deck> allDecks = new ArrayList<>();
     private PieChart ratingChart;
-    private BarChart<String, Number> dailyChart;
+    private LineChart<String, Number> dailyChart;
 
     public StatisticView() {
         contentBox = new VBox(20);
@@ -129,7 +130,7 @@ public class StatisticView extends BorderPane {
     }
 
     private void renderCharts(StatisticsAggregator agg) {
-        contentBox.getChildren().removeIf(n -> n instanceof PieChart || n instanceof BarChart);
+        contentBox.getChildren().removeIf(n -> n instanceof PieChart || n instanceof LineChart);
 
         if (agg.getTotalCount() == 0) {
             noDataLabel.setVisible(true);
@@ -141,55 +142,57 @@ public class StatisticView extends BorderPane {
         noDataLabel.setManaged(false);
 
         ratingChart = buildPieChart(agg);
-        dailyChart = buildDailyBarChart(agg);
+        dailyChart = buildDailyLineChart(agg);
         contentBox.getChildren().addAll(ratingChart, dailyChart);
     }
 
     private PieChart buildPieChart(StatisticsAggregator agg) {
         Map<String, Long> counts = agg.getCountByRating();
 
+        // colors mirror the rating buttons: FALSCH=red, SCHWIERIG=orange, OK=blue, LEICHT=green
+        String[] ratingKeys  = {"FALSCH",        "SCHWIERIG",       "OK",            "LEICHT"};
+        String[] labelKeys   = {"statistic.rating_falsch", "statistic.rating_schwierig",
+                                "statistic.rating_ok",     "statistic.rating_leicht"};
+        String[] colorTokens = {"accent-red", "accent-orange", "accent-blue", "accent-green"};
+
         ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
-        addSlice(data, "statistic.rating_falsch", counts.getOrDefault("FALSCH", 0L));
-        addSlice(data, "statistic.rating_schwierig", counts.getOrDefault("SCHWIERIG", 0L));
-        addSlice(data, "statistic.rating_ok", counts.getOrDefault("OK", 0L));
-        addSlice(data, "statistic.rating_leicht", counts.getOrDefault("LEICHT", 0L));
+        List<String> sliceColors = new ArrayList<>();
+        for (int i = 0; i < ratingKeys.length; i++) {
+            long count = counts.getOrDefault(ratingKeys[i], 0L);
+            if (count > 0) {
+                String label = TranslationProvider.get(labelKeys[i]) + " (" + count + ")";
+                data.add(new PieChart.Data(label, count));
+                sliceColors.add(ThemeProvider.get(colorTokens[i]));
+            }
+        }
 
         PieChart chart = new PieChart(data);
         chart.titleProperty().bind(TranslationProvider.createStringBinding("statistic.rating_chart"));
         chart.setLabelsVisible(true);
         chart.setLegendVisible(true);
         chart.setPrefHeight(320);
+        chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + ";");
 
-        String textColor = ThemeProvider.get("text-primary");
-        String bgColor = ThemeProvider.get("bg-card");
-        chart.setStyle("-fx-background-color: " + bgColor + "; -fx-text-fill: " + textColor + ";");
-
-        // color slices: red / orange / blue / green
-        String[] sliceColors = {
-            ThemeProvider.get("accent-red"),
-            ThemeProvider.get("accent-orange"),
-            ThemeProvider.get("accent-blue"),
-            ThemeProvider.get("accent-green")
-        };
-        chart.setStyle(chart.getStyle()
-                + " -fx-pie-color-0: " + sliceColors[0] + ";"
-                + " -fx-pie-color-1: " + sliceColors[1] + ";"
-                + " -fx-pie-color-2: " + sliceColors[2] + ";"
-                + " -fx-pie-color-3: " + sliceColors[3] + ";");
+        Platform.runLater(() -> {
+            for (int i = 0; i < Math.min(data.size(), sliceColors.size()); i++) {
+                if (data.get(i).getNode() != null) {
+                    data.get(i).getNode().setStyle("-fx-pie-color: " + sliceColors.get(i) + ";");
+                }
+            }
+        });
         return chart;
     }
 
-    private BarChart<String, Number> buildDailyBarChart(StatisticsAggregator agg) {
+    private LineChart<String, Number> buildDailyLineChart(StatisticsAggregator agg) {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         yAxis.setMinorTickVisible(false);
 
-        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.titleProperty().bind(TranslationProvider.createStringBinding("statistic.daily_chart"));
         chart.setLegendVisible(false);
         chart.setPrefHeight(280);
-        chart.setBarGap(2);
-        chart.setCategoryGap(8);
+        chart.setCreateSymbols(true);
         chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card")
                 + "; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
@@ -200,13 +203,6 @@ public class StatisticView extends BorderPane {
 
         chart.getData().add(series);
         return chart;
-    }
-
-    private void addSlice(ObservableList<PieChart.Data> data, String labelKey, long count) {
-        if (count > 0) {
-            String label = TranslationProvider.get(labelKey) + " (" + count + ")";
-            data.add(new PieChart.Data(label, count));
-        }
     }
 
     public void applyTheme() {

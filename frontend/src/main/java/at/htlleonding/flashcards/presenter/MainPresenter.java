@@ -21,7 +21,8 @@ public class MainPresenter {
     private final Stack<String> forwardStack = new Stack<>();
     private String currentViewName;
     private Deck currentDeck; // null = "all cards" mode
-    private CardSelector cardSelector = CardSelector.of(CardSelector.AlgorithmType.WEIGHTED);
+    private List<Card> studyQueue = new ArrayList<>();
+    private int studyQueueIdx = 0;
     private Card lastStudyCard;
     private String viewBeforeSearch = null;
 
@@ -532,25 +533,33 @@ public class MainPresenter {
             alert(Alert.AlertType.WARNING, "Der Stapel enthält keine Karten.");
             return;
         }
-        cardSelector.reset();
-        lastStudyCard = null;
+        studyQueue = new ArrayList<>(currentDeck.getCards());
+        Collections.shuffle(studyQueue);
+        studyQueueIdx = 0;
+        lastStudyCard = studyQueue.get(0);
         StudyModeView studyView = (StudyModeView) views.get("StudyMode");
         studyView.setDeckName(currentDeck.getName());
-        lastStudyCard = cardSelector.selectNext(currentDeck.getCards());
         studyView.showCard(lastStudyCard);
         navigateTo("StudyMode", true);
     }
 
     private void handleLearnRating(String rating) {
-        if (currentDeck == null || currentDeck.getCards().isEmpty()) return;
-        cardSelector.recordRating(lastStudyCard, rating);
+        if (lastStudyCard == null) return;
+        lastStudyCard.getStudyHistory().add(new StudyRecord(rating));
+        model.updateDeck(currentDeck);
+        studyQueueIdx++;
         StudyModeView studyView = (StudyModeView) views.get("StudyMode");
-        lastStudyCard = cardSelector.selectNext(currentDeck.getCards());
+        if (studyQueueIdx >= studyQueue.size()) {
+            studyView.showSessionDone();
+            return;
+        }
+        lastStudyCard = studyQueue.get(studyQueueIdx);
         studyView.showCard(lastStudyCard);
     }
 
     private void handleStopLearnMode() {
-        cardSelector.reset();
+        studyQueue.clear();
+        studyQueueIdx = 0;
         lastStudyCard = null;
         navigateTo("Flashcards", true);
     }
