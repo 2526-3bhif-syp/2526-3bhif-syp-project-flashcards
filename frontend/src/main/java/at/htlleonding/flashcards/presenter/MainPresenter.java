@@ -2,12 +2,20 @@ package at.htlleonding.flashcards.presenter;
 
 import at.htlleonding.flashcards.model.*;
 import at.htlleonding.flashcards.view.*;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,11 +70,17 @@ public class MainPresenter {
         studyModeView.setOnRatingSelected(this::handleLearnRating);
         studyModeView.setOnStopRequested(this::handleStopLearnMode);
 
+        StatisticView statisticView = new StatisticView();
+        statisticView.setOnShareEinschaetzung(
+                () -> shareChart(statisticView.getEinschaetzungChartNode(), statisticView));
+        statisticView.setOnShareKartenProTag(
+                () -> shareChart(statisticView.getKartenProTagChartNode(), statisticView));
+
         views.put("Home", homepageView);
         views.put("Decks", homeView);
         views.put("Flashcards", flashcardsView);
         views.put("StudyMode", studyModeView);
-        views.put("Statistic", new StatisticView());
+        views.put("Statistic", statisticView);
         views.put("Settings", new SettingsView());
 
         view.getSidebar().setOnNavigationAction(this::handleNavigation);
@@ -629,6 +643,51 @@ public class MainPresenter {
         int streakCount = model.calculateCurrentStreak();
 
         hpView.setData(recommended, recent, streaks, streakCount);
+    }
+
+    private void shareChart(Node chartNode, StatisticView sv) {
+        if (chartNode == null) return;
+        VBox container = (VBox) chartNode;
+
+        String stapel = sv.getSelectedDeckLabel();
+        String zeitraum = sv.getSelectedTimeframeLabel();
+        Label filterLabel = new Label("Stapel: " + stapel + " | Zeitraum: " + zeitraum);
+        filterLabel.setStyle("-fx-font-size: 12px; -fx-padding: 4 8 4 8; -fx-text-fill: "
+                + ThemeProvider.get("text-muted") + ";");
+        filterLabel.setPadding(new Insets(4, 8, 8, 8));
+        container.getChildren().add(filterLabel);
+
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.web(ThemeProvider.get("bg-card")));
+        WritableImage image = container.snapshot(params, null);
+        container.getChildren().remove(filterLabel);
+
+        // File I/O and process launch are blocking — run off the FX thread
+        new Thread(() -> {
+            try {
+                int w = (int) image.getWidth();
+                int h = (int) image.getHeight();
+                BufferedImage buf = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+                javafx.scene.image.PixelReader reader = image.getPixelReader();
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                        buf.setRGB(x, y, reader.getArgb(x, y));
+
+                File tmp = File.createTempFile("flashcards_stat_", ".png");
+                tmp.deleteOnExit();
+                ImageIO.write(buf, "png", tmp);
+
+                String os = System.getProperty("os.name").toLowerCase();
+                ProcessBuilder pb;
+                if (os.contains("win"))       pb = new ProcessBuilder("explorer.exe", tmp.getAbsolutePath());
+                else if (os.contains("mac"))  pb = new ProcessBuilder("open", tmp.getAbsolutePath());
+                else                          pb = new ProcessBuilder("xdg-open", tmp.getAbsolutePath());
+                pb.start();
+            } catch (IOException e) {
+                javafx.application.Platform.runLater(() ->
+                        alert(Alert.AlertType.ERROR, "Share fehlgeschlagen: " + e.getMessage()));
+            }
+        }).start();
     }
 
     private File saveDialog(Node anchor, String initialName) {
