@@ -186,6 +186,16 @@ public class StatisticView extends BorderPane {
         return dailyChartContainer;
     }
 
+    public String getSelectedDeckLabel() {
+        String val = deckCombo.getSelectionModel().getSelectedItem();
+        return val != null ? val : TranslationProvider.get(ALL_DECKS_KEY);
+    }
+
+    public String getSelectedTimeframeLabel() {
+        String val = timeframeCombo.getSelectionModel().getSelectedItem();
+        return val != null ? val : "";
+    }
+
     private PieChart buildPieChart(StatisticsAggregator agg) {
         Map<String, Long> counts = agg.getCountByRating();
 
