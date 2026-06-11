@@ -64,9 +64,11 @@ public class StatisticView extends BorderPane {
         noDataLabel.setAlignment(Pos.CENTER);
         noDataLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
-        shareRatingButton = new Button("Share");
+        shareRatingButton = new Button("⬆ Share");
+        styleShareBtn(shareRatingButton);
         shareRatingButton.setDisable(true);
-        shareDailyButton = new Button("Share");
+        shareDailyButton = new Button("⬆ Share");
+        styleShareBtn(shareDailyButton);
         shareDailyButton.setDisable(true);
 
         contentBox.getChildren().addAll(title, filterBar, noDataLabel);
@@ -186,6 +188,23 @@ public class StatisticView extends BorderPane {
         return dailyChartContainer;
     }
 
+    private void styleShareBtn(Button btn) {
+        String accent = ThemeProvider.get("accent-blue");
+        String normal = "-fx-background-color: " + ThemeProvider.get("bg-card")
+                + "; -fx-border-color: " + accent
+                + "; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-background-radius: 8;"
+                + " -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"
+                + " -fx-text-fill: " + ThemeProvider.get("fg-black") + "; -fx-font-weight: bold;";
+        String hover = "-fx-background-color: " + accent
+                + "; -fx-border-color: " + accent
+                + "; -fx-border-width: 1.5; -fx-border-radius: 8; -fx-background-radius: 8;"
+                + " -fx-padding: 8 14; -fx-cursor: hand; -fx-font-size: 13px;"
+                + " -fx-text-fill: white; -fx-font-weight: bold;";
+        btn.setStyle(normal);
+        btn.setOnMouseEntered(e -> btn.setStyle(hover));
+        btn.setOnMouseExited(e -> btn.setStyle(normal));
+    }
+
     public String getSelectedDeckLabel() {
         String val = deckCombo.getSelectionModel().getSelectedItem();
         return val != null ? val : TranslationProvider.get(ALL_DECKS_KEY);
@@ -272,6 +291,9 @@ public class StatisticView extends BorderPane {
                 + " -fx-text-fill: " + ThemeProvider.get("text-primary") + ";";
         deckCombo.setStyle(comboStyle);
         timeframeCombo.setStyle(comboStyle);
+
+        styleShareBtn(shareRatingButton);
+        styleShareBtn(shareDailyButton);
 
         if (!allDecks.isEmpty()) {
             applyFilters();
