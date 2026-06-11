@@ -114,3 +114,25 @@ Fragen zur implementierung.
 
 Antwort: neben dem bereich wo der audio name ist
 Antwort: Ja bau ein limit ein. was du für anständig hältst. nicht über 1min
+
+== Session 9 (???)
+
+Aufgrund von openspec keine Dokumentation nötig.
+
+== Session 10 (2026 30-05)
+Analysiere die Klasse WeightedCardAlgorithm und erstelle daraufhin eine Unittest die beide Methoden abdeckt.
+
+
+== Session 11 (2026 11-06)
+analysiere mal openspec. welche aufgabe sind noch offen und was ist mit share statistic user story 9, bei bedarf wirf einen Blick auf github.
+
+ja bitte fetch auch noch den task share button 34 und mache einen change dafür aber besprich es davor mit mir wie du es dir vorstellst
+
+Aktuell ist es so dass wir 2 Statistiken haben und jeweils einen Stapel und einen Zeitraum filter. Ich will den Button, allgemein auf der seite und wenn man diesen drückt soll ein Dialogfenster erscheinen bei dem man auswählen kann welche filter und welche Statistik genau. Daruafhin soll das Bild also Screenshot geteilt werden können. bevor du es implemeniterst besprechen wir nochmal um ganz sicherzugehen.
+
+Nein pro Statistik ein Button und machen wir es so dass die aktuelle Filterung einfach übernommen wird, und ich will dass wirklich geshared wird.. Es soll auch die aktiven Filter Labels angezeigt werden. Hast du es
+verstanden. Fass es nochmal zusammen.
+
+/opsx:apply share-statistiken
+
+Bitte passe den share button grafisch an den bereits vorhanden buttons an
