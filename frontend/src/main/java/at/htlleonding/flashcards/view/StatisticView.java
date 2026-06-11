@@ -70,6 +70,7 @@ public class StatisticView extends BorderPane {
 
         setCenter(scrollPane);
         applyTheme();
+        ThemeProvider.addThemeListener(this::applyTheme);
     }
 
     public void refresh(List<Deck> decks) {
@@ -225,5 +226,9 @@ public class StatisticView extends BorderPane {
                 + " -fx-text-fill: " + ThemeProvider.get("text-primary") + ";";
         deckCombo.setStyle(comboStyle);
         timeframeCombo.setStyle(comboStyle);
+
+        if (!allDecks.isEmpty()) {
+            applyFilters();
+        }
     }
 }
