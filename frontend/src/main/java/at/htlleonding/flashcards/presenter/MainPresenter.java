@@ -6,16 +6,25 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.image.WritableImage;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -649,45 +658,83 @@ public class MainPresenter {
         if (chartNode == null) return;
         VBox container = (VBox) chartNode;
 
+        // Hide the share-button bar so it doesn't appear in the screenshot
+        Node buttonBar = container.getChildren().get(0);
+        buttonBar.setVisible(false);
+        buttonBar.setManaged(false);
+
         String stapel = sv.getSelectedDeckLabel();
         String zeitraum = sv.getSelectedTimeframeLabel();
         Label filterLabel = new Label("Stapel: " + stapel + " | Zeitraum: " + zeitraum);
-        filterLabel.setStyle("-fx-font-size: 12px; -fx-padding: 4 8 4 8; -fx-text-fill: "
+        filterLabel.setStyle("-fx-font-size: 12px; -fx-padding: 4 8 8 8; -fx-text-fill: "
                 + ThemeProvider.get("text-muted") + ";");
-        filterLabel.setPadding(new Insets(4, 8, 8, 8));
         container.getChildren().add(filterLabel);
 
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.web(ThemeProvider.get("bg-card")));
         WritableImage image = container.snapshot(params, null);
+
         container.getChildren().remove(filterLabel);
+        buttonBar.setVisible(true);
+        buttonBar.setManaged(true);
 
-        // File I/O and process launch are blocking — run off the FX thread
-        new Thread(() -> {
-            try {
-                int w = (int) image.getWidth();
-                int h = (int) image.getHeight();
-                BufferedImage buf = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-                javafx.scene.image.PixelReader reader = image.getPixelReader();
-                for (int y = 0; y < h; y++)
-                    for (int x = 0; x < w; x++)
-                        buf.setRGB(x, y, reader.getArgb(x, y));
+        showSharePreview(image);
+    }
 
-                File tmp = File.createTempFile("flashcards_stat_", ".png");
-                tmp.deleteOnExit();
-                ImageIO.write(buf, "png", tmp);
+    private void showSharePreview(WritableImage image) {
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setTitle("Statistik teilen");
 
-                String os = System.getProperty("os.name").toLowerCase();
-                ProcessBuilder pb;
-                if (os.contains("win"))       pb = new ProcessBuilder("explorer.exe", tmp.getAbsolutePath());
-                else if (os.contains("mac"))  pb = new ProcessBuilder("open", tmp.getAbsolutePath());
-                else                          pb = new ProcessBuilder("xdg-open", tmp.getAbsolutePath());
-                pb.start();
-            } catch (IOException e) {
-                javafx.application.Platform.runLater(() ->
-                        alert(Alert.AlertType.ERROR, "Share fehlgeschlagen: " + e.getMessage()));
-            }
-        }).start();
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(600);
+
+        Button copyBtn = new Button("In Zwischenablage kopieren");
+        copyBtn.setOnAction(e -> {
+            ClipboardContent content = new ClipboardContent();
+            content.putImage(image);
+            Clipboard.getSystemClipboard().setContent(content);
+        });
+
+        Button saveBtn = new Button("Speichern...");
+        saveBtn.setOnAction(e -> {
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Statistik speichern");
+            fc.setInitialFileName("statistik.png");
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG", "*.png"));
+            File file = fc.showSaveDialog(dialog);
+            if (file == null) return;
+            new Thread(() -> {
+                try {
+                    int w = (int) image.getWidth();
+                    int h = (int) image.getHeight();
+                    BufferedImage buf = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+                    javafx.scene.image.PixelReader reader = image.getPixelReader();
+                    for (int y = 0; y < h; y++)
+                        for (int x = 0; x < w; x++)
+                            buf.setRGB(x, y, reader.getArgb(x, y));
+                    ImageIO.write(buf, "png", file);
+                } catch (IOException ex) {
+                    javafx.application.Platform.runLater(() ->
+                            alert(Alert.AlertType.ERROR, "Speichern fehlgeschlagen: " + ex.getMessage()));
+                }
+            }).start();
+        });
+
+        Button closeBtn = new Button("Schließen");
+        closeBtn.setOnAction(e -> dialog.close());
+
+        HBox buttons = new HBox(8, copyBtn, saveBtn, closeBtn);
+        buttons.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        buttons.setPadding(new Insets(8, 0, 0, 0));
+
+        VBox root = new VBox(12, imageView, buttons);
+        root.setPadding(new Insets(16));
+        root.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + ";");
+
+        dialog.setScene(new Scene(root));
+        dialog.show();
     }
 
     private File saveDialog(Node anchor, String initialName) {
