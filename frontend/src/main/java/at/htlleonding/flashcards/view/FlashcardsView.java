@@ -412,20 +412,35 @@ public class FlashcardsView extends HBox {
     }
 
     static VBox buildImageUI(String base64Data, String fileName, double fitWidth, double fitHeight) {
-        byte[] bytes = Base64.getDecoder().decode(base64Data);
-        ImageView imageView = new ImageView(new Image(new ByteArrayInputStream(bytes)));
-        imageView.setFitWidth(fitWidth);
-        imageView.setFitHeight(fitHeight);
-        imageView.setPreserveRatio(true);
-        imageView.setSmooth(true);
+        try {
+            System.out.println("buildImageUI: fileName=" + fileName + ", dataLength=" + (base64Data != null ? base64Data.length() : "null"));
+            if (base64Data == null || base64Data.isEmpty()) {
+                return new VBox(new Label("No image data provided for " + fileName));
+            }
+            byte[] bytes = Base64.getMimeDecoder().decode(base64Data.replaceAll("\\s", ""));
+            Image img = new Image(new ByteArrayInputStream(bytes));
+            if (img.isError()) {
+                System.err.println("buildImageUI error loading image: " + img.getException());
+                return new VBox(new Label("Image format error: " + fileName));
+            }
+            ImageView imageView = new ImageView(img);
+            imageView.setFitWidth(fitWidth);
+            imageView.setFitHeight(fitHeight);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
 
-        Label nameLabel = new Label("🖼 " + (fileName != null ? fileName : ""));
-        nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
+            Label nameLabel = new Label("🖼 " + (fileName != null ? fileName : ""));
+            nameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
-        VBox container = new VBox(4, imageView, nameLabel);
-        container.setAlignment(Pos.CENTER);
-        container.setPadding(new Insets(8, 0, 0, 0));
-        return container;
+            VBox container = new VBox(4, imageView, nameLabel);
+            container.setAlignment(Pos.CENTER);
+            container.setPadding(new Insets(8, 0, 0, 0));
+            return container;
+        } catch (Exception e) {
+            System.err.println("buildImageUI exception: " + e.getMessage());
+            e.printStackTrace();
+            return new VBox(new Label("Exception loading image: " + fileName));
+        }
     }
 
     // ── select mode ────────────────────────────────────────────────────────
@@ -474,6 +489,8 @@ public class FlashcardsView extends HBox {
     private void addPlusCard() {
         VBox plusCard = new VBox();
         plusCard.setPrefSize(120, 160);
+        plusCard.setMinSize(120, 160);
+        plusCard.setMaxSize(120, 160);
         plusCard.setAlignment(Pos.CENTER);
         plusCard.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;");
         Label plusLabel = new Label("+");
@@ -507,6 +524,8 @@ public class FlashcardsView extends HBox {
 
             VBox cardTile = new VBox();
             cardTile.setPrefSize(120, 160);
+            cardTile.setMinSize(120, 160);
+            cardTile.setMaxSize(120, 160);
             cardTile.setPadding(new Insets(5));
             cardTile.setAlignment(Pos.TOP_CENTER);
             cardTile.setStyle(String.format(
@@ -571,16 +590,20 @@ public class FlashcardsView extends HBox {
                 FlowPane tagsPane = new FlowPane(4, 4);
                 tagsPane.setAlignment(Pos.CENTER);
                 tagsPane.setPadding(new Insets(0, 0, 5, 0));
+                tagsPane.setMaxWidth(110);
                 int count = 0;
                 for (String tag : card.getTags()) {
-                    if (count >= 3) {
-                    Label more = new Label("...");
-                    more.setStyle("-fx-font-size: 9px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
+                    if (count >= 2) {
+                        Label more = new Label("...");
+                        more.setStyle("-fx-font-size: 9px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
                         tagsPane.getChildren().add(more);
                         break;
                     }
                     Label tagLabel = new Label(tag);
                     tagLabel.setPadding(new Insets(1, 6, 1, 6));
+                    tagLabel.setMaxWidth(80);
+                    tagLabel.setTextOverrun(OverrunStyle.ELLIPSIS);
+                    tagLabel.setWrapText(false);
                     tagLabel.setStyle("-fx-background-color: " + ThemeProvider.get("accent-blue-bg") + "; -fx-border-color: " + ThemeProvider.get("accent-blue") + "; " +
                                        "-fx-border-radius: 10; -fx-background-radius: 10; " +
                                        "-fx-font-size: 9px; -fx-text-fill: " + ThemeProvider.get("accent-blue-hover") + "; -fx-border-width: 0.5; -fx-font-weight: bold;");

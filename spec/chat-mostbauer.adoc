@@ -261,3 +261,36 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
   * There is a new bug i just noticed: After switching language, you cant switch theme anymore. Probably an issue with the translated theme names
   
   * I am seeing the no-deck select issues again. I think it brakes after changing the language
+  
+  
+  == Session 14.6
+  
+  * Read up on spec/ and openspec/ for context of this project. We use the openspec.dev workflow of explore - propose - apply - archive; You can use the github cli to read up on issues and the git cli to commit *localy*(Orient yourself with existing commits and keep them in a similar style); The goal of todays session is Issue #69: Adding the "Fragenkatalog" as premade example decks. You can find the original source of the content in "~/Downloads/fragenkatalog.adoc"(images used can be found in "~/Downloads/fragenkatalog_images/"). Just collect all questions and answers and then create the deck json directly. I want all questions properly tagged to the topic they belong too. 
+  
+  * The project does not compile anymore. There are many symbol and package errors, make sure to
+  undo changes to relevant files
+  
+  * The problem most likely comes from changes to maven configurations, not the actual java code
+  you changed.
+  
+ * I used to be able to run it in intelij without issues, just undo the config changes
+ 
+ * I reset the commit and even changed branches and now it works nowhere. Explain what you changed
+ 
+ * It works again; The fk. deck exists, but has issues. No images seem to be displayed when they should and often times the answers are way to long to be fully displayed. If thats the case, they should be scrollable. Also the formating is often very messed up
+ 
+ * the images still dont show and its not scrollable. WHen text is too long, it simply ends with ...
+ 
+* are you sure you are actually making any changes to the study-mode? It looks exactly the same, no improvements at all
+
+* The scrolling now works, the images still dont. You are taking the ascii doc answer exactly how they were found in the file, which does not look good because the asciidoc formating tags are all over the answers. Also the center allignment does not look good on mono code blocks like code blocks which appear in some answers.
+
+* Great! Most issues are resolved. I have seen some images working, but there are some cards with backsides that dont display anything. Figure out what causes the issues and then fix it
+
+* When the answer could not be found in the fragenkatalog, answer it yourself. They are all questions about programming knowledge, answer them precise but compactly. Also when theres an image and text at the same time, the image is way to small. Increase the size of images in this case
+
+* in the section that shows all the cards of a deck, the cards should have uniform sizes so they align in a grid
+
+* Two new issues: The tags now clip out of the cards, make them cut of with a "..." if they are too long. Also the home page now pulses as if it was breathing when the app is windowed small enough for some reason
+
+* The home page still pulses vertically.

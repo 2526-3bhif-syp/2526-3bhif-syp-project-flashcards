@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -40,7 +41,15 @@ public class StudyModeView extends VBox {
 
         cardArea = new VBox(16);
         cardArea.setAlignment(Pos.CENTER);
-        VBox.setVgrow(cardArea, Priority.ALWAYS);
+        cardArea.setMinHeight(Region.USE_PREF_SIZE);
+
+        ScrollPane scrollPane = new ScrollPane(cardArea);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;");
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
         revealBtn = createBtn("", ThemeProvider.get("accent-blue"), ThemeProvider.get("accent-blue-active"));
         revealBtn.textProperty().bind(TranslationProvider.createStringBinding("study.reveal_btn"));
@@ -55,7 +64,7 @@ public class StudyModeView extends VBox {
         bottom.setAlignment(Pos.CENTER);
         bottom.setPadding(new Insets(8, 0, 0, 0));
 
-        this.getChildren().addAll(header, cardArea, bottom);
+        this.getChildren().addAll(header, scrollPane, bottom);
     }
 
     // ── layout builders ────────────────────────────────────────────────────
@@ -172,26 +181,84 @@ public class StudyModeView extends VBox {
 
         Label textLabel = new Label(text != null ? text : "");
         textLabel.setWrapText(true);
-        textLabel.setStyle(String.format("-fx-font-size: 18px; -fx-text-fill: %s;", textColor));
-        textLabel.setTextAlignment(TextAlignment.CENTER);
-        textLabel.setAlignment(Pos.CENTER);
+        textLabel.setMinHeight(Region.USE_PREF_SIZE);
+
+        boolean isCode = isMonospaceOrCode(text);
+        boolean isMultiLine = text != null && text.contains("\n");
+
+        String fontStyle;
+        if (isCode) {
+            fontStyle = String.format("-fx-font-family: monospace; -fx-font-size: 15px; -fx-text-fill: %s;", textColor);
+        } else {
+            fontStyle = String.format("-fx-font-size: 18px; -fx-text-fill: %s;", textColor);
+        }
+        textLabel.setStyle(fontStyle);
+
+        if (isCode || isMultiLine) {
+            textLabel.setTextAlignment(TextAlignment.LEFT);
+            textLabel.setAlignment(Pos.CENTER_LEFT);
+        } else {
+            textLabel.setTextAlignment(TextAlignment.CENTER);
+            textLabel.setAlignment(Pos.CENTER);
+        }
         textLabel.setMaxWidth(Double.MAX_VALUE);
 
         box.getChildren().addAll(headerLabel, textLabel);
 
-        if (imageData != null) {
-            byte[] bytes = Base64.getDecoder().decode(imageData);
-            ImageView iv = new ImageView(new Image(new ByteArrayInputStream(bytes)));
-            iv.setFitWidth(220);
-            iv.setFitHeight(160);
-            iv.setPreserveRatio(true);
-            iv.setSmooth(true);
-            Label imgNameLabel = new Label("🖼 " + (imageName != null ? imageName : ""));
-            imgNameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
-            box.getChildren().addAll(iv, imgNameLabel);
+        if (imageData != null && !imageData.isEmpty()) {
+            try {
+                byte[] bytes = Base64.getMimeDecoder().decode(imageData.replaceAll("\\s", ""));
+                Image img = new Image(new ByteArrayInputStream(bytes));
+                if (!img.isError()) {
+                    ImageView iv = new ImageView(img);
+                    iv.setFitWidth(450);
+                    iv.setFitHeight(320);
+                    iv.setPreserveRatio(true);
+                    iv.setSmooth(true);
+                    Label imgNameLabel = new Label("🖼 " + (imageName != null ? imageName : ""));
+                    imgNameLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
+                    box.getChildren().addAll(iv, imgNameLabel);
+                } else {
+                    System.err.println("StudyModeView buildSide: Error loading image: " + img.getException());
+                }
+            } catch (Exception e) {
+                System.err.println("StudyModeView buildSide: Exception loading image: " + e.getMessage());
+            }
         }
 
         return box;
+    }
+
+    private static boolean isMonospaceOrCode(String text) {
+        if (text == null) return false;
+        String trimmed = text.trim();
+        if (trimmed.startsWith("git ") ||
+            trimmed.startsWith("docker ") ||
+            trimmed.startsWith("$ ") ||
+            trimmed.startsWith("# ") ||
+            trimmed.startsWith("FROM ") ||
+            trimmed.startsWith("RUN ") ||
+            trimmed.startsWith("CMD ") ||
+            trimmed.startsWith("WORKDIR ") ||
+            trimmed.startsWith("COPY ") ||
+            trimmed.startsWith("netstat ") ||
+            trimmed.startsWith("lsof ") ||
+            trimmed.startsWith("kubectl ") ||
+            trimmed.startsWith("mvn ") ||
+            trimmed.startsWith("java ") ||
+            trimmed.startsWith("javac ") ||
+            trimmed.startsWith("chmod ") ||
+            trimmed.startsWith("cat ") ||
+            trimmed.startsWith("echo ")) {
+            return true;
+        }
+        for (String line : text.split("\n")) {
+            String tl = line.trim();
+            if (tl.startsWith("$ ") || tl.startsWith("git ") || tl.startsWith("docker ") || tl.startsWith("FROM ") || tl.startsWith("RUN ")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void rate(String rating) {
