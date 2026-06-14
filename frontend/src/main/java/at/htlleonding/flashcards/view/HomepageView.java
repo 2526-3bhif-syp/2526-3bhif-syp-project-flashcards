@@ -110,6 +110,8 @@ public class HomepageView extends VBox {
 
         ScrollPane recentScrollPane = new ScrollPane(recentContainer);
         recentScrollPane.setFitToWidth(true);
+        recentScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        recentScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         recentScrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         VBox.setVgrow(recentScrollPane, Priority.ALWAYS);
 

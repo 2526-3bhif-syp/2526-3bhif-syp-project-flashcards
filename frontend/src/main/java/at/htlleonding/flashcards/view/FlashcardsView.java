@@ -131,6 +131,8 @@ public class FlashcardsView extends HBox {
 
         ScrollPane scrollPane = new ScrollPane(cardsGrid);
         scrollPane.setFitToWidth(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
