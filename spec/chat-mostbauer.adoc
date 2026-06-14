@@ -291,6 +291,8 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
 
 * in the section that shows all the cards of a deck, the cards should have uniform sizes so they align in a grid
 
-* Two new issues: The tags now clip out of the cards, make them cut of with a "..." if they are too long. Also the home page now pulses as if it was breathing when the app is windowed small enough for some reason
-
 * The home page still pulses vertically.
+
+* Its still happening
+
+* Everything seems to work. Finish up by updating the specs then commiting everything thats left
