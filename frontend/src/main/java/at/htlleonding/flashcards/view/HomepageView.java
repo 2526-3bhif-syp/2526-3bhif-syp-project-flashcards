@@ -55,6 +55,7 @@ public class HomepageView extends VBox {
     public HomepageView() {
         this.setPadding(new Insets(24));
         this.setSpacing(24);
+        this.setMinHeight(560);
 
         // 1. Header
         Label title = new Label();
@@ -69,6 +70,7 @@ public class HomepageView extends VBox {
         VBox leftCol = new VBox(20);
         leftCol.setAlignment(Pos.TOP_LEFT);
         HBox.setHgrow(leftCol, Priority.ALWAYS);
+        leftCol.setMinWidth(320);
         leftCol.prefWidthProperty().bind(contentBox.widthProperty().multiply(0.42));
 
         // -- Recommended section
@@ -108,6 +110,8 @@ public class HomepageView extends VBox {
 
         ScrollPane recentScrollPane = new ScrollPane(recentContainer);
         recentScrollPane.setFitToWidth(true);
+        recentScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        recentScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         recentScrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         VBox.setVgrow(recentScrollPane, Priority.ALWAYS);
 
@@ -125,6 +129,7 @@ public class HomepageView extends VBox {
         // Right Column (Streak / Calendar)
         VBox rightCol = new VBox(12);
         HBox.setHgrow(rightCol, Priority.ALWAYS);
+        rightCol.setMinWidth(400);
         rightCol.prefWidthProperty().bind(contentBox.widthProperty().multiply(0.56));
 
         // -- Streak section

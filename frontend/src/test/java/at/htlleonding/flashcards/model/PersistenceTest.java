@@ -259,4 +259,18 @@ class PersistenceTest {
         assertNull(imported.getCards().get(0).getFrontImageData());
         assertNull(imported.getCards().get(0).getBackImageData());
     }
+
+    @Test
+    void testLoadDefaultDecksImages() throws IOException {
+        File defaultJson = new File("src/main/resources/at/htlleonding/flashcards/default_decks.json");
+        if (defaultJson.exists()) {
+            List<Deck> decks = persistence.importDecksFromJSON(defaultJson);
+            assertFalse(decks.isEmpty());
+            Deck fk = decks.get(0);
+            Card c1 = fk.getCards().get(0);
+            System.out.println("TEST IMAGE NAME: " + c1.getBackImageName());
+            System.out.println("TEST IMAGE DATA LENGTH: " + (c1.getBackImageData() != null ? c1.getBackImageData().length() : "null"));
+            assertNotNull(c1.getBackImageData());
+        }
+    }
 }

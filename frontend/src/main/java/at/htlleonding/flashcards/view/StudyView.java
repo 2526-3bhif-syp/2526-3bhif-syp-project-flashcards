@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
 import javafx.scene.media.MediaPlayer;
@@ -153,9 +154,27 @@ public class StudyView {
                                 String audioData, String audioName) {
         Label label = new Label(text);
         label.setWrapText(true);
-        label.setStyle(textStyle);
-        label.setTextAlignment(TextAlignment.CENTER);
-        label.setAlignment(Pos.CENTER);
+        label.setMinHeight(Region.USE_PREF_SIZE);
+
+        boolean isCode = isMonospaceOrCode(text);
+        boolean isMultiLine = text != null && text.contains("\n");
+
+        String style = textStyle;
+        if (isCode) {
+            style = style.replace("-fx-font-size: 36px;", "-fx-font-size: 20px;")
+                         .replace("-fx-font-size: 26px;", "-fx-font-size: 18px;")
+                         .replace("-fx-font-weight: bold;", "");
+            style += " -fx-font-family: monospace;";
+        }
+        label.setStyle(style);
+
+        if (isCode || isMultiLine) {
+            label.setTextAlignment(TextAlignment.LEFT);
+            label.setAlignment(Pos.CENTER_LEFT);
+        } else {
+            label.setTextAlignment(TextAlignment.CENTER);
+            label.setAlignment(Pos.CENTER);
+        }
         label.setMaxWidth(Double.MAX_VALUE);
         label.setMaxHeight(Double.MAX_VALUE);
 
@@ -176,7 +195,7 @@ public class StudyView {
 
         if (imageData != null && !imageData.isEmpty()) {
             content.getChildren().add(
-                FlashcardsView.buildImageUI(imageData, imageName, 300, 200));
+                FlashcardsView.buildImageUI(imageData, imageName, 500, 350));
         }
         if (audioData != null && !audioData.isEmpty()) {
             content.getChildren().add(
@@ -188,6 +207,38 @@ public class StudyView {
         wrapper.setAlignment(Pos.CENTER);
         VBox.setVgrow(content, Priority.ALWAYS);
         return wrapper;
+    }
+
+    private static boolean isMonospaceOrCode(String text) {
+        if (text == null) return false;
+        String trimmed = text.trim();
+        if (trimmed.startsWith("git ") ||
+            trimmed.startsWith("docker ") ||
+            trimmed.startsWith("$ ") ||
+            trimmed.startsWith("# ") ||
+            trimmed.startsWith("FROM ") ||
+            trimmed.startsWith("RUN ") ||
+            trimmed.startsWith("CMD ") ||
+            trimmed.startsWith("WORKDIR ") ||
+            trimmed.startsWith("COPY ") ||
+            trimmed.startsWith("netstat ") ||
+            trimmed.startsWith("lsof ") ||
+            trimmed.startsWith("kubectl ") ||
+            trimmed.startsWith("mvn ") ||
+            trimmed.startsWith("java ") ||
+            trimmed.startsWith("javac ") ||
+            trimmed.startsWith("chmod ") ||
+            trimmed.startsWith("cat ") ||
+            trimmed.startsWith("echo ")) {
+            return true;
+        }
+        for (String line : text.split("\n")) {
+            String tl = line.trim();
+            if (tl.startsWith("$ ") || tl.startsWith("git ") || tl.startsWith("docker ") || tl.startsWith("FROM ") || tl.startsWith("RUN ")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void showCardFront() {
@@ -207,7 +258,7 @@ public class StudyView {
         }
 
         String style = "-fx-font-size: 36px; -fx-text-fill: " + ThemeProvider.get("accent-blue-strong") + "; -fx-font-weight: bold;";
-        root.setCenter(buildSidePanel(
+        setCenterScrollable(buildSidePanel(
             currentCard.getQuestion(), style,
             currentCard.getFrontImageData(), currentCard.getFrontImageName(),
             currentCard.getFrontAudioData(), currentCard.getFrontAudioName()
@@ -248,7 +299,7 @@ public class StudyView {
         split.setAlignment(Pos.CENTER);
         split.setFillWidth(true);
 
-        root.setCenter(split);
+        setCenterScrollable(split);
 
         flipBtn.setVisible(false);
         flipBtn.setManaged(false);
@@ -256,6 +307,19 @@ public class StudyView {
         nextBtn.setManaged(true);
         assessmentBox.setVisible(true);
         assessmentBox.setManaged(true);
+    }
+
+    private void setCenterScrollable(Node node) {
+        if (node instanceof Region r) {
+            r.setMinHeight(Region.USE_PREF_SIZE);
+        }
+        ScrollPane scrollPane = new ScrollPane(node);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;");
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        root.setCenter(scrollPane);
     }
 
     private void showStats() {

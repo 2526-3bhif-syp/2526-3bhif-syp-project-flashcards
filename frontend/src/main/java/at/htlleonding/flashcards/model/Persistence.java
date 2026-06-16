@@ -21,13 +21,28 @@ public class Persistence {
 
     public List<Deck> loadDecks() {
         File file = new File(DEFAULT_FILE);
-        if (!file.exists()) return new ArrayList<>();
-        try {
-            return mapper.readValue(file, new TypeReference<List<Deck>>() {});
-        } catch (IOException e) {
-            System.err.println("Error loading decks: " + e.getMessage());
-            return new ArrayList<>();
+        if (file.exists()) {
+            try {
+                return mapper.readValue(file, new TypeReference<List<Deck>>() {});
+            } catch (IOException e) {
+                System.err.println("Error loading decks: " + e.getMessage());
+                return new ArrayList<>();
+            }
         }
+
+        // Fallback: If local decks.json does not exist, load default decks from classpath resource
+        try (InputStream is = Persistence.class.getResourceAsStream("/at/htlleonding/flashcards/default_decks.json")) {
+            if (is != null) {
+                List<Deck> defaultDecks = mapper.readValue(is, new TypeReference<List<Deck>>() {});
+                if (defaultDecks != null && !defaultDecks.isEmpty()) {
+                    saveDecks(defaultDecks);
+                    return defaultDecks;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading default decks resource: " + e.getMessage());
+        }
+        return new ArrayList<>();
     }
 
     public void saveDecks(List<Deck> decks) {

@@ -115,6 +115,8 @@ public class HomeView extends VBox {
 
         ScrollPane sp = new ScrollPane(deckGrid);
         sp.setFitToWidth(true);
+        sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         VBox.setVgrow(sp, Priority.ALWAYS);
         return sp;
