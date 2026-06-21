@@ -494,11 +494,22 @@ public class FlashcardsView extends HBox {
         plusCard.setMinSize(120, 160);
         plusCard.setMaxSize(120, 160);
         plusCard.setAlignment(Pos.CENTER);
-        plusCard.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;");
+            String plusNormal = "-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;";
+        String plusHover  = "-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-border-color: " + ThemeProvider.get("accent-blue") + "; -fx-border-radius: 10; -fx-background-radius: 10; -fx-cursor: hand;";
+        plusCard.setStyle(plusNormal);
         Label plusLabel = new Label("+");
         plusLabel.setStyle("-fx-font-size: 40px; -fx-text-fill: " + ThemeProvider.get("text-disabled") + ";");
         plusCard.getChildren().add(plusLabel);
         plusCard.setOnMouseClicked(e -> { if (onAddCardRequested != null) onAddCardRequested.run(); });
+        plusCard.setOnMouseEntered(e -> plusCard.setStyle(plusHover));
+        plusCard.setOnMouseExited(e -> plusCard.setStyle(plusNormal));
+
+        Tooltip addTooltip = new Tooltip();
+        addTooltip.textProperty().bind(TranslationProvider.createStringBinding("cards.tooltip_add"));
+        addTooltip.setShowDelay(Duration.millis(400));
+        addTooltip.setStyle("-fx-font-size: 11px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 3 7 3 7; -fx-background-radius: 4;");
+        Tooltip.install(plusCard, addTooltip);
+
         cardsGrid.getChildren().add(plusCard);
     }
 
@@ -556,6 +567,12 @@ public class FlashcardsView extends HBox {
                     if (onEditCardRequested != null) onEditCardRequested.accept(card);
                 });
 
+                Tooltip editTooltip = new Tooltip();
+                editTooltip.textProperty().bind(TranslationProvider.createStringBinding("cards.tooltip_edit"));
+                editTooltip.setShowDelay(Duration.millis(400));
+                editTooltip.setStyle("-fx-font-size: 11px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 3 7 3 7; -fx-background-radius: 4;");
+                Tooltip.install(editBtn, editTooltip);
+
                 Region sp = new Region();
                 HBox.setHgrow(sp, Priority.ALWAYS);
 
@@ -575,6 +592,12 @@ public class FlashcardsView extends HBox {
                         if (r == ButtonType.OK && onDeleteCardRequested != null) onDeleteCardRequested.accept(card);
                     });
                 });
+
+                Tooltip deleteTooltip = new Tooltip();
+                deleteTooltip.textProperty().bind(TranslationProvider.createStringBinding("cards.tooltip_delete"));
+                deleteTooltip.setShowDelay(Duration.millis(400));
+                deleteTooltip.setStyle("-fx-font-size: 11px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 3 7 3 7; -fx-background-radius: 4;");
+                Tooltip.install(deleteBtn, deleteTooltip);
                 topBox.getChildren().addAll(editBtn, sp, deleteBtn);
             }
 
