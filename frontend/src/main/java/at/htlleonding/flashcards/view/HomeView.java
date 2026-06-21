@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public class HomeView extends VBox {
 
@@ -179,12 +180,24 @@ public class HomeView extends VBox {
     private void addPlusTile() {
         StackPane tile = new StackPane();
         tile.setPrefSize(150, 200);
-        tile.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-width: 1; " +
-                      "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;");
+        String plusNormal = "-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-width: 1; " +
+                            "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;";
+        String plusHover  = "-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-border-color: " + ThemeProvider.get("accent-blue") + "; -fx-border-width: 1; " +
+                            "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;";
+        tile.setStyle(plusNormal);
         Label plusLabel = new Label("+");
         plusLabel.setStyle("-fx-font-size: 60px; -fx-text-fill: " + ThemeProvider.get("text-disabled") + ";");
         tile.getChildren().add(plusLabel);
         tile.setOnMouseClicked(e -> { if (onCreateDeckRequested != null) onCreateDeckRequested.run(); });
+        tile.setOnMouseEntered(e -> tile.setStyle(plusHover));
+        tile.setOnMouseExited(e -> tile.setStyle(plusNormal));
+
+        Tooltip addTooltip = new Tooltip();
+        addTooltip.textProperty().bind(TranslationProvider.createStringBinding("home.tooltip_add"));
+        addTooltip.setShowDelay(Duration.millis(400));
+        addTooltip.setStyle("-fx-font-size: 11px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 3 7 3 7; -fx-background-radius: 4;");
+        Tooltip.install(tile, addTooltip);
+
         deckGrid.getChildren().add(tile);
     }
 
@@ -267,17 +280,34 @@ public class HomeView extends VBox {
             topRow.setPickOnBounds(false);
             StackPane.setAlignment(topRow, Pos.TOP_LEFT);
 
+            String tipStyle = "-fx-font-size: 11px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 3 7 3 7; -fx-background-radius: 4;";
+
             Button editBtn = iconBtn("✎", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-link"));
             editBtn.setOnAction(e -> { e.consume(); if (onEditDeckRequested != null) onEditDeckRequested.accept(deck); });
+            Tooltip editTip = new Tooltip();
+            editTip.textProperty().bind(TranslationProvider.createStringBinding("home.tooltip_edit_deck"));
+            editTip.setShowDelay(Duration.millis(400));
+            editTip.setStyle(tipStyle);
+            Tooltip.install(editBtn, editTip);
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
             Button exportBtn = iconBtn("⬆", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-orange"));
             exportBtn.setOnAction(e -> { e.consume(); if (onExportDeckRequested != null) onExportDeckRequested.accept(deck); });
+            Tooltip exportTip = new Tooltip();
+            exportTip.textProperty().bind(TranslationProvider.createStringBinding("home.tooltip_export_deck"));
+            exportTip.setShowDelay(Duration.millis(400));
+            exportTip.setStyle(tipStyle);
+            Tooltip.install(exportBtn, exportTip);
 
             Button deleteBtn = iconBtn("✖", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-red"));
             deleteBtn.setOnAction(e -> { e.consume(); if (onDeleteDeckRequested != null) onDeleteDeckRequested.accept(deck); });
+            Tooltip deleteTip = new Tooltip();
+            deleteTip.textProperty().bind(TranslationProvider.createStringBinding("home.tooltip_delete_deck"));
+            deleteTip.setShowDelay(Duration.millis(400));
+            deleteTip.setStyle(tipStyle);
+            Tooltip.install(deleteBtn, deleteTip);
 
             topRow.getChildren().addAll(editBtn, spacer, exportBtn, deleteBtn);
             tile.getChildren().add(topRow);
