@@ -102,7 +102,7 @@ public class CreateCardDialog {
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
         root.setPrefWidth(450);
-        root.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1.5;");
+        root.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1.5; -fx-border-radius: 12; -fx-background-radius: 12;");
 
         String inputBg = ThemeProvider.getTheme().equals("dark") ? ThemeProvider.get("bg-card") : "#ffffff";
         String inputText = ThemeProvider.getTheme().equals("dark") ? ThemeProvider.get("text-primary") : "#333333";
@@ -187,7 +187,11 @@ public class CreateCardDialog {
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         
         saveButton = new Button(isEditMode ? TranslationProvider.get("card.save_btn") : TranslationProvider.get("card.create_btn"));
-        saveButton.setStyle("-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold;");
+        String saveNormal = "-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 14;";
+        String saveHover  = "-fx-background-color: " + ThemeProvider.get("accent-green-strong") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 14;";
+        saveButton.setStyle(saveNormal);
+        saveButton.setOnMouseEntered(e -> saveButton.setStyle(saveHover));
+        saveButton.setOnMouseExited(e -> saveButton.setStyle(saveNormal));
         saveButton.setDefaultButton(true);
         saveButton.setDisable(!isEditMode);
         
