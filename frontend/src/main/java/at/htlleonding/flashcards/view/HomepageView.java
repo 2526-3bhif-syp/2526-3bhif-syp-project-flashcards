@@ -46,6 +46,7 @@ public class HomepageView extends VBox {
     private final Label streakCountLabel;
     private final Label currentMonthLabel;
 
+
     private List<Deck> recommendedDecks = new ArrayList<>();
     private List<Deck> recentDecks = new ArrayList<>();
     private List<String> streakDates = new ArrayList<>();
@@ -243,16 +244,28 @@ public class HomepageView extends VBox {
             "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
             bgColor, borderColor));
 
+        tile.setOnMouseEntered(ev -> {
+            tile.setStyle(String.format(
+                "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1; " +
+                "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
+                ThemeProvider.get("bg-hover"), ThemeProvider.get("border-default")));
+        });
+        tile.setOnMouseExited(ev -> {
+            tile.setStyle(String.format(
+                "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1; " +
+                "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
+                ThemeProvider.get("bg-card"), ThemeProvider.get("border-default")));
+        });
+
         VBox content = new VBox(10);
         content.setAlignment(Pos.CENTER);
         content.setPadding(new Insets(12));
 
-        Image iconImage = IconManager.getIcon(deck.getIconId());
-        ImageView iconView = new ImageView(iconImage);
-        iconView.setFitWidth(70);
-        iconView.setFitHeight(70);
-        iconView.setPreserveRatio(true);
-        iconView.setSmooth(true);
+        ImageView deckIcon = new ImageView(IconManager.getIcon(deck.getIconId()));
+        deckIcon.setFitWidth(64);
+        deckIcon.setFitHeight(64);
+        deckIcon.setPreserveRatio(true);
+        deckIcon.setSmooth(true);
 
         Label nameLabel = new Label(deck.getName() != null ? deck.getName() : "");
         nameLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
@@ -265,7 +278,10 @@ public class HomepageView extends VBox {
         countLabel.textProperty().bind(TranslationProvider.createStringBinding("home.cards", deck.getCardCount()));
         countLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
-        content.getChildren().addAll(iconView, nameLabel, countLabel);
+        Label lastStudiedLabel = new Label(getLastStudiedText(deck));
+        lastStudiedLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: " + ThemeProvider.get("text-subtle") + "; -fx-font-style: italic;");
+
+        content.getChildren().addAll(deckIcon, nameLabel, countLabel, lastStudiedLabel);
         tile.getChildren().add(content);
 
         // Edit/Delete overlays
@@ -497,4 +513,22 @@ public class HomepageView extends VBox {
     public void setOnDeckSelected(Consumer<Deck> cb) { this.onDeckSelected = cb; }
     public void setOnEditDeckRequested(Consumer<Deck> cb) { this.onEditDeckRequested = cb; }
     public void setOnDeleteDeckRequested(Consumer<Deck> cb) { this.onDeleteDeckRequested = cb; }
+
+    private String getLastStudiedText(Deck deck) {
+        java.time.LocalDateTime last = deck.getLastStudied();
+        if (last == null) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Nie" : "Last: Never";
+        }
+        java.time.LocalDate lastDate = last.toLocalDate();
+        java.time.LocalDate today = java.time.LocalDate.now();
+        if (lastDate.equals(today)) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Heute" : "Last: Today";
+        } else if (lastDate.equals(today.minusDays(1))) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Gestern" : "Last: Yesterday";
+        } else {
+            java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            String prefix = TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: " : "Last: ";
+            return prefix + lastDate.format(fmt);
+        }
+    }
 }

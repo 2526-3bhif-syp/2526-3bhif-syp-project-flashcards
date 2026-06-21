@@ -30,11 +30,16 @@ public class StatisticView extends BorderPane {
 
     private List<Deck> allDecks = new ArrayList<>();
     private PieChart ratingChart;
-    private LineChart<String, Number> dailyChart;
+    private AreaChart<String, Number> dailyChart;
     private Button shareRatingButton;
     private Button shareDailyButton;
     private VBox ratingChartContainer;
     private VBox dailyChartContainer;
+
+    private javafx.scene.shape.Circle donutCenterHole;
+    private Label donutNumberLabel;
+    private Label donutTextLabel;
+    private VBox donutCenterBox;
 
     public StatisticView() {
         contentBox = new VBox(20);
@@ -80,6 +85,13 @@ public class StatisticView extends BorderPane {
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        donutCenterHole = new javafx.scene.shape.Circle(65);
+        donutNumberLabel = new Label();
+        donutTextLabel = new Label();
+        donutCenterBox = new VBox(2, donutNumberLabel, donutTextLabel);
+        donutCenterBox.setAlignment(Pos.CENTER);
+        donutCenterBox.setMouseTransparent(true);
 
         setCenter(scrollPane);
         applyTheme();
@@ -158,9 +170,14 @@ public class StatisticView extends BorderPane {
         ratingChart = buildPieChart(agg);
         dailyChart = buildDailyLineChart(agg);
 
+        donutNumberLabel.setText(String.valueOf(agg.getTotalCount()));
+
+        StackPane donutPane = new StackPane();
+        donutPane.getChildren().addAll(ratingChart, donutCenterHole, donutCenterBox);
+
         HBox ratingHeader = new HBox(shareRatingButton);
         ratingHeader.setAlignment(Pos.CENTER_RIGHT);
-        ratingChartContainer = new VBox(4, ratingHeader, ratingChart);
+        ratingChartContainer = new VBox(4, ratingHeader, donutPane);
 
         HBox dailyHeader = new HBox(shareDailyButton);
         dailyHeader.setAlignment(Pos.CENTER_RIGHT);
@@ -252,12 +269,12 @@ public class StatisticView extends BorderPane {
         return chart;
     }
 
-    private LineChart<String, Number> buildDailyLineChart(StatisticsAggregator agg) {
+    private AreaChart<String, Number> buildDailyLineChart(StatisticsAggregator agg) {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         yAxis.setMinorTickVisible(false);
 
-        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+        AreaChart<String, Number> chart = new AreaChart<>(xAxis, yAxis);
         chart.titleProperty().bind(TranslationProvider.createStringBinding("statistic.daily_chart"));
         chart.setLegendVisible(false);
         chart.setPrefHeight(280);
@@ -275,9 +292,19 @@ public class StatisticView extends BorderPane {
     }
 
     public void applyTheme() {
-        setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + ";");
-        scrollPane.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary")
-                + "; -fx-background: " + ThemeProvider.get("bg-primary") + ";");
+        setStyle("-fx-background-color: transparent;");
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        if (donutCenterHole != null) {
+            donutCenterHole.setFill(javafx.scene.paint.Color.web(ThemeProvider.get("bg-card")));
+        }
+        if (donutNumberLabel != null) {
+            donutNumberLabel.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+        }
+        if (donutTextLabel != null) {
+            donutTextLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-secondary") + ";");
+            donutTextLabel.setText(TranslationProvider.getLocale().getLanguage().equals("de") ? "Karten gelernt" : "Cards studied");
+        }
 
         if (!contentBox.getChildren().isEmpty() && contentBox.getChildren().get(0) instanceof Label title) {
             title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: "

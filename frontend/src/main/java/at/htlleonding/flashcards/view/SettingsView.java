@@ -85,21 +85,31 @@ public class SettingsView extends VBox {
         themeDropdown = new ComboBox<>();
         themeDropdown.getItems().addAll(
             TranslationProvider.get("settings.theme_light"),
-            TranslationProvider.get("settings.theme_dark")
+            TranslationProvider.get("settings.theme_dark"),
+            TranslationProvider.get("settings.theme_sapphire")
         );
         styleComboBox(themeDropdown);
         themeDropdown.setPrefWidth(200);
 
         String currentTheme = ThemeProvider.getTheme();
-        themeDropdown.setValue("light".equals(currentTheme)
-            ? TranslationProvider.get("settings.theme_light")
-            : TranslationProvider.get("settings.theme_dark"));
+        if ("light".equals(currentTheme)) {
+            themeDropdown.setValue(TranslationProvider.get("settings.theme_light"));
+        } else if ("dark".equals(currentTheme)) {
+            themeDropdown.setValue(TranslationProvider.get("settings.theme_dark"));
+        } else {
+            themeDropdown.setValue(TranslationProvider.get("settings.theme_sapphire"));
+        }
 
         ThemeProvider.themeProperty().addListener((obs, oldTheme, newTheme) -> {
             if (newTheme != null) {
-                String expected = "light".equals(newTheme)
-                    ? TranslationProvider.get("settings.theme_light")
-                    : TranslationProvider.get("settings.theme_dark");
+                String expected;
+                if ("light".equals(newTheme)) {
+                    expected = TranslationProvider.get("settings.theme_light");
+                } else if ("dark".equals(newTheme)) {
+                    expected = TranslationProvider.get("settings.theme_dark");
+                } else {
+                    expected = TranslationProvider.get("settings.theme_sapphire");
+                }
                 if (!expected.equals(themeDropdown.getValue())) {
                     themeDropdown.setValue(expected);
                 }
@@ -108,7 +118,14 @@ public class SettingsView extends VBox {
 
         themeDropdown.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                String targetTheme = newVal.equals(TranslationProvider.get("settings.theme_light")) ? "light" : "dark";
+                String targetTheme;
+                if (newVal.equals(TranslationProvider.get("settings.theme_light"))) {
+                    targetTheme = "light";
+                } else if (newVal.equals(TranslationProvider.get("settings.theme_dark"))) {
+                    targetTheme = "dark";
+                } else {
+                    targetTheme = "sapphire";
+                }
                 if (!targetTheme.equals(ThemeProvider.getTheme())) {
                     ThemeProvider.setTheme(targetTheme);
                 }
@@ -130,11 +147,17 @@ public class SettingsView extends VBox {
         TranslationProvider.localeProperty().addListener((obs, oldLocale, newLocale) -> {
             themeDropdown.getItems().setAll(
                 TranslationProvider.get("settings.theme_light"),
-                TranslationProvider.get("settings.theme_dark")
+                TranslationProvider.get("settings.theme_dark"),
+                TranslationProvider.get("settings.theme_sapphire")
             );
-            themeDropdown.setValue("light".equals(ThemeProvider.getTheme())
-                ? TranslationProvider.get("settings.theme_light")
-                : TranslationProvider.get("settings.theme_dark"));
+            String curTheme = ThemeProvider.getTheme();
+            if ("light".equals(curTheme)) {
+                themeDropdown.setValue(TranslationProvider.get("settings.theme_light"));
+            } else if ("dark".equals(curTheme)) {
+                themeDropdown.setValue(TranslationProvider.get("settings.theme_dark"));
+            } else {
+                themeDropdown.setValue(TranslationProvider.get("settings.theme_sapphire"));
+            }
         });
     }
 

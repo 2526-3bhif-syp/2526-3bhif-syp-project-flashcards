@@ -12,6 +12,8 @@ import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.*;
 import java.util.function.Consumer;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.paint.Color;
 
 public class HomeView extends VBox {
 
@@ -199,6 +201,23 @@ public class HomeView extends VBox {
             "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
             bgColor, borderColor, borderWidth));
 
+        tile.setOnMouseEntered(ev -> {
+            if (!selectedDecks.contains(deck)) {
+                tile.setStyle(String.format(
+                    "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1; " +
+                    "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
+                    ThemeProvider.get("bg-hover"), ThemeProvider.get("border-default")));
+            }
+        });
+        tile.setOnMouseExited(ev -> {
+            if (!selectedDecks.contains(deck)) {
+                tile.setStyle(String.format(
+                    "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1; " +
+                    "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
+                    ThemeProvider.get("bg-card"), ThemeProvider.get("border-default")));
+            }
+        });
+
         // ── Centered content ───────────────────────────────────────────────
         VBox content = new VBox(8);
         content.setAlignment(Pos.CENTER);
@@ -210,12 +229,11 @@ public class HomeView extends VBox {
             content.getChildren().add(check);
         }
 
-        Image iconImage = IconManager.getIcon(deck.getIconId());
-        ImageView iconView = new ImageView(iconImage);
-        iconView.setFitWidth(selectMode ? 55 : 75);
-        iconView.setFitHeight(selectMode ? 55 : 75);
-        iconView.setPreserveRatio(true);
-        iconView.setSmooth(true);
+        ImageView deckIcon = new ImageView(IconManager.getIcon(deck.getIconId()));
+        deckIcon.setFitWidth(64);
+        deckIcon.setFitHeight(64);
+        deckIcon.setPreserveRatio(true);
+        deckIcon.setSmooth(true);
 
         Label nameLabel = new Label(deck.getName() != null ? deck.getName() : "");
         nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
@@ -228,7 +246,10 @@ public class HomeView extends VBox {
         countLabel.textProperty().bind(TranslationProvider.createStringBinding("home.cards", deck.getCardCount()));
         countLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
-        content.getChildren().addAll(iconView, nameLabel, countLabel);
+        Label lastStudiedLabel = new Label(getLastStudiedText(deck));
+        lastStudiedLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: " + ThemeProvider.get("text-subtle") + "; -fx-font-style: italic;");
+
+        content.getChildren().addAll(deckIcon, nameLabel, countLabel, lastStudiedLabel);
         tile.getChildren().add(content);
 
         if (selectMode) {
@@ -331,6 +352,24 @@ public class HomeView extends VBox {
     private void updateTextOnLocaleChange() {
         selectToggleBtn.setText(TranslationProvider.get(selectMode ? "home.cancel" : "home.select"));
         updateSelectModeButtons();
+    }
+
+    private String getLastStudiedText(Deck deck) {
+        java.time.LocalDateTime last = deck.getLastStudied();
+        if (last == null) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Nie" : "Last: Never";
+        }
+        java.time.LocalDate lastDate = last.toLocalDate();
+        java.time.LocalDate today = java.time.LocalDate.now();
+        if (lastDate.equals(today)) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Heute" : "Last: Today";
+        } else if (lastDate.equals(today.minusDays(1))) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Gestern" : "Last: Yesterday";
+        } else {
+            java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            String prefix = TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: " : "Last: ";
+            return prefix + lastDate.format(fmt);
+        }
     }
 }
 

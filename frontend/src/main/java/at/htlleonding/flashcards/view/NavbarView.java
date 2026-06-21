@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 public class NavbarView extends HBox {
 
     private final TextField searchField;
+    private final SVGPath searchIcon;
 
     public NavbarView() {
         this.setAlignment(Pos.CENTER);
@@ -30,17 +31,9 @@ public class NavbarView extends HBox {
 
         searchField = new TextField();
         searchField.promptTextProperty().bind(TranslationProvider.createStringBinding("navbar.search_prompt"));
-        searchField.setStyle(
-            "-fx-background-radius: 20; " +
-            "-fx-border-radius: 20; " +
-            "-fx-border-color: " + ThemeProvider.get("border-default") + "; " +
-            "-fx-background-color: transparent; " +
-            "-fx-padding: 5 10 5 30;"
-        );
 
-        SVGPath searchIcon = new SVGPath();
+        searchIcon = new SVGPath();
         searchIcon.setContent("M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z");
-        searchIcon.setFill(Color.GRAY);
         searchIcon.setScaleX(0.8);
         searchIcon.setScaleY(0.8);
 
@@ -66,8 +59,12 @@ public class NavbarView extends HBox {
             "-fx-border-radius: 20; " +
             "-fx-border-color: " + ThemeProvider.get("border-default") + "; " +
             "-fx-background-color: transparent; " +
+            "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; " +
             "-fx-padding: 5 10 5 30;"
         );
+        if (searchIcon != null) {
+            searchIcon.setFill(Color.web(ThemeProvider.get("text-muted")));
+        }
     }
 
     public void setOnSearchTextChanged(Consumer<String> listener) {

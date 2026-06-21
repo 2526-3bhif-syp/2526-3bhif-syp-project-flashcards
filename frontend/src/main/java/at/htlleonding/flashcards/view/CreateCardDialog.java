@@ -102,12 +102,17 @@ public class CreateCardDialog {
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
         root.setPrefWidth(450);
+        root.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1.5;");
+
+        String inputBg = ThemeProvider.getTheme().equals("dark") ? ThemeProvider.get("bg-card") : "#ffffff";
+        String inputText = ThemeProvider.getTheme().equals("dark") ? ThemeProvider.get("text-primary") : "#333333";
+        String inputPrompt = ThemeProvider.getTheme().equals("dark") ? ThemeProvider.get("text-placeholder") : "#888888";
 
         // --- Question Section Header ---
         HBox qHeader = new HBox(10);
         qHeader.setAlignment(Pos.CENTER_LEFT);
         Label qLabel = new Label(TranslationProvider.get("card.front_label"));
-        qLabel.setStyle("-fx-font-weight: bold;");
+        qLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         Region qSpacer = new Region();
         HBox.setHgrow(qSpacer, Priority.ALWAYS);
         Button qAddExtra = new Button(TranslationProvider.get("card.add_extra"));
@@ -119,6 +124,7 @@ public class CreateCardDialog {
         questionArea.setPromptText(TranslationProvider.get("card.front_prompt"));
         questionArea.setPrefRowCount(3);
         questionArea.setWrapText(true);
+        setupInputField(questionArea, inputBg, inputText, inputPrompt);
         if (isEditMode) questionArea.setText(cardToEdit.getQuestion());
 
         fAudioInfoBox = new VBox(5);
@@ -128,7 +134,7 @@ public class CreateCardDialog {
         HBox aHeader = new HBox(10);
         aHeader.setAlignment(Pos.CENTER_LEFT);
         Label aLabel = new Label(TranslationProvider.get("card.back_label"));
-        aLabel.setStyle("-fx-font-weight: bold;");
+        aLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         Region aSpacer = new Region();
         HBox.setHgrow(aSpacer, Priority.ALWAYS);
         Button aAddExtra = new Button(TranslationProvider.get("card.add_extra"));
@@ -140,6 +146,7 @@ public class CreateCardDialog {
         answerArea.setPromptText(TranslationProvider.get("card.back_prompt"));
         answerArea.setPrefRowCount(3);
         answerArea.setWrapText(true);
+        setupInputField(answerArea, inputBg, inputText, inputPrompt);
         if (isEditMode) answerArea.setText(cardToEdit.getAnswer());
 
         bAudioInfoBox = new VBox(5);
@@ -147,10 +154,11 @@ public class CreateCardDialog {
 
         // --- Tags Section ---
         Label tagsLabel = new Label(TranslationProvider.get("card.tags_label"));
-        tagsLabel.setStyle("-fx-font-weight: bold;");
+        tagsLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         
         tagField = new TextField();
         tagField.setPromptText(TranslationProvider.get("card.tags_prompt"));
+        setupInputField(tagField, inputBg, inputText, inputPrompt);
         
         Button addTagBtn = new Button(TranslationProvider.get("card.add_btn"));
         styleAddTagButton(addTagBtn);
@@ -159,6 +167,7 @@ public class CreateCardDialog {
         tagField.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
                 addTagFromField();
+                e.consume();
             }
         });
 
@@ -179,9 +188,13 @@ public class CreateCardDialog {
         
         saveButton = new Button(isEditMode ? TranslationProvider.get("card.save_btn") : TranslationProvider.get("card.create_btn"));
         saveButton.setStyle("-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold;");
+        saveButton.setDefaultButton(true);
         saveButton.setDisable(!isEditMode);
         
         Button cancelButton = new Button(TranslationProvider.get("card.cancel_btn"));
+        cancelButton.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-text-fill: " + ThemeProvider.get("text-secondary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-weight: bold;");
+        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle("-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-weight: bold;"));
+        cancelButton.setOnMouseExited(e -> cancelButton.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-text-fill: " + ThemeProvider.get("text-secondary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-weight: bold;"));
         cancelButton.setOnAction(e -> {
             stopPreview();
             stage.close();
@@ -258,7 +271,7 @@ public class CreateCardDialog {
         ContextMenu menu = new ContextMenu();
         menu.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; " +
                      "-fx-background-radius: 8; " +
-                     "-fx-border-color: " + ThemeProvider.get("border-light") + "; " +
+                     "-fx-border-color: " + ThemeProvider.get("border-muted") + "; " +
                      "-fx-border-radius: 8; " +
                      "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);");
 
@@ -269,19 +282,29 @@ public class CreateCardDialog {
         musicIcon.setScaleX(0.7);
         musicIcon.setScaleY(0.7);
         
-        MenuItem audioItem = new MenuItem(TranslationProvider.get("card.add_audio"));
-        audioItem.setGraphic(musicIcon);
+        Label audioLabel = new Label(TranslationProvider.get("card.add_audio"));
+        audioLabel.setStyle("-fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-font-weight: bold;");
+        HBox audioContent = new HBox(8, musicIcon, audioLabel);
+        audioContent.setAlignment(Pos.CENTER_LEFT);
+
+        MenuItem audioItem = new MenuItem();
+        audioItem.setGraphic(audioContent);
         audioItem.setOnAction(e -> handleAddAudio(isFront));
 
         // Image Item
         SVGPath imageIcon = new SVGPath();
-        imageIcon.setContent("M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z");
+        imageIcon.setContent("M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z");
         imageIcon.setFill(Color.web(ThemeProvider.get("text-secondary")));
         imageIcon.setScaleX(0.7);
         imageIcon.setScaleY(0.7);
 
-        MenuItem imageItem = new MenuItem(TranslationProvider.get("card.add_image"));
-        imageItem.setGraphic(imageIcon);
+        Label imageLabel = new Label(TranslationProvider.get("card.add_image"));
+        imageLabel.setStyle("-fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-font-weight: bold;");
+        HBox imageContent = new HBox(8, imageIcon, imageLabel);
+        imageContent.setAlignment(Pos.CENTER_LEFT);
+
+        MenuItem imageItem = new MenuItem();
+        imageItem.setGraphic(imageContent);
         imageItem.setOnAction(e -> handleAddImage(isFront));
         
         menu.getItems().addAll(audioItem, imageItem);
@@ -469,7 +492,7 @@ public class CreateCardDialog {
             thumb.setSmooth(true);
 
             Label label = new Label("🖼 " + name);
-            label.setStyle("-fx-font-size: 11px;");
+            label.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -505,13 +528,13 @@ public class CreateCardDialog {
             info.setStyle("-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-background-radius: 5;");
 
             Label label = new Label(String.format("\uD83C\uDFB5 %s (%s)", name, dur));
-            label.setStyle("-fx-font-size: 11px;");
+            label.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
             
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
             
             Button playBtn = new Button("▶");
-            playBtn.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+            playBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-cursor: hand;");
             playBtn.setOnAction(e -> togglePreview(data, playBtn));
 
             Button delBtn = new Button("\uD83D\uDDD1");
@@ -573,5 +596,31 @@ public class CreateCardDialog {
     public Optional<Card> showAndWait() {
         stage.showAndWait();
         return Optional.ofNullable(result);
+    }
+
+    private void setupInputField(javafx.scene.control.TextInputControl input, String inputBg, String inputText, String inputPrompt) {
+        String baseStyle = String.format(
+            "-fx-control-inner-background: %s; " +
+            "-fx-background-color: %s; " +
+            "-fx-text-fill: %s; " +
+            "-fx-text-inner-color: %s; " +
+            "-fx-prompt-text-fill: %s; " +
+            "-fx-border-color: %s; " +
+            "-fx-border-width: 1; " +
+            "-fx-border-radius: 5; " +
+            "-fx-background-radius: 5; " +
+            "-fx-focus-color: transparent; " +
+            "-fx-faint-focus-color: transparent;",
+            inputBg, inputBg, inputText, inputText, inputPrompt, ThemeProvider.get("border-muted")
+        );
+        input.setStyle(baseStyle);
+
+        input.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                input.setStyle(baseStyle + " -fx-border-color: " + ThemeProvider.get("accent-blue") + ";");
+            } else {
+                input.setStyle(baseStyle);
+            }
+        });
     }
 }
