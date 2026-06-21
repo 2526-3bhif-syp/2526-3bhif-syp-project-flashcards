@@ -3,11 +3,13 @@ package at.htlleonding.flashcards.view;
 import at.htlleonding.flashcards.model.Card;
 import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -69,6 +71,20 @@ public class FlashcardsView extends HBox {
         detailPanel = buildDetailPanel();
 
         this.getChildren().addAll(leftSide, detailPanel);
+
+        this.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER && !(e.getTarget() instanceof TextInputControl)) {
+                if (onAddCardRequested != null) onAddCardRequested.run();
+                e.consume();
+            } else if (e.getCode() == KeyCode.T && !(e.getTarget() instanceof TextInputControl)) {
+                if (onStudyRequested != null) onStudyRequested.run();
+                e.consume();
+            }
+        });
+
+        sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) Platform.runLater(this::requestFocus);
+        });
     }
 
     // ── layout builders ────────────────────────────────────────────────────

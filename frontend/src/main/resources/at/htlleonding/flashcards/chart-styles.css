@@ -19,3 +19,33 @@
 .chart-legend-item {
     -fx-text-fill: -fx-text-primary !important;
 }
+
+.axis {
+    -fx-tick-label-fill: -fx-text-primary !important;
+    -fx-tick-length: 6;
+    -fx-minor-tick-length: 4;
+}
+
+.axis .axis-line {
+    -fx-stroke: -fx-text-primary !important;
+    -fx-stroke-width: 1.5;
+}
+
+.axis .axis-tick-mark {
+    -fx-stroke: -fx-text-primary !important;
+    -fx-stroke-width: 1.5;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: -fx-border-default;
+    -fx-stroke-width: 0.5;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: -fx-border-default;
+    -fx-stroke-width: 0.5;
+}

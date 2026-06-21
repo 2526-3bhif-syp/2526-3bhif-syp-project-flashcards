@@ -290,6 +290,8 @@ public class StatisticView extends BorderPane {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         yAxis.setMinorTickVisible(false);
+        xAxis.labelProperty().bind(TranslationProvider.createStringBinding("statistic.daily_xaxis"));
+        yAxis.labelProperty().bind(TranslationProvider.createStringBinding("statistic.daily_yaxis"));
 
         AreaChart<String, Number> chart = new AreaChart<>(xAxis, yAxis);
         chart.titleProperty().bind(TranslationProvider.createStringBinding("statistic.daily_chart"));
@@ -311,8 +313,10 @@ public class StatisticView extends BorderPane {
     private void applyChartTextTheme(javafx.scene.chart.Chart chart) {
         if (chart == null) return;
         String color = ThemeProvider.get("text-primary");
+        String borderColor = ThemeProvider.get("border-default");
         chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card")
-                + "; -fx-text-primary: " + color + ";");
+                + "; -fx-text-primary: " + color + ";"
+                + " -fx-border-default: " + borderColor + ";");
         String style = "-fx-text-fill: " + color + "; -fx-fill: " + color + ";";
         for (String selector : new String[]{".chart-title", ".axis-label", ".tick-label",
                 ".chart-pie-label", ".chart-legend-item"}) {

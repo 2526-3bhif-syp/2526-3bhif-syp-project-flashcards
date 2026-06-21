@@ -1,11 +1,13 @@
 package at.htlleonding.flashcards.view;
 
 import at.htlleonding.flashcards.model.Deck;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 
 import at.htlleonding.flashcards.model.ThemeProvider;
@@ -45,6 +47,18 @@ public class HomeView extends VBox {
         this.setPadding(new Insets(20));
         this.setSpacing(16);
         this.getChildren().addAll(buildHeader(), buildDeckGrid());
+
+        this.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER && !(e.getTarget() instanceof TextInputControl)) {
+                if (onCreateDeckRequested != null) onCreateDeckRequested.run();
+                e.consume();
+            }
+        });
+
+        sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) Platform.runLater(this::requestFocus);
+        });
+
         TranslationProvider.localeProperty().addListener((obs, oldLocale, newLocale) -> {
             updateTextOnLocaleChange();
         });
