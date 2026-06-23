@@ -127,13 +127,15 @@ public class FlashcardsView extends HBox {
         cardsGrid.setHgap(15);
         cardsGrid.setVgap(15);
         cardsGrid.setPadding(new Insets(10));
-        cardsGrid.setPrefWrapLength(600);
 
         ScrollPane scrollPane = new ScrollPane(cardsGrid);
         scrollPane.setFitToWidth(true);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        scrollPane.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            cardsGrid.setPrefWrapLength(newValue.getWidth() - 30);
+        });
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
         addPlusCard();

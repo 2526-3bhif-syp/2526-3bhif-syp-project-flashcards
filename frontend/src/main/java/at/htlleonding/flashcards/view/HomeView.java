@@ -123,6 +123,9 @@ public class HomeView extends VBox {
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        sp.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            deckGrid.setPrefWrapLength(newValue.getWidth() - 25);
+        });
         VBox.setVgrow(sp, Priority.ALWAYS);
         return sp;
     }
