@@ -29,6 +29,7 @@ public class HomeView extends VBox {
     private Button exportSelectedBtn;
     private Button deleteSelectedBtn;
     private Button importBtn;
+    private Label title;
 
     // ── callbacks ──────────────────────────────────────────────────────────
     private Consumer<Deck> onDeckSelected;
@@ -50,6 +51,7 @@ public class HomeView extends VBox {
     }
 
     public void applyTheme() {
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         renderDecks(currentDecks);
         rebuildHeaderButtons();
     }
@@ -70,9 +72,9 @@ public class HomeView extends VBox {
     // ── layout builders ────────────────────────────────────────────────────
 
     private HBox buildHeader() {
-        Label title = new Label();
+        title = new Label();
         title.textProperty().bind(TranslationProvider.createStringBinding("home.title"));
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
