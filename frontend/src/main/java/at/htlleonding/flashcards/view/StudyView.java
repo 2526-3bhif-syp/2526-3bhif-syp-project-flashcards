@@ -45,6 +45,7 @@ public class StudyView {
     private Consumer<String> onAssessment;
     private Runnable onFinish;
     private Runnable onSessionEnd;
+    private boolean sessionEnded = false;
 
     public StudyView(List<Card> cards) {
         this.studyCards = new ArrayList<>(cards);
@@ -136,6 +137,7 @@ public class StudyView {
         stage.setOnHidden(e -> {
             stopAllAudio();
             ThemeProvider.removeThemeListener(themeListener);
+            fireSessionEnd();
         });
 
         showCardFront();
@@ -426,7 +428,10 @@ public class StudyView {
     }
 
     private void fireSessionEnd() {
-        if (onSessionEnd != null) onSessionEnd.run();
+        if (!sessionEnded) {
+            sessionEnded = true;
+            if (onSessionEnd != null) onSessionEnd.run();
+        }
     }
 
     private void stopAllAudio() {

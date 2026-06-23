@@ -296,3 +296,19 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
 * Its still happening
 
 * Everything seems to work. Finish up by updating the specs then commiting everything thats left
+
+
+== Quick Fix
+
+* When using the dark theme, the text is not readable at all in the statistics next to the
+  graph. (ex: Ok(3), Leicht(3)). Make sure it is readable in the dark theme,  and all other
+  themes as well
+
+
+== Session 23.06
+
+* /openspec-explore there currently is an issue that the statistics are not stored persistently. After closing the application, the old session no longer show up. It has worked once before, but i broke somewhere along the way. Fix this issue in our javafx app. The issue is #79, you can use git and gh in the commandline, but dont push anything yourself. You are allowed to do local commits, but orrient yourself with our own previous commit messages.
+
+* /openspec-propose yes looks good. go ahead
+
+* /openspec-apply-change

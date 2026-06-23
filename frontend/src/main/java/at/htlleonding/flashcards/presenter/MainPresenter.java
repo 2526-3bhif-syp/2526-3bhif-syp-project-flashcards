@@ -481,6 +481,7 @@ public class MainPresenter {
         studyView.setOnSessionEnd(() -> {
             if (currentDeck != null) {
                 model.recordDeckStudied(currentDeck.getId());
+                model.updateDeck(currentDeck);
             } else {
                 model.addStreakDate(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             }
