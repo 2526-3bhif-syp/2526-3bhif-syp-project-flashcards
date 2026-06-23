@@ -95,6 +95,7 @@ public class HomepageView extends VBox {
         recommendedScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         recommendedScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         recommendedScrollPane.setPrefHeight(250);
+        recommendedScrollPane.setMinHeight(250);
         recommendedScrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         recommendedBox.getChildren().addAll(recHeader, recommendedScrollPane);
 
@@ -116,12 +117,16 @@ public class HomepageView extends VBox {
         recentContainer.setHgap(16);
         recentContainer.setVgap(16);
         recentContainer.setPadding(new Insets(6));
+        recentContainer.setAlignment(Pos.TOP_CENTER);
 
         ScrollPane recentScrollPane = new ScrollPane(recentContainer);
         recentScrollPane.setFitToWidth(true);
         recentScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         recentScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         recentScrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        recentScrollPane.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            recentContainer.setPrefWrapLength(newValue.getWidth() - 20);
+        });
         VBox.setVgrow(recentScrollPane, Priority.ALWAYS);
 
         recentBox.getChildren().addAll(recentHeader, recentScrollPane);
