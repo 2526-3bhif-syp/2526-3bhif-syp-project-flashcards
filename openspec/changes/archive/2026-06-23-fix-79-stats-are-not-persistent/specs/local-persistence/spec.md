@@ -1,7 +1,7 @@
 ## MODIFIED Requirements
 
 ### Requirement: Lokale JSON-Persistenz
-Alle Stapel und Karten werden lokal als JSON-Datei gespeichert und beim Anwendungsstart geladen.
+Alle Stapel und Karten SHALL lokal als JSON-Datei gespeichert und beim Anwendungsstart geladen werden.
 
 #### Scenario: Daten beim Start laden
 - **WHEN** die Anwendung startet
