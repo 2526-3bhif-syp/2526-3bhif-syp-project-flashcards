@@ -47,3 +47,6 @@ docs/slides/revealjs
 
 frontend/decks.json
 CONTINIOUS/
+
+frontend/settings.properties
+frontend/streaks.json

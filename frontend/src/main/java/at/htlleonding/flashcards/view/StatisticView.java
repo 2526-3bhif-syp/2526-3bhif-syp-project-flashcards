@@ -97,6 +97,13 @@ public class StatisticView extends BorderPane {
         donutCenterBox.setAlignment(Pos.CENTER);
         donutCenterBox.setMouseTransparent(true);
 
+        try {
+            String stylesheet = getClass().getResource("/at/htlleonding/flashcards/chart-styles.css").toExternalForm();
+            this.getStylesheets().add(stylesheet);
+        } catch (Exception e) {
+            System.err.println("Could not load chart-styles.css: " + e.getMessage());
+        }
+
         setCenter(scrollPane);
         applyTheme();
         ThemeProvider.addThemeListener(this::applyTheme);
@@ -267,7 +274,7 @@ public class StatisticView extends BorderPane {
         chart.setLegendVisible(true);
         chart.setPrefHeight(320);
         chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card")
-                + "; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+                + "; -fx-text-primary: " + ThemeProvider.get("text-primary") + ";");
 
         Platform.runLater(() -> {
             for (int i = 0; i < Math.min(data.size(), sliceColors.size()); i++) {
@@ -290,7 +297,7 @@ public class StatisticView extends BorderPane {
         chart.setPrefHeight(280);
         chart.setCreateSymbols(true);
         chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card")
-                + "; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+                + "; -fx-text-primary: " + ThemeProvider.get("text-primary") + ";");
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         Map<LocalDate, Long> byDay = agg.getCountByDay();
@@ -303,10 +310,13 @@ public class StatisticView extends BorderPane {
 
     private void applyChartTextTheme(javafx.scene.chart.Chart chart) {
         if (chart == null) return;
-        String fill = "-fx-text-fill: " + ThemeProvider.get("text-primary") + ";";
+        String color = ThemeProvider.get("text-primary");
+        chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card")
+                + "; -fx-text-primary: " + color + ";");
+        String style = "-fx-text-fill: " + color + "; -fx-fill: " + color + ";";
         for (String selector : new String[]{".chart-title", ".axis-label", ".tick-label",
                 ".chart-pie-label", ".chart-legend-item"}) {
-            chart.lookupAll(selector).forEach(n -> n.setStyle(fill));
+            chart.lookupAll(selector).forEach(n -> n.setStyle(style));
         }
     }
 
