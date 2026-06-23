@@ -12,6 +12,9 @@ import at.htlleonding.flashcards.model.ThemeProvider;
 import at.htlleonding.flashcards.model.TranslationProvider;
 import java.util.*;
 import java.util.function.Consumer;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public class HomeView extends VBox {
 
@@ -26,6 +29,7 @@ public class HomeView extends VBox {
     private Button exportSelectedBtn;
     private Button deleteSelectedBtn;
     private Button importBtn;
+    private Label title;
 
     // ── callbacks ──────────────────────────────────────────────────────────
     private Consumer<Deck> onDeckSelected;
@@ -47,6 +51,7 @@ public class HomeView extends VBox {
     }
 
     public void applyTheme() {
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         renderDecks(currentDecks);
         rebuildHeaderButtons();
     }
@@ -67,9 +72,9 @@ public class HomeView extends VBox {
     // ── layout builders ────────────────────────────────────────────────────
 
     private HBox buildHeader() {
-        Label title = new Label();
+        title = new Label();
         title.textProperty().bind(TranslationProvider.createStringBinding("home.title"));
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -177,12 +182,24 @@ public class HomeView extends VBox {
     private void addPlusTile() {
         StackPane tile = new StackPane();
         tile.setPrefSize(150, 200);
-        tile.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-width: 1; " +
-                      "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;");
+        String plusNormal = "-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-border-color: " + ThemeProvider.get("border-default") + "; -fx-border-width: 1; " +
+                            "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;";
+        String plusHover  = "-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-border-color: " + ThemeProvider.get("accent-blue") + "; -fx-border-width: 1; " +
+                            "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;";
+        tile.setStyle(plusNormal);
         Label plusLabel = new Label("+");
         plusLabel.setStyle("-fx-font-size: 60px; -fx-text-fill: " + ThemeProvider.get("text-disabled") + ";");
         tile.getChildren().add(plusLabel);
         tile.setOnMouseClicked(e -> { if (onCreateDeckRequested != null) onCreateDeckRequested.run(); });
+        tile.setOnMouseEntered(e -> tile.setStyle(plusHover));
+        tile.setOnMouseExited(e -> tile.setStyle(plusNormal));
+
+        Tooltip addTooltip = new Tooltip();
+        addTooltip.textProperty().bind(TranslationProvider.createStringBinding("home.tooltip_add"));
+        addTooltip.setShowDelay(Duration.millis(400));
+        addTooltip.setStyle("-fx-font-size: 11px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 3 7 3 7; -fx-background-radius: 4;");
+        Tooltip.install(tile, addTooltip);
+
         deckGrid.getChildren().add(tile);
     }
 
@@ -199,6 +216,23 @@ public class HomeView extends VBox {
             "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
             bgColor, borderColor, borderWidth));
 
+        tile.setOnMouseEntered(ev -> {
+            if (!selectedDecks.contains(deck)) {
+                tile.setStyle(String.format(
+                    "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1; " +
+                    "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
+                    ThemeProvider.get("bg-hover"), ThemeProvider.get("border-default")));
+            }
+        });
+        tile.setOnMouseExited(ev -> {
+            if (!selectedDecks.contains(deck)) {
+                tile.setStyle(String.format(
+                    "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1; " +
+                    "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
+                    ThemeProvider.get("bg-card"), ThemeProvider.get("border-default")));
+            }
+        });
+
         // ── Centered content ───────────────────────────────────────────────
         VBox content = new VBox(8);
         content.setAlignment(Pos.CENTER);
@@ -210,12 +244,11 @@ public class HomeView extends VBox {
             content.getChildren().add(check);
         }
 
-        Image iconImage = IconManager.getIcon(deck.getIconId());
-        ImageView iconView = new ImageView(iconImage);
-        iconView.setFitWidth(selectMode ? 55 : 75);
-        iconView.setFitHeight(selectMode ? 55 : 75);
-        iconView.setPreserveRatio(true);
-        iconView.setSmooth(true);
+        ImageView deckIcon = new ImageView(IconManager.getIcon(deck.getIconId()));
+        deckIcon.setFitWidth(64);
+        deckIcon.setFitHeight(64);
+        deckIcon.setPreserveRatio(true);
+        deckIcon.setSmooth(true);
 
         Label nameLabel = new Label(deck.getName() != null ? deck.getName() : "");
         nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
@@ -228,7 +261,10 @@ public class HomeView extends VBox {
         countLabel.textProperty().bind(TranslationProvider.createStringBinding("home.cards", deck.getCardCount()));
         countLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
-        content.getChildren().addAll(iconView, nameLabel, countLabel);
+        Label lastStudiedLabel = new Label(getLastStudiedText(deck));
+        lastStudiedLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: " + ThemeProvider.get("text-subtle") + "; -fx-font-style: italic;");
+
+        content.getChildren().addAll(deckIcon, nameLabel, countLabel, lastStudiedLabel);
         tile.getChildren().add(content);
 
         if (selectMode) {
@@ -246,17 +282,34 @@ public class HomeView extends VBox {
             topRow.setPickOnBounds(false);
             StackPane.setAlignment(topRow, Pos.TOP_LEFT);
 
+            String tipStyle = "-fx-font-size: 11px; -fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 3 7 3 7; -fx-background-radius: 4;";
+
             Button editBtn = iconBtn("✎", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-link"));
             editBtn.setOnAction(e -> { e.consume(); if (onEditDeckRequested != null) onEditDeckRequested.accept(deck); });
+            Tooltip editTip = new Tooltip();
+            editTip.textProperty().bind(TranslationProvider.createStringBinding("home.tooltip_edit_deck"));
+            editTip.setShowDelay(Duration.millis(400));
+            editTip.setStyle(tipStyle);
+            Tooltip.install(editBtn, editTip);
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
             Button exportBtn = iconBtn("⬆", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-orange"));
             exportBtn.setOnAction(e -> { e.consume(); if (onExportDeckRequested != null) onExportDeckRequested.accept(deck); });
+            Tooltip exportTip = new Tooltip();
+            exportTip.textProperty().bind(TranslationProvider.createStringBinding("home.tooltip_export_deck"));
+            exportTip.setShowDelay(Duration.millis(400));
+            exportTip.setStyle(tipStyle);
+            Tooltip.install(exportBtn, exportTip);
 
             Button deleteBtn = iconBtn("✖", ThemeProvider.get("text-placeholder"), ThemeProvider.get("accent-red"));
             deleteBtn.setOnAction(e -> { e.consume(); if (onDeleteDeckRequested != null) onDeleteDeckRequested.accept(deck); });
+            Tooltip deleteTip = new Tooltip();
+            deleteTip.textProperty().bind(TranslationProvider.createStringBinding("home.tooltip_delete_deck"));
+            deleteTip.setShowDelay(Duration.millis(400));
+            deleteTip.setStyle(tipStyle);
+            Tooltip.install(deleteBtn, deleteTip);
 
             topRow.getChildren().addAll(editBtn, spacer, exportBtn, deleteBtn);
             tile.getChildren().add(topRow);
@@ -331,6 +384,24 @@ public class HomeView extends VBox {
     private void updateTextOnLocaleChange() {
         selectToggleBtn.setText(TranslationProvider.get(selectMode ? "home.cancel" : "home.select"));
         updateSelectModeButtons();
+    }
+
+    private String getLastStudiedText(Deck deck) {
+        java.time.LocalDateTime last = deck.getLastStudied();
+        if (last == null) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Nie" : "Last: Never";
+        }
+        java.time.LocalDate lastDate = last.toLocalDate();
+        java.time.LocalDate today = java.time.LocalDate.now();
+        if (lastDate.equals(today)) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Heute" : "Last: Today";
+        } else if (lastDate.equals(today.minusDays(1))) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Gestern" : "Last: Yesterday";
+        } else {
+            java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            String prefix = TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: " : "Last: ";
+            return prefix + lastDate.format(fmt);
+        }
     }
 }
 

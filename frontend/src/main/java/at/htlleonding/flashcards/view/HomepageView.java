@@ -45,6 +45,15 @@ public class HomepageView extends VBox {
     private final VBox calendarContainer;
     private final Label streakCountLabel;
     private final Label currentMonthLabel;
+    private final Label title;
+    private final Label recHeader;
+    private final Label recentHeader;
+    private final Label streakHeader;
+    private final Region hLine;
+    private final Region vLine;
+    private final Button prevMonthBtn;
+    private final Button nextMonthBtn;
+
 
     private List<Deck> recommendedDecks = new ArrayList<>();
     private List<Deck> recentDecks = new ArrayList<>();
@@ -58,7 +67,7 @@ public class HomepageView extends VBox {
         this.setMinHeight(560);
 
         // 1. Header
-        Label title = new Label();
+        title = new Label();
         title.textProperty().bind(TranslationProvider.createStringBinding("homepage.title"));
         title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
@@ -75,7 +84,7 @@ public class HomepageView extends VBox {
 
         // -- Recommended section
         VBox recommendedBox = new VBox(12);
-        Label recHeader = new Label();
+        recHeader = new Label();
         recHeader.textProperty().bind(TranslationProvider.createStringBinding("homepage.recommended"));
         recHeader.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
@@ -90,7 +99,7 @@ public class HomepageView extends VBox {
         recommendedBox.getChildren().addAll(recHeader, recommendedScrollPane);
 
         // -- Horizontal Separator Line (H-Line)
-        Region hLine = new Region();
+        hLine = new Region();
         hLine.setPrefHeight(1.5);
         hLine.setMinHeight(1.5);
         hLine.setStyle("-fx-background-color: " + ThemeProvider.get("border-default") + ";");
@@ -99,7 +108,7 @@ public class HomepageView extends VBox {
         VBox recentBox = new VBox(12);
         VBox.setVgrow(recentBox, Priority.ALWAYS);
 
-        Label recentHeader = new Label();
+        recentHeader = new Label();
         recentHeader.textProperty().bind(TranslationProvider.createStringBinding("homepage.recent"));
         recentHeader.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
@@ -120,7 +129,7 @@ public class HomepageView extends VBox {
         leftCol.getChildren().addAll(recommendedBox, hLine, recentBox);
 
         // -- Vertical Separator Line (V-Line)
-        Region vLine = new Region();
+        vLine = new Region();
         vLine.setPrefWidth(1.5);
         vLine.setMinWidth(1.5);
         vLine.setStyle("-fx-background-color: " + ThemeProvider.get("border-default") + ";");
@@ -138,7 +147,7 @@ public class HomepageView extends VBox {
         HBox streakHeaderBox = new HBox(12);
         streakHeaderBox.setAlignment(Pos.CENTER_LEFT);
 
-        Label streakHeader = new Label();
+        streakHeader = new Label();
         streakHeader.textProperty().bind(TranslationProvider.createStringBinding("homepage.streak"));
         streakHeader.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
@@ -148,7 +157,7 @@ public class HomepageView extends VBox {
         Region headerSpacer = new Region();
         HBox.setHgrow(headerSpacer, Priority.ALWAYS);
 
-        Button prevMonthBtn = new Button("◀");
+        prevMonthBtn = new Button("◀");
         prevMonthBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-cursor: hand; -fx-font-size: 16px;");
         prevMonthBtn.setOnAction(e -> handlePrevMonth());
         addHoverAnimation(prevMonthBtn);
@@ -156,7 +165,7 @@ public class HomepageView extends VBox {
         currentMonthLabel = new Label();
         currentMonthLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-min-width: 150px; -fx-alignment: center;");
 
-        Button nextMonthBtn = new Button("▶");
+        nextMonthBtn = new Button("▶");
         nextMonthBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-cursor: hand; -fx-font-size: 16px;");
         nextMonthBtn.setOnAction(e -> handleNextMonth());
         addHoverAnimation(nextMonthBtn);
@@ -181,6 +190,16 @@ public class HomepageView extends VBox {
 
     public void applyTheme() {
         this.setStyle("-fx-background-color: transparent;");
+        title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+        recHeader.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+        recentHeader.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+        streakHeader.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+        streakCountLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("accent-orange") + ";");
+        currentMonthLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-min-width: 150px; -fx-alignment: center;");
+        prevMonthBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-cursor: hand; -fx-font-size: 16px;");
+        nextMonthBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-cursor: hand; -fx-font-size: 16px;");
+        hLine.setStyle("-fx-background-color: " + ThemeProvider.get("border-default") + ";");
+        vLine.setStyle("-fx-background-color: " + ThemeProvider.get("border-default") + ";");
         renderData();
     }
 
@@ -243,16 +262,28 @@ public class HomepageView extends VBox {
             "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
             bgColor, borderColor));
 
+        tile.setOnMouseEntered(ev -> {
+            tile.setStyle(String.format(
+                "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1; " +
+                "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
+                ThemeProvider.get("bg-hover"), ThemeProvider.get("border-default")));
+        });
+        tile.setOnMouseExited(ev -> {
+            tile.setStyle(String.format(
+                "-fx-background-color: %s; -fx-border-color: %s; -fx-border-width: 1; " +
+                "-fx-border-radius: 15; -fx-background-radius: 15; -fx-cursor: hand;",
+                ThemeProvider.get("bg-card"), ThemeProvider.get("border-default")));
+        });
+
         VBox content = new VBox(10);
         content.setAlignment(Pos.CENTER);
         content.setPadding(new Insets(12));
 
-        Image iconImage = IconManager.getIcon(deck.getIconId());
-        ImageView iconView = new ImageView(iconImage);
-        iconView.setFitWidth(70);
-        iconView.setFitHeight(70);
-        iconView.setPreserveRatio(true);
-        iconView.setSmooth(true);
+        ImageView deckIcon = new ImageView(IconManager.getIcon(deck.getIconId()));
+        deckIcon.setFitWidth(64);
+        deckIcon.setFitHeight(64);
+        deckIcon.setPreserveRatio(true);
+        deckIcon.setSmooth(true);
 
         Label nameLabel = new Label(deck.getName() != null ? deck.getName() : "");
         nameLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
@@ -265,7 +296,10 @@ public class HomepageView extends VBox {
         countLabel.textProperty().bind(TranslationProvider.createStringBinding("home.cards", deck.getCardCount()));
         countLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + ThemeProvider.get("text-muted") + ";");
 
-        content.getChildren().addAll(iconView, nameLabel, countLabel);
+        Label lastStudiedLabel = new Label(getLastStudiedText(deck));
+        lastStudiedLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: " + ThemeProvider.get("text-subtle") + "; -fx-font-style: italic;");
+
+        content.getChildren().addAll(deckIcon, nameLabel, countLabel, lastStudiedLabel);
         tile.getChildren().add(content);
 
         // Edit/Delete overlays
@@ -497,4 +531,22 @@ public class HomepageView extends VBox {
     public void setOnDeckSelected(Consumer<Deck> cb) { this.onDeckSelected = cb; }
     public void setOnEditDeckRequested(Consumer<Deck> cb) { this.onEditDeckRequested = cb; }
     public void setOnDeleteDeckRequested(Consumer<Deck> cb) { this.onDeleteDeckRequested = cb; }
+
+    private String getLastStudiedText(Deck deck) {
+        java.time.LocalDateTime last = deck.getLastStudied();
+        if (last == null) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Nie" : "Last: Never";
+        }
+        java.time.LocalDate lastDate = last.toLocalDate();
+        java.time.LocalDate today = java.time.LocalDate.now();
+        if (lastDate.equals(today)) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Heute" : "Last: Today";
+        } else if (lastDate.equals(today.minusDays(1))) {
+            return TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: Gestern" : "Last: Yesterday";
+        } else {
+            java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            String prefix = TranslationProvider.getLocale().getLanguage().equals("de") ? "Zuletzt: " : "Last: ";
+            return prefix + lastDate.format(fmt);
+        }
+    }
 }

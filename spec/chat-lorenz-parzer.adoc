@@ -136,3 +136,14 @@ verstanden. Fass es nochmal zusammen.
 /opsx:apply share-statistiken
 
 Bitte passe den share button grafisch an den bereits vorhanden buttons an
+
+== Session 12 (2026 21-06)
+
+Analysiere ob die changes in opsx für das redesign schon gemacht wurden.
+
+/opsx:apply ui-feinschliff -- beginne erstmals nur mit der Dashboard seite und lasse mich überprüfen ob es passt.
+
+/opsx:apply ui-feinschliff -- wende dieses Design auf alle Pages an.
+
+/opsx:sync ui-feinschliff
+/opsx:archive ui-feinschliff

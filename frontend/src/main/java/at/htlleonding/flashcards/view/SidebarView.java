@@ -27,6 +27,7 @@ public class SidebarView extends VBox {
     private Consumer<String> navigationHandler;
     private Button backBtn;
     private Button forwardBtn;
+    private final java.util.List<SVGPath> navIcons = new java.util.ArrayList<>();
 
     public SidebarView() {
         this.setPrefWidth(85); 
@@ -68,6 +69,11 @@ public class SidebarView extends VBox {
 
     public void applyTheme() {
         this.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + ";");
+        for (SVGPath icon : navIcons) {
+            icon.setFill(Color.web(ThemeProvider.get("text-secondary")));
+        }
+        updateButtonStyle(backBtn, !backBtn.isDisable());
+        updateButtonStyle(forwardBtn, !forwardBtn.isDisable());
     }
 
     public void setOnNavigationAction(Consumer<String> handler) {
@@ -87,10 +93,10 @@ public class SidebarView extends VBox {
     private void updateButtonStyle(Button btn, boolean enabled) {
         SVGPath icon = (SVGPath) btn.getGraphic();
         if (enabled) {
-            icon.setFill(Color.web("#888888"));
+            icon.setFill(Color.web(ThemeProvider.get("text-secondary")));
             btn.setOpacity(1.0);
         } else {
-            icon.setFill(Color.web("#cccccc"));
+            icon.setFill(Color.web(ThemeProvider.get("text-disabled")));
             btn.setOpacity(0.4);
         }
     }
@@ -102,7 +108,7 @@ public class SidebarView extends VBox {
 
         SVGPath icon = new SVGPath();
         icon.setContent(svgPath);
-        icon.setFill(Color.web("#888888"));
+        icon.setFill(Color.web(ThemeProvider.get("text-secondary")));
         
         btn.setGraphic(icon);
 
@@ -123,7 +129,7 @@ public class SidebarView extends VBox {
         btn.setOnMouseEntered(e -> {
             if (!btn.isDisable()) {
                 fillIcon.setFromValue((Color) icon.getFill());
-                fillIcon.setToValue(Color.web("#2196F3"));
+                fillIcon.setToValue(Color.web(ThemeProvider.get("accent-blue")));
                 scaleIcon.setToX(1.2);
                 scaleIcon.setToY(1.2);
                 new ParallelTransition(fillIcon, scaleIcon).play();
@@ -139,7 +145,7 @@ public class SidebarView extends VBox {
             
             if (!btn.isDisable()) {
                 fillIcon.setFromValue((Color) icon.getFill());
-                fillIcon.setToValue(Color.web("#888888"));
+                fillIcon.setToValue(Color.web(ThemeProvider.get("text-secondary")));
                 scaleIcon.setToX(1.0);
                 scaleIcon.setToY(1.0);
                 new ParallelTransition(fillIcon, scaleIcon).play();
@@ -156,9 +162,10 @@ public class SidebarView extends VBox {
 
         SVGPath icon = new SVGPath();
         icon.setContent(svgPath);
-        icon.setFill(Color.web("#555555"));
+        icon.setFill(Color.web(ThemeProvider.get("text-secondary")));
         icon.setScaleX(1.1); 
         icon.setScaleY(1.1);
+        navIcons.add(icon);
         
         btn.setGraphic(icon);
 
@@ -178,7 +185,7 @@ public class SidebarView extends VBox {
 
         btn.setOnMouseEntered(e -> {
             fillIcon.setFromValue((Color) icon.getFill());
-            fillIcon.setToValue(Color.web("#2196F3"));
+            fillIcon.setToValue(Color.web(ThemeProvider.get("accent-blue")));
             scaleIcon.setToX(1.25);
             scaleIcon.setToY(1.25);
             new ParallelTransition(fillIcon, scaleIcon).play();
@@ -189,7 +196,7 @@ public class SidebarView extends VBox {
         
         btn.setOnMouseExited(e -> {
             fillIcon.setFromValue((Color) icon.getFill());
-            fillIcon.setToValue(Color.web("#555555"));
+            fillIcon.setToValue(Color.web(ThemeProvider.get("text-secondary")));
             scaleIcon.setToX(1.1);
             scaleIcon.setToY(1.1);
             new ParallelTransition(fillIcon, scaleIcon).play();

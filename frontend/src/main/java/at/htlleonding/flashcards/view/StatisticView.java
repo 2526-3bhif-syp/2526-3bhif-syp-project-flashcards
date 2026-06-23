@@ -30,11 +30,16 @@ public class StatisticView extends BorderPane {
 
     private List<Deck> allDecks = new ArrayList<>();
     private PieChart ratingChart;
-    private LineChart<String, Number> dailyChart;
+    private AreaChart<String, Number> dailyChart;
     private Button shareRatingButton;
     private Button shareDailyButton;
     private VBox ratingChartContainer;
     private VBox dailyChartContainer;
+
+    private javafx.scene.shape.Circle donutCenterHole;
+    private Label donutNumberLabel;
+    private Label donutTextLabel;
+    private VBox donutCenterBox;
 
     public StatisticView() {
         contentBox = new VBox(20);
@@ -50,10 +55,14 @@ public class StatisticView extends BorderPane {
         deckCombo = new ComboBox<>();
         deckCombo.setMinWidth(160);
         deckCombo.setOnAction(e -> applyFilters());
+        deckCombo.setButtonCell(new StyledListCell());
+        deckCombo.setCellFactory(cb -> new StyledListCell());
 
         timeframeCombo = new ComboBox<>();
         timeframeCombo.setMinWidth(120);
         timeframeCombo.setOnAction(e -> applyFilters());
+        timeframeCombo.setButtonCell(new StyledListCell());
+        timeframeCombo.setCellFactory(cb -> new StyledListCell());
 
         HBox filterBar = new HBox(12, deckCombo, timeframeCombo);
         filterBar.setAlignment(Pos.CENTER_LEFT);
@@ -80,6 +89,13 @@ public class StatisticView extends BorderPane {
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        donutCenterHole = new javafx.scene.shape.Circle(65);
+        donutNumberLabel = new Label();
+        donutTextLabel = new Label();
+        donutCenterBox = new VBox(2, donutNumberLabel, donutTextLabel);
+        donutCenterBox.setAlignment(Pos.CENTER);
+        donutCenterBox.setMouseTransparent(true);
 
         setCenter(scrollPane);
         applyTheme();
@@ -158,9 +174,14 @@ public class StatisticView extends BorderPane {
         ratingChart = buildPieChart(agg);
         dailyChart = buildDailyLineChart(agg);
 
+        donutNumberLabel.setText(String.valueOf(agg.getTotalCount()));
+
+        StackPane donutPane = new StackPane();
+        donutPane.getChildren().addAll(ratingChart, donutCenterHole, donutCenterBox);
+
         HBox ratingHeader = new HBox(shareRatingButton);
         ratingHeader.setAlignment(Pos.CENTER_RIGHT);
-        ratingChartContainer = new VBox(4, ratingHeader, ratingChart);
+        ratingChartContainer = new VBox(4, ratingHeader, donutPane);
 
         HBox dailyHeader = new HBox(shareDailyButton);
         dailyHeader.setAlignment(Pos.CENTER_RIGHT);
@@ -170,6 +191,11 @@ public class StatisticView extends BorderPane {
         shareDailyButton.setDisable(false);
 
         contentBox.getChildren().addAll(ratingChartContainer, dailyChartContainer);
+
+        Platform.runLater(() -> {
+            applyChartTextTheme(ratingChart);
+            applyChartTextTheme(dailyChart);
+        });
     }
 
     public void setOnShareEinschaetzung(Runnable handler) {
@@ -240,7 +266,8 @@ public class StatisticView extends BorderPane {
         chart.setLabelsVisible(true);
         chart.setLegendVisible(true);
         chart.setPrefHeight(320);
-        chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + ";");
+        chart.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card")
+                + "; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
 
         Platform.runLater(() -> {
             for (int i = 0; i < Math.min(data.size(), sliceColors.size()); i++) {
@@ -252,12 +279,12 @@ public class StatisticView extends BorderPane {
         return chart;
     }
 
-    private LineChart<String, Number> buildDailyLineChart(StatisticsAggregator agg) {
+    private AreaChart<String, Number> buildDailyLineChart(StatisticsAggregator agg) {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         yAxis.setMinorTickVisible(false);
 
-        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+        AreaChart<String, Number> chart = new AreaChart<>(xAxis, yAxis);
         chart.titleProperty().bind(TranslationProvider.createStringBinding("statistic.daily_chart"));
         chart.setLegendVisible(false);
         chart.setPrefHeight(280);
@@ -274,10 +301,29 @@ public class StatisticView extends BorderPane {
         return chart;
     }
 
+    private void applyChartTextTheme(javafx.scene.chart.Chart chart) {
+        if (chart == null) return;
+        String fill = "-fx-text-fill: " + ThemeProvider.get("text-primary") + ";";
+        for (String selector : new String[]{".chart-title", ".axis-label", ".tick-label",
+                ".chart-pie-label", ".chart-legend-item"}) {
+            chart.lookupAll(selector).forEach(n -> n.setStyle(fill));
+        }
+    }
+
     public void applyTheme() {
-        setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + ";");
-        scrollPane.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary")
-                + "; -fx-background: " + ThemeProvider.get("bg-primary") + ";");
+        setStyle("-fx-background-color: transparent;");
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        if (donutCenterHole != null) {
+            donutCenterHole.setFill(javafx.scene.paint.Color.web(ThemeProvider.get("bg-card")));
+        }
+        if (donutNumberLabel != null) {
+            donutNumberLabel.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
+        }
+        if (donutTextLabel != null) {
+            donutTextLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + ThemeProvider.get("text-secondary") + ";");
+            donutTextLabel.setText(TranslationProvider.getLocale().getLanguage().equals("de") ? "Karten gelernt" : "Cards studied");
+        }
 
         if (!contentBox.getChildren().isEmpty() && contentBox.getChildren().get(0) instanceof Label title) {
             title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: "
@@ -291,12 +337,45 @@ public class StatisticView extends BorderPane {
                 + " -fx-text-fill: " + ThemeProvider.get("text-primary") + ";";
         deckCombo.setStyle(comboStyle);
         timeframeCombo.setStyle(comboStyle);
+        deckCombo.setButtonCell(new StyledListCell());
+        deckCombo.setCellFactory(cb -> new StyledListCell());
+        timeframeCombo.setButtonCell(new StyledListCell());
+        timeframeCombo.setCellFactory(cb -> new StyledListCell());
 
         styleShareBtn(shareRatingButton);
         styleShareBtn(shareDailyButton);
 
         if (!allDecks.isEmpty()) {
             applyFilters();
+        } else {
+            Platform.runLater(() -> {
+                applyChartTextTheme(ratingChart);
+                applyChartTextTheme(dailyChart);
+            });
+        }
+    }
+
+    private static class StyledListCell extends javafx.scene.control.ListCell<String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item);
+                setStyle("-fx-text-fill: " + ThemeProvider.get("text-primary") + "; "
+                        + "-fx-background-color: " + ThemeProvider.get("bg-card") + "; "
+                        + "-fx-font-size: 13px; -fx-padding: 5 10;");
+                setOnMouseEntered(e -> setStyle(
+                        "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; "
+                        + "-fx-background-color: " + ThemeProvider.get("bg-hover") + "; "
+                        + "-fx-font-size: 13px; -fx-padding: 5 10;"));
+                setOnMouseExited(e -> setStyle(
+                        "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; "
+                        + "-fx-background-color: " + ThemeProvider.get("bg-card") + "; "
+                        + "-fx-font-size: 13px; -fx-padding: 5 10;"));
+            }
         }
     }
 }

@@ -47,21 +47,28 @@ public class CreateDeckDialog {
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
         root.setPrefWidth(550);
+        root.setStyle("-fx-background-color: " + ThemeProvider.get("bg-primary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1.5; -fx-border-radius: 12; -fx-background-radius: 12;");
+
+        String inputBg = ThemeProvider.getTheme().equals("dark") ? ThemeProvider.get("bg-card") : "#ffffff";
+        String inputText = ThemeProvider.getTheme().equals("dark") ? ThemeProvider.get("text-primary") : "#333333";
+        String inputPrompt = ThemeProvider.getTheme().equals("dark") ? ThemeProvider.get("text-placeholder") : "#888888";
 
         Label nameLabel = new Label(TranslationProvider.get("deck.name_label"));
-        nameLabel.setStyle("-fx-font-weight: bold;");
+        nameLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         nameField = new TextField();
         nameField.setPromptText(TranslationProvider.get("deck.name_prompt"));
+        setupInputField(nameField, inputBg, inputText, inputPrompt);
 
         Label descLabel = new Label(TranslationProvider.get("deck.description_label"));
-        descLabel.setStyle("-fx-font-weight: bold;");
+        descLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         descriptionArea = new TextArea();
         descriptionArea.setPromptText(TranslationProvider.get("deck.description_prompt"));
         descriptionArea.setPrefRowCount(2);
         descriptionArea.setWrapText(true);
+        setupInputField(descriptionArea, inputBg, inputText, inputPrompt);
 
         Label iconLabel = new Label(TranslationProvider.get("deck.icon_label"));
-        iconLabel.setStyle("-fx-font-weight: bold;");
+        iconLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: " + ThemeProvider.get("text-primary") + ";");
         
         FlowPane iconPicker = new FlowPane(10, 10);
         iconPicker.setAlignment(Pos.CENTER_LEFT);
@@ -112,13 +119,21 @@ public class CreateDeckDialog {
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         
         saveButton = new Button(deckToEdit == null ? TranslationProvider.get("deck.create_btn") : TranslationProvider.get("deck.save_btn"));
-        saveButton.setStyle("-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold;");
+        String saveNormal = "-fx-background-color: " + ThemeProvider.get("accent-green") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 14;";
+        String saveHover  = "-fx-background-color: " + ThemeProvider.get("accent-green-strong") + "; -fx-text-fill: " + ThemeProvider.get("text-on-primary") + "; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 14;";
+        saveButton.setStyle(saveNormal);
+        saveButton.setOnMouseEntered(e -> saveButton.setStyle(saveHover));
+        saveButton.setOnMouseExited(e -> saveButton.setStyle(saveNormal));
+        saveButton.setDefaultButton(true);
         
         if (deckToEdit == null) {
             saveButton.setDisable(true);
         }
         
         Button cancelButton = new Button(TranslationProvider.get("deck.cancel_btn"));
+        cancelButton.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-text-fill: " + ThemeProvider.get("text-secondary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-weight: bold;");
+        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle("-fx-background-color: " + ThemeProvider.get("bg-hover") + "; -fx-text-fill: " + ThemeProvider.get("text-primary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-weight: bold;"));
+        cancelButton.setOnMouseExited(e -> cancelButton.setStyle("-fx-background-color: " + ThemeProvider.get("bg-card") + "; -fx-text-fill: " + ThemeProvider.get("text-secondary") + "; -fx-border-color: " + ThemeProvider.get("border-muted") + "; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-weight: bold;"));
         cancelButton.setOnAction(e -> stage.close());
 
         buttonBox.getChildren().addAll(cancelButton, saveButton);
@@ -155,5 +170,31 @@ public class CreateDeckDialog {
     public Optional<DeckResult> showAndWait() {
         stage.showAndWait();
         return Optional.ofNullable(result);
+    }
+
+    private void setupInputField(javafx.scene.control.TextInputControl input, String inputBg, String inputText, String inputPrompt) {
+        String baseStyle = String.format(
+            "-fx-control-inner-background: %s; " +
+            "-fx-background-color: %s; " +
+            "-fx-text-fill: %s; " +
+            "-fx-text-inner-color: %s; " +
+            "-fx-prompt-text-fill: %s; " +
+            "-fx-border-color: %s; " +
+            "-fx-border-width: 1; " +
+            "-fx-border-radius: 5; " +
+            "-fx-background-radius: 5; " +
+            "-fx-focus-color: transparent; " +
+            "-fx-faint-focus-color: transparent;",
+            inputBg, inputBg, inputText, inputText, inputPrompt, ThemeProvider.get("border-muted")
+        );
+        input.setStyle(baseStyle);
+
+        input.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                input.setStyle(baseStyle + " -fx-border-color: " + ThemeProvider.get("accent-blue") + ";");
+            } else {
+                input.setStyle(baseStyle);
+            }
+        });
     }
 }

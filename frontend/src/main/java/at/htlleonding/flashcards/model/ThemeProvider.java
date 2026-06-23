@@ -11,7 +11,7 @@ public class ThemeProvider {
     private static final String SETTINGS_FILE = "settings.properties";
     private static final String THEME_KEY = "theme";
 
-    private static final ObjectProperty<String> currentTheme = new SimpleObjectProperty<>("light");
+    private static final ObjectProperty<String> currentTheme = new SimpleObjectProperty<>("sapphire");
     private static final Map<String, Map<String, String>> themes = new LinkedHashMap<>();
     private static final List<Runnable> listeners = new ArrayList<>();
 
@@ -61,9 +61,9 @@ public class ThemeProvider {
         themes.put("dark", Map.ofEntries(
             Map.entry("bg-primary",       "#121212"),
             Map.entry("bg-secondary",     "#1e1e2e"),
-            Map.entry("bg-card",          "#2a2a3e"),
-            Map.entry("bg-hover",         "#353550"),
-            Map.entry("bg-active",        "#404060"),
+            Map.entry("bg-card",          "#38385a"),
+            Map.entry("bg-hover",         "#46467a"),
+            Map.entry("bg-active",        "#505090"),
             Map.entry("text-primary",     "#e0e0e0"),
             Map.entry("text-secondary",   "#b0b0b0"),
             Map.entry("text-muted",       "#909090"),
@@ -71,9 +71,9 @@ public class ThemeProvider {
             Map.entry("text-disabled",    "#606060"),
             Map.entry("text-placeholder", "#505050"),
             Map.entry("text-hint",        "#444444"),
-            Map.entry("border-default",   "#444444"),
-            Map.entry("border-light",     "#3a3a3a"),
-            Map.entry("border-muted",     "#555555"),
+            Map.entry("border-default",   "#6060a0"),
+            Map.entry("border-light",     "#4a4a7a"),
+            Map.entry("border-muted",     "#555580"),
             Map.entry("accent-blue",      "#64B5F6"),
             Map.entry("accent-blue-hover","#42A5F5"),
             Map.entry("accent-blue-active","#2196F3"),
@@ -100,6 +100,48 @@ public class ThemeProvider {
             Map.entry("text-on-accent",   "#000000")
         ));
 
+        themes.put("sapphire", Map.ofEntries(
+            Map.entry("bg-primary",       "#D5E7F5"),
+            Map.entry("bg-secondary",     "#E3F0FB"),
+            Map.entry("bg-card",          "#B8DBF4"),
+            Map.entry("bg-hover",         "#A5D0EE"),
+            Map.entry("bg-active",        "#8BBADA"),
+            Map.entry("text-primary",     "#1B365D"),
+            Map.entry("text-secondary",   "#2E5B88"),
+            Map.entry("text-muted",       "#3E5C80"),
+            Map.entry("text-subtle",      "#4D6D91"),
+            Map.entry("text-disabled",    "#6E8CAE"),
+            Map.entry("text-placeholder", "#7E9DBF"),
+            Map.entry("text-hint",        "#94B5D8"),
+            Map.entry("border-default",   "#8BBADA"),
+            Map.entry("border-light",     "#A2C9E5"),
+            Map.entry("border-muted",     "#7CAFD0"),
+            Map.entry("accent-blue",      "#2563EB"),
+            Map.entry("accent-blue-hover","#1D4ED8"),
+            Map.entry("accent-blue-active","#1E40AF"),
+            Map.entry("accent-blue-strong","#172554"),
+            Map.entry("accent-blue-light", "#93C5FD"),
+            Map.entry("accent-blue-bg",   "#EFF6FF"),
+            Map.entry("accent-green",     "#10B981"),
+            Map.entry("accent-green-strong","#047857"),
+            Map.entry("accent-green-dark", "#065F46"),
+            Map.entry("accent-green-light","#A7F3D0"),
+            Map.entry("accent-green-bg",  "#ECFDF5"),
+            Map.entry("accent-orange",    "#F59E0B"),
+            Map.entry("accent-orange-hover","#D97706"),
+            Map.entry("accent-orange-active","#B45309"),
+            Map.entry("accent-red",       "#EF4444"),
+            Map.entry("accent-red-hover", "#DC2626"),
+            Map.entry("accent-red-strong","#B91C1C"),
+            Map.entry("neutral-gray",     "#6B7280"),
+            Map.entry("neutral-gray-dark","#4B5563"),
+            Map.entry("accent-link",      "#3B82F6"),
+            Map.entry("fg-black",         "#1B365D"),
+            Map.entry("fg-dark",          "#1B365D"),
+            Map.entry("text-on-primary",  "#ffffff"),
+            Map.entry("text-on-accent",   "#ffffff")
+        ));
+
         String saved = loadSavedTheme();
         if (saved != null && themes.containsKey(saved)) {
             currentTheme.set(saved);
@@ -116,7 +158,7 @@ public class ThemeProvider {
 
     public static void setTheme(String theme) {
         if (theme == null || !themes.containsKey(theme)) {
-            theme = "light";
+            theme = "sapphire";
         }
         currentTheme.set(theme);
         saveTheme(theme);
