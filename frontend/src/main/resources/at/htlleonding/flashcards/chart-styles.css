@@ -1,0 +1,21 @@
+/* Styling for JavaFX Charts to ensure readability in all themes */
+
+.chart-title {
+    -fx-text-fill: -fx-text-primary !important;
+}
+
+.axis-label {
+    -fx-text-fill: -fx-text-primary !important;
+}
+
+.tick-label {
+    -fx-fill: -fx-text-primary !important;
+}
+
+.chart-pie-label {
+    -fx-fill: -fx-text-primary !important;
+}
+
+.chart-legend-item {
+    -fx-text-fill: -fx-text-primary !important;
+}
