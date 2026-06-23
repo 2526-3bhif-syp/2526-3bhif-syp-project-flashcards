@@ -41,6 +41,9 @@ public class SettingsView extends VBox {
         languageDropdown.getItems().addAll("Deutsch", "English");
         styleComboBox(languageDropdown);
         languageDropdown.setPrefWidth(200);
+        languageDropdown.showingProperty().addListener((obs, wasShowing, isShowing) -> {
+            if (isShowing) languageDropdown.setCellFactory(cb -> new StyledListCell());
+        });
 
         Locale current = TranslationProvider.getLocale();
         if ("de".equals(current.getLanguage())) {
@@ -90,6 +93,9 @@ public class SettingsView extends VBox {
         );
         styleComboBox(themeDropdown);
         themeDropdown.setPrefWidth(200);
+        themeDropdown.showingProperty().addListener((obs, wasShowing, isShowing) -> {
+            if (isShowing) themeDropdown.setCellFactory(cb -> new StyledListCell());
+        });
 
         String currentTheme = ThemeProvider.getTheme();
         if ("light".equals(currentTheme)) {
@@ -192,12 +198,14 @@ public class SettingsView extends VBox {
 
     private static class StyledListCell extends ListCell<String> {
         StyledListCell() {}
+
         @Override
         protected void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
             if (empty || item == null) {
                 setText(null);
                 setGraphic(null);
+                setStyle("");
             } else {
                 setText(item);
                 setStyle(
@@ -205,21 +213,12 @@ public class SettingsView extends VBox {
                     "-fx-background-color: " + ThemeProvider.get("bg-card") + "; " +
                     "-fx-font-size: 14px; -fx-padding: 6 12;"
                 );
-                setOnMouseEntered(e -> {
-                    if (!isEmpty()) setStyle(
-                        "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; " +
-                        "-fx-background-color: " + ThemeProvider.get("bg-hover") + "; " +
-                        "-fx-font-size: 14px; -fx-padding: 6 12;"
-                    );
-                });
-                setOnMouseExited(e -> {
-                    if (!isEmpty()) setStyle(
-                        "-fx-text-fill: " + ThemeProvider.get("text-primary") + "; " +
-                        "-fx-background-color: " + ThemeProvider.get("bg-card") + "; " +
-                        "-fx-font-size: 14px; -fx-padding: 6 12;"
-                    );
-                });
             }
+        }
+
+        @Override
+        public void updateSelected(boolean selected) {
+            // skip super to suppress JavaFX :selected highlight
         }
     }
 }
