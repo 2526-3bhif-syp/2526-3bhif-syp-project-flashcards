@@ -312,3 +312,5 @@ Read up on previous work done in the openspecs/ folder. You can also use the gh 
 * /openspec-propose yes looks good. go ahead
 
 * /openspec-apply-change
+
+* openspec sync its fixed
